@@ -4,7 +4,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
-import { User, Lock, View as ElIconView, Hide as ElIconHide } from '@element-plus/icons-vue'
+import { User, Lock, View as ElIconView, Hide as ElIconHide, RefreshRight as Refresh } from '@element-plus/icons-vue'
 import { getCaptcha } from '@/api/login/captcha'
 import { login } from '@/api/login/login'
 
@@ -126,9 +126,10 @@ const togglePasswordVisibility = () => {
               <label for="username">用户名</label>
               <div class="input-with-icon">
                 <el-icon class="input-icon"><User /></el-icon>
-                <el-input id="username" v-model="loginForm.username" placeholder="admin" />
+                <el-input id="username" v-model="loginForm.username" placeholder="请输入用户名" />
               </div>
             </el-form-item>
+            
             <el-form-item prop="password">
               <label for="password">密码</label>
               <div class="input-with-icon">
@@ -137,7 +138,7 @@ const togglePasswordVisibility = () => {
                   id="password" 
                   v-model="loginForm.password" 
                   :type="passwordVisible ? 'text' : 'password'" 
-                  placeholder="****"
+                  placeholder="请输入密码"
                 >
                   <template #suffix>
                     <el-icon 
@@ -150,24 +151,27 @@ const togglePasswordVisibility = () => {
                 </el-input>
               </div>
             </el-form-item>
+            
             <el-form-item prop="captcha">
               <label for="captcha">验证码</label>
-              <div class="captcha-row">
+              <div class="captcha-block">
                 <el-input 
                   id="captcha" 
-                  class="captcha-input" 
                   v-model="loginForm.captcha" 
                   placeholder="请输入验证码" 
                 />
                 <img
                   :src="captchaImg"
                   alt="验证码"
-                  class="captcha-img"
                   @click="fetchCaptcha"
                   title="点击刷新验证码"
                 />
+                <div class="captcha-refresh" @click="fetchCaptcha" title="刷新验证码">
+                  <el-icon><Refresh /></el-icon>
+                </div>
               </div>
             </el-form-item>
+            
             <el-button type="primary" class="login-button" @click="handleLogin" :loading="loading">
               {{ loading ? '登录中...' : '登录' }}
             </el-button>
