@@ -9,15 +9,43 @@
         <div
           v-for="item in menuItems"
           :key="item.id"
-          class="menu-item"
-          :class="{ active: activeMenu === item.id }"
-          @click="selectMenu(item.id)"
+          class="menu-item-container"
         >
-          <el-icon class="menu-item-icon">
-            <component :is="item.icon"></component>
-          </el-icon>
-          <span class="menu-title">{{ item.title }}</span>
+          <div
+            class="menu-item"
+            :class="{ active: activeMenu === item.id }"
+            @click="selectMenu(item.id)"
+          >
+            <el-icon class="menu-item-icon">
+              <component :is="item.icon"></component>
+            </el-icon>
+            <span class="menu-title">{{ item.title }}</span>
+            <el-icon v-if="item.children && item.children.length" class="menu-arrow">
+              <arrow-down v-if="expandedMenus.includes(item.id)" />
+              <arrow-right v-else />
+            </el-icon>
+          </div>
+          
+          <!-- 子菜单 -->
+          <div 
+            v-if="item.children && item.children.length && expandedMenus.includes(item.id)" 
+            class="submenu"
+          >
+            <div
+              v-for="child in item.children"
+              :key="child.id"
+              class="submenu-item"
+              :class="{ active: activeMenu === child.id }"
+              @click="selectMenu(child.id)"
+            >
+              <el-icon class="menu-item-icon">
+                <component :is="child.icon"></component>
+              </el-icon>
+              <span class="menu-title">{{ child.title }}</span>
+            </div>
+          </div>
         </div>
+        
         <!-- 退出登录按钮 -->
         <div class="menu-item logout-item" @click="handleLogout">
           <el-icon class="menu-item-icon">
@@ -55,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import useHomepage from './homepage'
+import useHomepage from './homepage.ts'
 import { 
   Setting, 
   Document, 
@@ -64,33 +92,26 @@ import {
   Tools, 
   Box, 
   Connection,
-  SwitchButton
+  SwitchButton,
+  ArrowDown,
+  ArrowRight,
+  User,
+  UserFilled,
+  Menu,
+  HomeFilled,
+  DataAnalysis
 } from '@element-plus/icons-vue'
 
 const {
   menuItems,
   activeMenu,
+  expandedMenus,
   selectMenu,
   username,
   currentTime,
   handleLogout
 } = useHomepage()
 </script>
-
 <style src="./homepage.css"></style>
 <style>
-/* 覆盖全局样式，确保主页能够填满整个屏幕 */
-#app {
-  max-width: none;
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  height: 100vh;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
 </style>

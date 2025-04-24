@@ -8,15 +8,29 @@ interface MenuItem {
   title: string
   icon: string
   path: string
+  children?: MenuItem[]
 }
 
 export default function useHomepage() {
   const router = useRouter()
-  const activeMenu = ref('system')
+  const activeMenu = ref('dashboard')  // 修改默认激活菜单为仪表盘
 
   const menuItems: MenuItem[] = reactive([
-    { id: 'system', title: '系统管理', icon: 'Setting', path: '/homepage/system' },
-    { id: 'cmdb', title: 'CMDB资产管理', icon: 'Document', path: '/homepage/cmdb' },
+    { id: 'dashboard', title: '仪表盘', icon: 'HomeFilled', path: '/dashboard' },
+
+    { 
+      id: 'system', 
+      title: '系统管理', 
+      icon: 'Setting', 
+      path: '/system',
+      children: [
+        { id: 'system-user', title: '用户管理', icon: 'User', path: '/system/userManager' },
+        { id: 'system-role', title: '角色管理', icon: 'UserFilled', path: '/system/roleManager' },
+        { id: 'system-menu', title: '菜单管理', icon: 'Menu', path: '/system/menuManager' },
+        { id: 'system-api', title: 'API管理', icon: 'Connection', path: '/system/apiManager' }
+      ]
+    },
+    { id: 'cmdb', title: 'CMDB资产管理', icon: 'DataAnalysis', path: '/homepage/cmdb' },
     { id: 'kubernetes', title: 'k8s管理', icon: 'Ship', path: '/homepage/kubernetes' },
     { id: 'prometheus', title: 'Prometheus监控管理', icon: 'Monitor', path: '/homepage/prometheus' },
     { id: 'config', title: '配置中心', icon: 'Tools', path: '/homepage/config' },
@@ -24,12 +38,47 @@ export default function useHomepage() {
     { id: 'cicd', title: 'CICD', icon: 'Connection', path: '/homepage/cicd' }
   ])
 
+  const expandedMenus = ref<string[]>(['system']) // 默认展开系统管理菜单
+  
+  // 初始化时导航到仪表盘
+  router.push('/dashboard')
+  
   const selectMenu = (menuId: string) => {
-    activeMenu.value = menuId
-    const selectedMenu = menuItems.find(item => item.id === menuId)
+    // 查找当前菜单项
+    const selectedMenu = findMenuItem(menuId, menuItems)
+    
     if (selectedMenu) {
-      router.push(selectedMenu.path)
+      // 如果有子菜单，则切换展开/收起状态
+      if (selectedMenu.children && selectedMenu.children.length > 0) {
+        if (expandedMenus.value.includes(menuId)) {
+          expandedMenus.value = expandedMenus.value.filter(id => id !== menuId)
+        } else {
+          expandedMenus.value.push(menuId)
+        }
+        // 如果是子菜单项，设置为激活状态
+        activeMenu.value = menuId
+      } else {
+        // 如果没有子菜单，则导航到对应路径
+        activeMenu.value = menuId
+        router.push(selectedMenu.path)
+      }
     }
+  }
+  
+  // 递归查找菜单项
+  const findMenuItem = (id: string, items: MenuItem[]): MenuItem | undefined => {
+    for (const item of items) {
+      if (item.id === id) {
+        return item
+      }
+      if (item.children && item.children.length > 0) {
+        const found = findMenuItem(id, item.children)
+        if (found) {
+          return found
+        }
+      }
+    }
+    return undefined
   }
 
   const username = ref('Admin')
@@ -58,10 +107,11 @@ export default function useHomepage() {
       ElMessage.error('退出登录失败，请稍后重试')
     }
   }
-
+  
   return {
     menuItems,
     activeMenu,
+    expandedMenus,
     selectMenu,
     username,
     currentTime,

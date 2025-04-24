@@ -6,7 +6,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/login'
+      redirect: '/dashboard'  // 修改为重定向到仪表盘
     },
     {
       path: '/login',
@@ -21,14 +21,30 @@ const router = createRouter({
         requiresAuth: true
       },
       children: [
+        // 添加仪表盘路由
         {
-          path: 'system',
-          name: 'system',
-          component: () => import('../views/system/index.vue'),
+          path: '/dashboard',
+          name: 'dashboard',
+          component: () => import('@/views/dashboard/index.vue'),
           meta: {
             requiresAuth: true,
-            title: '系统管理'
+            title: '仪表盘'
           }
+        },
+        // 系统管理相关路由
+        {
+          path: '/system',
+          component: () => import('@/views/system/index.vue'),
+          children: [
+            {
+              path: '',
+              redirect: '/system/userManager'
+            },
+            {
+              path: 'userManager',
+              component: () => import('@/views/system/userManager/index.vue')
+            }
+          ]
         },
         {
           path: 'cmdb',

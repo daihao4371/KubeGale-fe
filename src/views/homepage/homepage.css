@@ -108,3 +108,43 @@
 .menu-title {
   font-size: 14px;
 }
+
+
+/* 添加到现有的 CSS 文件中 */
+/* 子菜单样式优化 */
+.menu-item-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.menu-arrow {
+  margin-left: auto;
+}
+
+.submenu {
+  margin-left: 10px;
+  width: 100%;
+  background-color: #00284d;
+  border-radius: 0 0 4px 4px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.submenu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 2px 0;
+}
+
+.submenu-item:hover {
+  background-color: rgba(24, 144, 255, 0.3);
+}
+
+.submenu-item.active {
+  background-color: #1890ff;
+  color: white;
+}
