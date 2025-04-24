@@ -9,21 +9,8 @@ export const getUserList = (data: { page: number; pageSize: number }) => {
   })
 }
 
-// 定义用户注册数据类型
-export interface RegisterUserData {
-  userName: string
-  passWord: string
-  nickName: string
-  headerImg?: string
-  authorityId: number
-  enable: number
-  authorityIds?: number[]
-  phone: string
-  email: string
-}
-
 // 添加用户
-export const addUser = (data: RegisterUserData) => {
+export const addUser = (data: any) => {
   return request({
     url: '/user/admin_register',
     method: 'post',

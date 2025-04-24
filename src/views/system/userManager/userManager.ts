@@ -1,7 +1,19 @@
 import { ref, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getUserList, addUser, updateUser, deleteUser, resetPassword } from '@/api/system/user'
-import type { RegisterUserData } from '@/api/system/user'
+
+// 定义用户注册数据类型
+export interface RegisterUserData {
+  userName: string
+  passWord: string
+  nickName: string
+  headerImg?: string
+  authorityId: number
+  enable: number
+  authorityIds?: number[]
+  phone: string
+  email: string
+}
 
 // 定义用户数据类型
 export interface UserInfo {
