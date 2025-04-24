@@ -34,6 +34,16 @@ export interface LoginResponse {
   }
 }
 
+export interface LogoutResponse {
+  code: number
+  msg: string
+  data: any
+}
+
 export function login(data: LoginParams) {
   return request.post<LoginResponse>('/base/login', data)
+}
+
+export function logout() {
+  return request.post<LogoutResponse>('/jwt/jsonInBlacklist')
 }

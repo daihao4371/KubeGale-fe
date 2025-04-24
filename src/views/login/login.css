@@ -156,3 +156,86 @@ body {
   min-width: 90px;
   object-fit: contain;
 }
+
+/* 调整表单项间距 */
+.el-form-item {
+  margin-bottom: 20px !important;  /* 增加表单项之间的间距 */
+}
+
+/* 输入框图标样式 */
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  color: #909399;
+  font-size: 16px;
+  z-index: 2;
+}
+
+.input-with-icon .el-input__inner {
+  padding-left: 35px !important;
+}
+
+/* 密码可见性图标样式 */
+.password-eye {
+  cursor: pointer;
+  color: #909399;
+  font-size: 16px;
+  margin-right: 5px;
+}
+
+.password-eye:hover {
+  color: #409EFF;
+}
+
+/* Element Plus 样式覆盖 */
+:deep(.el-input__inner) {
+  height: 38px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: border 0.2s;
+}
+
+:deep(.el-input__inner:focus) {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+/* 调整验证码输入框样式 */
+.form-item.captcha-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: row;
+}
+
+.form-item.captcha-row label {
+  margin-bottom: 0;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+.captcha-input {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+}
+
+.captcha-img {
+  height: 38px;
+  margin-left: 0;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  width: auto;
+  min-width: 90px;
+  object-fit: contain;
+}

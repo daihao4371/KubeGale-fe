@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import router from '@/router'
 
 const service = axios.create({
   baseURL: '/api', // 统一接口前缀
@@ -35,7 +36,8 @@ service.interceptors.response.use(
           // 清除token
           localStorage.removeItem('token')
           localStorage.removeItem('userInfo')
-          // 可以在这里添加重定向到登录页的逻辑
+          // 重定向到登录页
+          router.push('/login')
           break
         case 403:
           ElMessage.error('拒绝访问')

@@ -1,47 +1,110 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import type { RouteRecordRaw } from 'vue-router'
-
-const routes: Array<RouteRecordRaw> = [
-  {
-    path: '/',
-    redirect: '/login'
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('../views/login/Login.vue'),
-    meta: { title: '登录', requiresAuth: false }
-  }
-  // 注意：这里删除了重复的登录路由
-]
+import { ElMessage } from 'element-plus'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes: [
+    {
+      path: '/',
+      redirect: '/login'
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/login/Login.vue')
+    },
+    {
+      path: '/homepage',
+      name: 'homepage',
+      component: () => import('../views/homepage/Homepage.vue'),
+      meta: {
+        requiresAuth: true
+      },
+      children: [
+        {
+          path: 'system',
+          name: 'system',
+          component: () => import('../views/system/index.vue'),
+          meta: {
+            requiresAuth: true,
+            title: '系统管理'
+          }
+        },
+        {
+          path: 'cmdb',
+          name: 'cmdb',
+          component: () => import('../views/cmdb/index.vue'),
+          meta: {
+            requiresAuth: true,
+            title: 'CMDB资产管理'
+          }
+        },
+        {
+          path: 'kubernetes',
+          name: 'kubernetes',
+          component: () => import('../views/kubernetes/index.vue'),
+          meta: {
+            requiresAuth: true
+          }
+        },
+        {
+          path: 'prometheus',
+          name: 'prometheus',
+          component: () => import('../views/prometheus/index.vue'),
+          meta: {
+            requiresAuth: true
+          }
+        },
+        {
+          path: 'config',
+          name: 'config',
+          component: () => import('../views/config/index.vue'),
+          meta: {
+            requiresAuth: true
+          }
+        },
+        {
+          path: 'docker',
+          name: 'docker',
+          component: () => import('../views/docker/index.vue'),
+          meta: {
+            requiresAuth: true
+          }
+        },
+        {
+          path: 'cicd',
+          name: 'cicd',
+          component: () => import('../views/cicd/index.vue'),
+          meta: {
+            requiresAuth: true
+          }
+        }
+      ]
+    }
+  ]
 })
 
-// 路由守卫
+// 全局前置守卫
 router.beforeEach((to, from, next) => {
   // 设置页面标题
   document.title = to.meta.title ? `${to.meta.title} - KubeGale` : 'KubeGale'
   
-  // 暂时注释掉登录验证逻辑，直接放行所有路由
-  next()
-  
-  /* 等登录功能完成后再启用
-  // 检查是否需要登录验证
-  if (to.matched.some(record => record.meta.requiresAuth !== false)) {
-    // 这里添加登录验证逻辑
-    const isLoggedIn = localStorage.getItem('token')
-    if (!isLoggedIn) {
+  // 检查路由是否需要认证
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // 检查用户是否已登录
+    const token = localStorage.getItem('token')
+    if (!token) {
+      ElMessage.warning('请先登录')
+      // 重定向到登录页
       next({ path: '/login' })
     } else {
+      // 已登录，允许访问
       next()
     }
   } else {
+    // 不需要认证的路由，直接放行
     next()
   }
-  */
 })
 
 export default router

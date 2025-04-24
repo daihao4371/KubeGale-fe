@@ -85,8 +85,8 @@ const handleLogin = async () => {
           saveToken(res.data.data.token)
           saveUserInfo(res.data.data.user)
           
-          // 跳转到首页
-          router.push('/')
+          // 修改这里：跳转到首页
+          router.push('/homepage')
         } else {
           ElMessage.error(res.data.msg || '登录失败')
           // 刷新验证码
@@ -121,35 +121,57 @@ const togglePasswordVisibility = () => {
         <div class="login-form-container">
           <h2>欢迎回来 👋</h2>
           <p class="login-subtitle">请输入您的账号和密码登录系统</p>
-          <form class="login-form" @submit.prevent="handleLogin" ref="loginFormRef">
-            <div class="form-item">
+          <el-form class="login-form" ref="loginFormRef" :model="loginForm" :rules="loginRules" @submit.prevent="handleLogin">
+            <el-form-item prop="username">
               <label for="username">用户名</label>
-              <input id="username" type="text" placeholder="请输入用户名" v-model="loginForm.username" />
-            </div>
-            <div class="form-item">
-              <label for="password">密码</label>
-              <div style="position: relative;">
-                <input id="password" :type="passwordVisible ? 'text' : 'password'" placeholder="请输入密码" v-model="loginForm.password" />
-                <span class="password-eye" @click="togglePasswordVisibility" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
-                  <component :is="passwordVisible ? ElIconView : ElIconHide" />
-                </span>
+              <div class="input-with-icon">
+                <el-icon class="input-icon"><User /></el-icon>
+                <el-input id="username" v-model="loginForm.username" placeholder="admin" />
               </div>
-            </div>
-            <div class="form-item captcha-row">
-              <label for="captcha" style="margin-bottom:0;">验证码</label>
-              <input id="captcha" class="captcha-input" type="text" placeholder="请输入验证码" v-model="loginForm.captcha" />
-              <img
-                :src="captchaImg"
-                alt="验证码"
-                class="captcha-img"
-                @click="fetchCaptcha"
-                title="点击刷新验证码"
-              />
-            </div>
-            <button type="submit" class="login-button" :disabled="loading">
+            </el-form-item>
+            <el-form-item prop="password">
+              <label for="password">密码</label>
+              <div class="input-with-icon">
+                <el-icon class="input-icon"><Lock /></el-icon>
+                <el-input 
+                  id="password" 
+                  v-model="loginForm.password" 
+                  :type="passwordVisible ? 'text' : 'password'" 
+                  placeholder="****"
+                >
+                  <template #suffix>
+                    <el-icon 
+                      class="password-eye" 
+                      @click="togglePasswordVisibility"
+                    >
+                      <component :is="passwordVisible ? ElIconView : ElIconHide" />
+                    </el-icon>
+                  </template>
+                </el-input>
+              </div>
+            </el-form-item>
+            <el-form-item prop="captcha">
+              <label for="captcha">验证码</label>
+              <div class="captcha-row">
+                <el-input 
+                  id="captcha" 
+                  class="captcha-input" 
+                  v-model="loginForm.captcha" 
+                  placeholder="请输入验证码" 
+                />
+                <img
+                  :src="captchaImg"
+                  alt="验证码"
+                  class="captcha-img"
+                  @click="fetchCaptcha"
+                  title="点击刷新验证码"
+                />
+              </div>
+            </el-form-item>
+            <el-button type="primary" class="login-button" @click="handleLogin" :loading="loading">
               {{ loading ? '登录中...' : '登录' }}
-            </button>
-          </form>
+            </el-button>
+          </el-form>
         </div>
       </div>
     </div>
