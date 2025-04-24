@@ -13,7 +13,10 @@
         >
           <div
             class="menu-item"
-            :class="{ active: activeMenu === item.id }"
+            :class="{ 
+              active: activeMenu === item.id,
+              'parent-active': hasActiveChild(item)
+            }"
             @click="selectMenu(item.id)"
           >
             <el-icon class="menu-item-icon">
@@ -109,7 +112,8 @@ const {
   selectMenu,
   username,
   currentTime,
-  handleLogout
+  handleLogout,
+  hasActiveChild
 } = useHomepage()
 </script>
 <style src="./homepage.css"></style>

@@ -55,7 +55,7 @@ export default function useHomepage() {
         } else {
           expandedMenus.value.push(menuId)
         }
-        // 如果是子菜单项，设置为激活状态
+        // 如果是父菜单项，设置为激活状态
         activeMenu.value = menuId
       } else {
         // 如果没有子菜单，则导航到对应路径
@@ -63,6 +63,14 @@ export default function useHomepage() {
         router.push(selectedMenu.path)
       }
     }
+  }
+  
+  // 检查菜单项是否有激活的子菜单
+  const hasActiveChild = (item: MenuItem): boolean => {
+    if (!item.children) return false
+    
+    return item.children.some(child => child.id === activeMenu.value) || 
+           (expandedMenus.value.includes(item.id) && item.id === activeMenu.value)
   }
   
   // 递归查找菜单项
@@ -115,6 +123,7 @@ export default function useHomepage() {
     selectMenu,
     username,
     currentTime,
-    handleLogout
+    handleLogout,
+    hasActiveChild
   }
 }
