@@ -1,6 +1,5 @@
 <template>
   <div class="system-container">
-    <h1>系统管理</h1>
     <router-view />
   </div>
 </template>
@@ -12,5 +11,8 @@
 <style scoped>
 .system-container {
   padding: 20px;
+  background-color: #f5f7fa;
+  min-height: calc(100vh - 120px);
+  border: none; /* 确保没有边框 */
 }
 </style>

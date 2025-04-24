@@ -1,0 +1,107 @@
+.user-manager-container {
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.box-card {
+  margin-bottom: 0;
+  border-radius: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #303133;
+}
+
+.header-subtitle {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 4px;
+}
+
+.pagination-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.el-button {
+  margin-right: 8px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.el-button:last-child {
+  margin-right: 0;
+}
+
+.el-table {
+  border-radius: 0;
+  margin-top: 10px;
+  flex: 1;
+  width: 100%;
+}
+
+:deep(.el-card__body) {
+  height: 100%;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  width: 100%;
+}
+
+:deep(.el-table__inner-wrapper) {
+  width: 100%;
+}
+
+:deep(.el-table__header-wrapper) {
+  width: 100%;
+}
+
+:deep(.el-table__body-wrapper) {
+  width: 100%;
+}
+
+:deep(.el-table th) {
+  font-weight: 500;
+}
+
+:deep(.el-pagination) {
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+.operation-buttons {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.operation-buttons .el-button {
+  margin-right: 5px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.operation-buttons .el-button:last-child {
+  margin-right: 0;
+}
