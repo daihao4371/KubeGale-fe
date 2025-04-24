@@ -105,3 +105,21 @@
 .operation-buttons .el-button:last-child {
   margin-right: 0;
 }
+
+/* 对话框样式 */
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+:deep(.el-dialog__body) {
+  padding: 20px;
+}
+
+:deep(.el-form-item__label) {
+  font-weight: 500;
+}
+
+:deep(.el-select) {
+  width: 100%;
+}

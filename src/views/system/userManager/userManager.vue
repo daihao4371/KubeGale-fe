@@ -79,6 +79,64 @@
           background
         />
       </div>
+      
+      <!-- 添加/编辑用户对话框 -->
+      <el-dialog
+        v-model="dialogVisible"
+        :title="dialogTitle"
+        width="500px"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+      >
+        <el-form
+          ref="formRef"
+          :model="userForm"
+          :rules="userFormRules"
+          label-width="100px"
+          v-loading="dialogLoading"
+        >
+          <el-form-item label="用户名" prop="userName">
+            <el-input v-model="userForm.userName" placeholder="请输入用户名" />
+          </el-form-item>
+          <el-form-item label="密码" prop="passWord">
+            <el-input v-model="userForm.passWord" type="password" placeholder="请输入密码" />
+          </el-form-item>
+          <el-form-item label="昵称" prop="nickName">
+            <el-input v-model="userForm.nickName" placeholder="请输入昵称" />
+          </el-form-item>
+          <el-form-item label="手机号" prop="phone">
+            <el-input v-model="userForm.phone" placeholder="请输入手机号" />
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="userForm.email" placeholder="请输入邮箱" />
+          </el-form-item>
+          <el-form-item label="角色" prop="authorityId">
+            <el-select v-model="userForm.authorityId" placeholder="请选择角色">
+              <el-option
+                v-for="(name, id) in roleMap"
+                :key="id"
+                :label="name"
+                :value="Number(id)"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="状态" prop="enable">
+            <el-switch
+              v-model="userForm.enable"
+              :active-value="1"
+              :inactive-value="0"
+              :active-color="'#13ce66'"
+              :inactive-color="'#ff4949'"
+            />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitForm" :loading="dialogLoading">确定</el-button>
+          </span>
+        </template>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -98,7 +156,16 @@ import {
   handleAddUser, 
   handleEdit, 
   handleResetPassword, 
-  handleDelete 
+  handleDelete,
+  // 新增导入
+  dialogVisible,
+  dialogTitle,
+  dialogLoading,
+  userForm,
+  userFormRules,
+  formRef,
+  submitForm,
+  roleMap  // 确保导入 roleMap
 } from './userManager'
 
 // 页面加载时获取用户列表
