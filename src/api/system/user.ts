@@ -41,16 +41,16 @@ export const updateUser = (data: any) => {
 }
 
 // 删除用户
-export const deleteUser = (data: { id: string }) => {
+export const deleteUser = (id: number) => {
   return request({
     url: '/user/deleteUser',
     method: 'delete',
-    data
+    data: { id }
   })
 }
 
 // 重设密码
-export const resetPassword = (data: { id: string; newPassword: string }) => {
+export const resetPassword = (data: { ID: number; newPassword: string }) => {
   return request({
     url: '/user/resetPassword',
     method: 'post',

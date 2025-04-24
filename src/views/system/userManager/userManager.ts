@@ -5,7 +5,7 @@ import type { RegisterUserData } from '@/api/system/user'
 
 // 定义用户数据类型
 export interface UserInfo {
-  uuid: string
+  ID: number
   userName: string
   nickName: string
   phone: string
@@ -192,45 +192,78 @@ export const handleEdit = (row: UserInfo) => {
 
 // 重设密码
 export const handleResetPassword = (row: UserInfo) => {
-  ElMessageBox.prompt('请输入新密码', '重设密码', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    inputType: 'password',
-    inputPattern: /^.{6,20}$/,
-    inputErrorMessage: '密码长度在6-20个字符之间'
-  }).then(({ value }) => {
-    resetPassword({ id: row.uuid, newPassword: value }).then(res => {
-      if (res.data && res.data.code === 0) {
-        ElMessage.success('密码重设成功')
-      } else {
-        ElMessage.error(res.data?.msg || '密码重设失败')
+  ElMessageBox.confirm(
+    '是否将此用户密码重置为123456?',
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      draggable: true,
+    }
+  )
+    .then(async () => {
+      try {
+        const response = await resetPassword({ 
+          ID: row.ID, 
+          newPassword: '123456' 
+        });
+        
+        if (response.data && response.data.code === 0) {
+          ElMessage({
+            message: '密码重置成功',
+            type: 'success'
+          });
+        } else {
+          ElMessage({
+            message: response.data?.msg || '密码重置失败',
+            type: 'error'
+          });
+        }
+      } catch (error) {
+        console.error('密码重置失败:', error);
+        ElMessage({
+          message: '密码重置失败，请重试',
+          type: 'error'
+        });
       }
-    }).catch(() => {
-      ElMessage.error('密码重设失败，请稍后重试')
     })
-  }).catch(() => {
-    // 用户取消操作
-  })
-}
+    .catch(() => {
+      // 用户取消操作，不做任何处理
+    });
+};
 
 // 删除用户
 export const handleDelete = (row: UserInfo) => {
   ElMessageBox.confirm('确定要删除该用户吗？此操作不可逆', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    deleteUser({ id: row.uuid }).then(res => {
+    type: 'warning',
+    draggable: true
+  }).then(async () => {
+    try {
+      const res = await deleteUser(row.ID);
+      
       if (res.data && res.data.code === 0) {
-        ElMessage.success('删除用户成功')
-        fetchUserList() // 刷新用户列表
+        ElMessage({
+          message: '删除用户成功',
+          type: 'success'
+        });
+        fetchUserList(); // 刷新用户列表
       } else {
-        ElMessage.error(res.data?.msg || '删除用户失败')
+        ElMessage({
+          message: res.data?.msg || '删除用户失败',
+          type: 'error'
+        });
       }
-    }).catch(() => {
-      ElMessage.error('删除用户失败，请稍后重试')
-    })
+    } catch (error) {
+      console.error('删除用户失败:', error);
+      ElMessage({
+        message: '删除用户失败，请稍后重试',
+        type: 'error'
+      });
+    }
   }).catch(() => {
-    // 用户取消操作
-  })
+    // 用户取消操作，不做任何处理
+  });
 }
