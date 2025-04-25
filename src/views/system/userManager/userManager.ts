@@ -327,6 +327,72 @@ export const userDetailInfo = ref<UserDetailInfo | null>(null)
 export const userInfoDialogVisible = ref(false)
 export const userInfoLoading = ref(false)
 
+// 用户信息表单数据
+export interface UserInfoForm {
+  phone: string
+  email: string
+}
+
+export const userInfoForm = reactive<UserInfoForm>({
+  phone: '',
+  email: ''
+})
+
+// 用户信息表单验证规则
+export const userInfoFormRules = {
+  phone: [
+    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
+  ],
+  email: [
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+  ]
+}
+
+// 用户信息表单引用
+export const userInfoFormRef = ref()
+
+// 提交用户信息表单
+export const submitUserInfoForm = async () => {
+  if (!userInfoFormRef.value) return
+  
+  await userInfoFormRef.value.validate(async (valid: boolean) => {
+    if (valid) {
+      userInfoLoading.value = true
+      try {
+        // 确保保留原有的昵称和启用状态
+        const updateData = {
+          ID: userDetailInfo.value?.ID,
+          nickName: userDetailInfo.value?.nickName,  // 保留原有昵称
+          phone: userInfoForm.phone,
+          email: userInfoForm.email,
+          enable: userDetailInfo.value?.enable,      // 保留原有启用状态
+          headerImg: userDetailInfo.value?.headerImg, // 保留头像
+          authorityIds: userDetailInfo.value?.authorities?.map(auth => auth.authorityId) || [] // 保留权限
+        }
+        
+        const res = await updateUser(updateData)
+        
+        if (res.data && res.data.code === 0) {
+          ElMessage.success('个人信息更新成功')
+          userInfoDialogVisible.value = false
+          // 更新本地用户信息
+          if (userDetailInfo.value) {
+            userDetailInfo.value.phone = userInfoForm.phone
+            userDetailInfo.value.email = userInfoForm.email
+          }
+        } else {
+          ElMessage.error(res.data?.msg || '个人信息更新失败')
+        }
+      } catch (error) {
+        console.error('更新个人信息失败:', error)
+        ElMessage.error('更新个人信息失败，请稍后重试')
+      } finally {
+        userInfoLoading.value = false
+      }
+    }
+  })
+}
+
 // 获取用户详细信息
 export const fetchUserInfo = async () => {
   userInfoLoading.value = true
@@ -334,6 +400,9 @@ export const fetchUserInfo = async () => {
     const res = await getUserInfo()
     if (res.data && res.data.code === 0) {
       userDetailInfo.value = res.data.data.userInfo
+      // 初始化表单数据
+      userInfoForm.phone = userDetailInfo.value?.phone || ''
+      userInfoForm.email = userDetailInfo.value?.email || ''
       userInfoDialogVisible.value = true
     } else {
       ElMessage.error(res.data?.msg || '获取用户信息失败')

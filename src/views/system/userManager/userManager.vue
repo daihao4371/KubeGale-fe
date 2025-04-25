@@ -155,37 +155,49 @@
         :close-on-press-escape="false"
       >
         <div v-loading="userInfoLoading">
-          <el-descriptions :column="1" border>
-            <el-descriptions-item label="用户ID">{{ userDetailInfo?.ID }}</el-descriptions-item>
-            <el-descriptions-item label="用户名">{{ userDetailInfo?.userName }}</el-descriptions-item>
-            <el-descriptions-item label="昵称">{{ userDetailInfo?.nickName }}</el-descriptions-item>
-            <el-descriptions-item label="手机号">{{ userDetailInfo?.phone }}</el-descriptions-item>
-            <el-descriptions-item label="邮箱">{{ userDetailInfo?.email }}</el-descriptions-item>
-            <el-descriptions-item label="角色">
+          <el-form
+            ref="userInfoFormRef"
+            :model="userInfoForm"
+            :rules="userInfoFormRules"
+            label-width="100px"
+          >
+            <el-form-item label="用户ID">
+              <span>{{ userDetailInfo?.ID }}</span>
+            </el-form-item>
+            <el-form-item label="用户名">
+              <span>{{ userDetailInfo?.userName }}</span>
+            </el-form-item>
+            <el-form-item label="昵称">
+              <span>{{ userDetailInfo?.nickName }}</span>
+            </el-form-item>
+            <el-form-item label="手机号" prop="phone">
+              <el-input v-model="userInfoForm.phone" placeholder="请输入手机号" />
+            </el-form-item>
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="userInfoForm.email" placeholder="请输入邮箱" />
+            </el-form-item>
+            <el-form-item label="角色">
               <el-tag v-for="(auth, index) in userDetailInfo?.authorities" :key="index" type="info" effect="plain" class="auth-tag">
                 {{ auth.authorityName }}
               </el-tag>
-            </el-descriptions-item>
-            <el-descriptions-item label="状态">
+            </el-form-item>
+            <el-form-item label="状态">
               <el-tag :type="userDetailInfo?.enable === 1 ? 'success' : 'danger'">
                 {{ userDetailInfo?.enable === 1 ? '启用' : '禁用' }}
               </el-tag>
-            </el-descriptions-item>
-            <el-descriptions-item label="头像">
-              <el-image 
-                style="width: 100px; height: 100px" 
-                :src="userDetailInfo?.headerImg" 
-                fit="cover"
-                :preview-src-list="userDetailInfo?.headerImg ? [userDetailInfo.headerImg] : []"
-              />
-            </el-descriptions-item>
-            <el-descriptions-item label="创建时间">{{ userDetailInfo?.CreatedAt }}</el-descriptions-item>
-            <el-descriptions-item label="更新时间">{{ userDetailInfo?.UpdatedAt }}</el-descriptions-item>
-          </el-descriptions>
+            </el-form-item>
+            <el-form-item label="创建时间">
+              <span>{{ userDetailInfo?.CreatedAt }}</span>
+            </el-form-item>
+            <el-form-item label="更新时间">
+              <span>{{ userDetailInfo?.UpdatedAt }}</span>
+            </el-form-item>
+          </el-form>
         </div>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="userInfoDialogVisible = false">关闭</el-button>
+            <el-button @click="userInfoDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitUserInfoForm" :loading="userInfoLoading">保存</el-button>
           </span>
         </template>
       </el-dialog>
@@ -260,7 +272,11 @@ import {
   changePasswordForm,
   changePasswordRules,
   handleChangePassword,
-  submitChangePasswordForm
+  submitChangePasswordForm,
+  userInfoFormRef,
+  userInfoForm,
+  userInfoFormRules,
+  submitUserInfoForm
 } from './userManager'
 
 // 页面加载时获取用户列表
