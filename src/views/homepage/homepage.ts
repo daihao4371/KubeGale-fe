@@ -11,9 +11,17 @@ interface MenuItem {
   children?: MenuItem[]
 }
 
+interface BreadcrumbItem {
+  title: string
+  path: string
+  timestamp: number
+}
+
 export default function useHomepage() {
   const router = useRouter()
   const activeMenu = ref('dashboard')  // 修改默认激活菜单为仪表盘
+  const recentPages = ref<BreadcrumbItem[]>([])
+  const maxRecentPages = 10
 
   const menuItems: MenuItem[] = reactive([
     { id: 'dashboard', title: '仪表盘', icon: 'HomeFilled', path: '/dashboard' },
@@ -43,25 +51,78 @@ export default function useHomepage() {
   // 初始化时导航到仪表盘
   router.push('/dashboard')
   
+  // 添加最近访问页面
+  const addRecentPage = (menu: MenuItem) => {
+    const newPage = {
+      title: menu.title,
+      path: menu.path,
+      timestamp: Date.now()
+    }
+    
+    // 移除已存在的相同路径的页面
+    recentPages.value = recentPages.value.filter(page => page.path !== menu.path)
+    
+    // 添加到最近访问列表的开头
+    recentPages.value.unshift(newPage)
+    
+    // 保持最多10个记录
+    if (recentPages.value.length > maxRecentPages) {
+      recentPages.value = recentPages.value.slice(0, maxRecentPages)
+    }
+  }
+  
+  // 更新面包屑
+  const updateBreadcrumbs = (menuId: string) => {
+    const selectedMenu = findMenuItem(menuId, menuItems)
+    if (selectedMenu) {
+      if (selectedMenu.children) {
+        // 如果是父菜单，只显示父菜单
+        addRecentPage(selectedMenu)
+      } else {
+        // 如果是子菜单，显示父菜单和子菜单
+        const parentMenu = findParentMenu(menuId, menuItems)
+        if (parentMenu) {
+          addRecentPage(selectedMenu)
+        } else {
+          addRecentPage(selectedMenu)
+        }
+      }
+    }
+  }
+  
+  // 查找父菜单
+  const findParentMenu = (childId: string, items: MenuItem[]): MenuItem | undefined => {
+    for (const item of items) {
+      if (item.children) {
+        if (item.children.some(child => child.id === childId)) {
+          return item
+        }
+        const found = findParentMenu(childId, item.children)
+        if (found) {
+          return found
+        }
+      }
+    }
+    return undefined
+  }
+  
   const selectMenu = (menuId: string) => {
-    // 查找当前菜单项
     const selectedMenu = findMenuItem(menuId, menuItems)
     
     if (selectedMenu) {
-      // 如果有子菜单，则切换展开/收起状态
       if (selectedMenu.children && selectedMenu.children.length > 0) {
         if (expandedMenus.value.includes(menuId)) {
           expandedMenus.value = expandedMenus.value.filter(id => id !== menuId)
         } else {
           expandedMenus.value.push(menuId)
         }
-        // 如果是父菜单项，设置为激活状态
         activeMenu.value = menuId
       } else {
-        // 如果没有子菜单，则导航到对应路径
         activeMenu.value = menuId
         router.push(selectedMenu.path)
       }
+      // 更新面包屑
+      updateBreadcrumbs(menuId)
     }
   }
   
@@ -124,6 +185,7 @@ export default function useHomepage() {
     username,
     currentTime,
     handleLogout,
-    hasActiveChild
+    hasActiveChild,
+    recentPages
   }
 }
