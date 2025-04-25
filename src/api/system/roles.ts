@@ -7,3 +7,17 @@ export const getAuthorityList = () => {
     method: 'post'
   })
 }
+
+// 创建角色
+export const createAuthority = (data: {
+  authorityId: number
+  authorityName: string
+  parentId: number
+  defaultRouter?: string
+}) => {
+  return request({
+    url: '/authority/createAuthority',
+    method: 'post',
+    data
+  })
+}
