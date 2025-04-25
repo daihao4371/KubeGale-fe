@@ -7,9 +7,14 @@
             <span class="header-title">用户管理</span>
             <span class="header-subtitle">管理系统用户信息和权限</span>
           </div>
-          <el-button type="primary" @click="handleAddUser">
-            <el-icon class="el-icon--left"><Plus /></el-icon>添加用户
-          </el-button>
+          <div class="header-right">
+            <el-button type="primary" @click="fetchUserInfo">
+              <el-icon class="el-icon--left"><User /></el-icon>个人信息
+            </el-button>
+            <el-button type="primary" @click="handleAddUser">
+              <el-icon class="el-icon--left"><Plus /></el-icon>添加用户
+            </el-button>
+          </div>
         </div>
       </template>
       
@@ -53,6 +58,9 @@
         <el-table-column label="操作" min-width="280">
           <template #default="scope">
             <div class="operation-buttons">
+              <el-button size="small" type="primary" text @click="handleViewUserInfo(scope.row)">
+                <el-icon class="el-icon--left"><InfoFilled /></el-icon>详情
+              </el-button>
               <el-button size="small" type="primary" text @click="handleEdit(scope.row)">
                 <el-icon class="el-icon--left"><Edit /></el-icon>编辑
               </el-button>
@@ -137,12 +145,56 @@
           </span>
         </template>
       </el-dialog>
+      
+      <!-- 用户详细信息对话框 -->
+      <el-dialog
+        v-model="userInfoDialogVisible"
+        title="用户详细信息"
+        width="600px"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+      >
+        <div v-loading="userInfoLoading">
+          <el-descriptions :column="1" border>
+            <el-descriptions-item label="用户ID">{{ userDetailInfo?.ID }}</el-descriptions-item>
+            <el-descriptions-item label="用户名">{{ userDetailInfo?.userName }}</el-descriptions-item>
+            <el-descriptions-item label="昵称">{{ userDetailInfo?.nickName }}</el-descriptions-item>
+            <el-descriptions-item label="手机号">{{ userDetailInfo?.phone }}</el-descriptions-item>
+            <el-descriptions-item label="邮箱">{{ userDetailInfo?.email }}</el-descriptions-item>
+            <el-descriptions-item label="角色">
+              <el-tag v-for="(auth, index) in userDetailInfo?.authorities" :key="index" type="info" effect="plain" class="auth-tag">
+                {{ auth.authorityName }}
+              </el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="状态">
+              <el-tag :type="userDetailInfo?.enable === 1 ? 'success' : 'danger'">
+                {{ userDetailInfo?.enable === 1 ? '启用' : '禁用' }}
+              </el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="头像">
+              <el-image 
+                style="width: 100px; height: 100px" 
+                :src="userDetailInfo?.headerImg" 
+                fit="cover"
+                :preview-src-list="userDetailInfo?.headerImg ? [userDetailInfo.headerImg] : []"
+              />
+            </el-descriptions-item>
+            <el-descriptions-item label="创建时间">{{ userDetailInfo?.CreatedAt }}</el-descriptions-item>
+            <el-descriptions-item label="更新时间">{{ userDetailInfo?.UpdatedAt }}</el-descriptions-item>
+          </el-descriptions>
+        </div>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="userInfoDialogVisible = false">关闭</el-button>
+          </span>
+        </template>
+      </el-dialog>
     </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Plus, Edit, Delete, Key } from '@element-plus/icons-vue'
+import { Plus, Edit, Delete, Key, User, InfoFilled } from '@element-plus/icons-vue'
 import { 
   currentPage, 
   pageSize, 
@@ -165,7 +217,13 @@ import {
   userFormRules,
   formRef,
   submitForm,
-  roleMap  // 确保导入 roleMap
+  roleMap,
+  // 用户详情相关
+  userDetailInfo,
+  userInfoDialogVisible,
+  userInfoLoading,
+  fetchUserInfo,
+  handleViewUserInfo
 } from './userManager'
 
 // 页面加载时获取用户列表

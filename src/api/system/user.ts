@@ -44,3 +44,11 @@ export const resetPassword = (data: { ID: number; newPassword: string }) => {
     data
   })
 }
+
+// 获取用户信息
+export const getUserInfo = () => {
+  return request({
+    url: '/user/getUserInfo',
+    method: 'get'
+  })
+}

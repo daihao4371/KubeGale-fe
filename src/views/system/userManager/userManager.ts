@@ -1,35 +1,51 @@
 import { ref, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getUserList, addUser, updateUser, deleteUser, resetPassword } from '@/api/system/user'
+import { getUserList, addUser, updateUser, deleteUser, resetPassword, getUserInfo } from '@/api/system/user'
 
-// 定义用户注册数据类型
-export interface RegisterUserData {
+// 基础用户信息接口
+export interface BaseUserInfo {
   userName: string
-  passWord: string
   nickName: string
-  headerImg?: string
-  authorityId: number
-  enable: number
-  authorityIds?: number[]
   phone: string
   email: string
+  headerImg: string
+  enable: number
+  authorityId: number
 }
 
-// 定义用户数据类型
-export interface UserInfo {
+// 用户注册数据类型
+export interface RegisterUserData extends BaseUserInfo {
+  passWord: string
+  authorityIds?: number[]
+}
+
+// 用户数据类型
+export interface UserInfo extends BaseUserInfo {
   ID: number
-  userName: string
-  nickName: string
-  phone: string
-  email: string
-  authorityId: number
-  enable: number
-  headerImg: string
   authority?: {
     CreatedAt: string
     UpdatedAt: string
   }
   originSetting?: any
+}
+
+// 用户详细信息类型
+export interface UserDetailInfo extends UserInfo {
+  CreatedAt: string
+  UpdatedAt: string
+  authorities: Array<{
+    CreatedAt: string
+    UpdatedAt: string
+    authorityId: number
+    authorityName: string
+    children: any
+    dataAuthorityId: any
+    defaultRouter: string
+    menus: any
+    parentId: number
+  }>
+  uuid: string
+  msg: string
 }
 
 // 分页参数
@@ -278,4 +294,103 @@ export const handleDelete = (row: UserInfo) => {
   }).catch(() => {
     // 用户取消操作，不做任何处理
   });
+}
+
+// 定义用户详细信息类型
+export interface UserDetailInfo {
+  ID: number
+  CreatedAt: string
+  UpdatedAt: string
+  authorities: Array<{
+    CreatedAt: string
+    UpdatedAt: string
+    authorityId: number
+    authorityName: string
+    children: any
+    dataAuthorityId: any
+    defaultRouter: string
+    menus: any
+    parentId: number
+  }>
+  authority: {
+    CreatedAt: string
+    UpdatedAt: string
+    authorityId: number
+  }
+  email: string
+  enable: number
+  headerImg: string
+  nickName: string
+  originSetting: any
+  phone: string
+  userName: string
+  uuid: string
+  msg: string
+}
+
+// 用户详细信息
+export const userDetailInfo = ref<UserDetailInfo | null>(null)
+export const userInfoDialogVisible = ref(false)
+export const userInfoLoading = ref(false)
+
+// 获取用户详细信息
+export const fetchUserInfo = async () => {
+  userInfoLoading.value = true
+  try {
+    const res = await getUserInfo()
+    if (res.data && res.data.code === 0) {
+      userDetailInfo.value = res.data.data.userInfo
+      userInfoDialogVisible.value = true
+    } else {
+      ElMessage.error(res.data?.msg || '获取用户信息失败')
+    }
+  } catch (error) {
+    console.error('获取用户信息出错:', error)
+    ElMessage.error('获取用户信息失败，请稍后重试')
+  } finally {
+    userInfoLoading.value = false
+  }
+}
+
+// 查看用户详细信息
+export const handleViewUserInfo = (row: UserInfo) => {
+  ElMessageBox.confirm(
+    '是否查看该用户的详细信息?',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'info',
+      draggable: true,
+    }
+  )
+    .then(async () => {
+      try {
+        userInfoLoading.value = true
+        // 这里模拟获取用户详情，实际项目中应该调用后端接口获取特定用户的详情
+        // 由于后端接口只能获取当前登录用户的信息，这里仅作为示例
+        const res = await getUserInfo()
+        
+        if (res.data && res.data.code === 0) {
+          userDetailInfo.value = res.data.data.userInfo
+          userInfoDialogVisible.value = true
+        } else {
+          ElMessage({
+            message: res.data?.msg || '获取用户信息失败',
+            type: 'error'
+          })
+        }
+      } catch (error) {
+        console.error('获取用户信息失败:', error)
+        ElMessage({
+          message: '获取用户信息失败，请稍后重试',
+          type: 'error'
+        })
+      } finally {
+        userInfoLoading.value = false
+      }
+    })
+    .catch(() => {
+      // 用户取消操作，不做任何处理
+    })
 }
