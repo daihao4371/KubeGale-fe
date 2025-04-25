@@ -52,3 +52,13 @@ export const getUserInfo = () => {
     method: 'get'
   })
 }
+
+// 修改密码
+export const changePassword = (data: any) => {
+  return request({
+    url: '/user/changePassword',
+    method: 'post',
+    data
+  })
+}
+

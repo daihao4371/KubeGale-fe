@@ -128,3 +128,12 @@
 :deep(.el-select) {
   width: 100%;
 }
+
+/* 密码输入框样式 */
+:deep(.el-input__inner[type="password"]) {
+  letter-spacing: 1px;
+}
+
+:deep(.el-input__suffix) {
+  cursor: pointer;
+}

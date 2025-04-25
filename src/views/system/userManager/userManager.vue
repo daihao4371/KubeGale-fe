@@ -11,6 +11,9 @@
             <el-button type="primary" @click="fetchUserInfo">
               <el-icon class="el-icon--left"><User /></el-icon>个人信息
             </el-button>
+            <el-button type="primary" @click="handleChangePassword">
+              <el-icon class="el-icon--left"><Lock /></el-icon>修改密码
+            </el-button>
             <el-button type="primary" @click="handleAddUser">
               <el-icon class="el-icon--left"><Plus /></el-icon>添加用户
             </el-button>
@@ -186,12 +189,42 @@
           </span>
         </template>
       </el-dialog>
+      
+      <!-- 修改密码对话框 -->
+      <el-dialog
+        v-model="changePasswordDialogVisible"
+        title="修改密码"
+        width="500px"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+      >
+        <el-form
+          ref="changePasswordFormRef"
+          :model="changePasswordForm"
+          :rules="changePasswordRules"
+          label-width="100px"
+          v-loading="changePasswordLoading"
+        >
+          <el-form-item label="当前密码" prop="Password">
+            <el-input v-model="changePasswordForm.Password" type="password" placeholder="请输入当前密码" show-password />
+          </el-form-item>
+          <el-form-item label="新密码" prop="NewPassword">
+            <el-input v-model="changePasswordForm.NewPassword" type="password" placeholder="请输入新密码" show-password />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="changePasswordDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitChangePasswordForm" :loading="changePasswordLoading">确定</el-button>
+          </span>
+        </template>
+      </el-dialog>
     </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Plus, Edit, Delete, Key, User } from '@element-plus/icons-vue'
+import { Plus, Edit, Delete, Key, User, Lock } from '@element-plus/icons-vue'
 import { 
   currentPage, 
   pageSize, 
@@ -219,7 +252,15 @@ import {
   userDetailInfo,
   userInfoDialogVisible,
   userInfoLoading,
-  fetchUserInfo
+  fetchUserInfo,
+  // 修改密码相关
+  changePasswordDialogVisible,
+  changePasswordLoading,
+  changePasswordFormRef,
+  changePasswordForm,
+  changePasswordRules,
+  handleChangePassword,
+  submitChangePasswordForm
 } from './userManager'
 
 // 页面加载时获取用户列表
