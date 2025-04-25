@@ -237,6 +237,7 @@
 
 <script setup lang="ts">
 import { Plus, Edit, Delete, Key, User, Lock } from '@element-plus/icons-vue'
+import { onMounted } from 'vue'
 import { 
   currentPage, 
   pageSize, 
@@ -249,7 +250,6 @@ import {
   handleSizeChange, 
   handleAddUser, 
   handleEdit, 
-  handleResetPassword, 
   handleDelete,
   // 新增导入
   dialogVisible,
@@ -265,7 +265,13 @@ import {
   userInfoDialogVisible,
   userInfoLoading,
   fetchUserInfo,
-  // 修改密码相关
+  userInfoFormRef,
+  userInfoForm,
+  userInfoFormRules,
+  submitUserInfoForm
+} from './userManager'
+
+import {
   changePasswordDialogVisible,
   changePasswordLoading,
   changePasswordFormRef,
@@ -273,14 +279,13 @@ import {
   changePasswordRules,
   handleChangePassword,
   submitChangePasswordForm,
-  userInfoFormRef,
-  userInfoForm,
-  userInfoFormRules,
-  submitUserInfoForm
-} from './userManager'
+  handleResetPassword
+} from './passwordManager'
 
 // 页面加载时获取用户列表
-fetchUserList()
+onMounted(() => {
+  fetchUserList()
+})
 </script>
 
 <style src="./userManager.css" scoped></style>
