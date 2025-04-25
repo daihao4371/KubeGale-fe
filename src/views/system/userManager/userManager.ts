@@ -45,16 +45,17 @@ export const handleRoleChange = async (value: number[], row: UserInfo) => {
     })
     
     if (res.data && res.data.code === 0) {
-      ElMessage.success('设置用户角色成功')
+      handleApiSuccess('设置用户角色成功')
       // 更新本地数据
       row.authorityId = value[0] // 更新主角色ID，用于显示
       row.authorityIds = value // 保存所有选中的角色ID
+      // 更新用户统计
+      updateUserStats(userList.value)
     } else {
       ElMessage.error(res.data?.msg || '设置用户角色失败')
     }
   } catch (error) {
-    console.error('设置用户角色失败:', error)
-    ElMessage.error('设置用户角色失败，请稍后重试')
+    handleApiError(error, '设置用户角色失败')
   }
 }
 
@@ -94,7 +95,7 @@ export const userForm = reactive<RegisterUserData>({
   headerImg: '',
   authorityId: 888, // 默认为管理员
   enable: 1, // 默认启用
-  authorityIds: [],
+  authorityIds: [], // 用于存储多选的角色ID
   phone: '',
   email: ''
 })
@@ -129,22 +130,66 @@ export const dialogTitle = ref('添加用户')
 export const dialogLoading = ref(false)
 export const formRef = ref()
 
+// 提取公共的错误处理函数
+const handleApiError = (error: unknown, message: string) => {
+  console.error(`${message}:`, error)
+  ElMessage.error(`${message}，请稍后重试`)
+}
+
+// 提取公共的成功处理函数
+const handleApiSuccess = (message: string) => {
+  ElMessage.success(message)
+}
+
+// 提取公共的用户更新数据构建函数
+const buildUserUpdateData = (user: Partial<UserInfo>) => ({
+  ID: user.ID!,
+  nickName: user.nickName!,
+  phone: user.phone!,
+  email: user.email!,
+  headerImg: user.headerImg!,
+  authorityId: user.authorityId!, // 使用单个角色ID
+  enable: user.enable!
+})
+
+// 提取公共的表单重置函数
+const resetFormData = <T extends object>(form: T, defaultValues: T) => {
+  Object.assign(form, defaultValues)
+}
+
+// 用户表单默认值
+const defaultUserForm = {
+  userName: '',
+  passWord: '',
+  nickName: '',
+  headerImg: '',
+  authorityId: 888,
+  enable: 1,
+  authorityIds: [],
+  phone: '',
+  email: ''
+}
+
+// 搜索表单默认值
+const defaultSearchForm = {
+  userName: '',
+  nickName: '',
+  phone: '',
+  email: ''
+}
+
 // 重置表单
 export const resetForm = () => {
   if (formRef.value) {
     formRef.value.resetFields()
   }
-  Object.assign(userForm, {
-    userName: '',
-    passWord: '',
-    nickName: '',
-    headerImg: '',
-    authorityId: 888,
-    enable: 1,
-    authorityIds: [],
-    phone: '',
-    email: ''
-  })
+  resetFormData(userForm, defaultUserForm)
+}
+
+// 重置搜索表单
+export const resetSearchForm = () => {
+  resetFormData(searchForm, defaultSearchForm)
+  fetchUserList()
 }
 
 // 添加用户
@@ -163,33 +208,26 @@ export const submitForm = async () => {
       dialogLoading.value = true
       try {
         let res;
-        // 根据对话框标题判断是添加还是编辑操作
         if (dialogTitle.value === '添加用户') {
-          res = await addUser(userForm)
+          // 添加用户时，使用第一个选中的角色ID作为主角色
+          const submitData = {
+            ...userForm,
+            authorityId: userForm.authorityIds?.[0] || 888 // 如果没有选择角色，使用默认值
+          }
+          res = await addUser(submitData)
         } else {
-          // 编辑用户时调用updateUser接口
-          // 编辑时不传递userName字段，确保不会修改用户名
-          res = await updateUser({
-            ID: userForm.ID,
-            nickName: userForm.nickName,
-            phone: userForm.phone,
-            email: userForm.email,
-            headerImg: userForm.headerImg,
-            authorityIds: [userForm.authorityId], // 将单个角色ID转换为数组
-            enable: userForm.enable
-          })
+          res = await updateUser(buildUserUpdateData(userForm))
         }
         
         if (res.data && res.data.code === 0) {
-          ElMessage.success(dialogTitle.value === '添加用户' ? '添加用户成功' : '编辑用户成功')
+          handleApiSuccess(dialogTitle.value === '添加用户' ? '添加用户成功' : '编辑用户成功')
           dialogVisible.value = false
-          fetchUserList() // 刷新用户列表
+          fetchUserList()
         } else {
           ElMessage.error(res.data?.msg || (dialogTitle.value === '添加用户' ? '添加用户失败' : '编辑用户失败'))
         }
       } catch (error) {
-        console.error(dialogTitle.value === '添加用户' ? '添加用户出错:' : '编辑用户出错:', error)
-        ElMessage.error((dialogTitle.value === '添加用户' ? '添加用户' : '编辑用户') + '失败，请稍后重试')
+        handleApiError(error, dialogTitle.value === '添加用户' ? '添加用户' : '编辑用户')
       } finally {
         dialogLoading.value = false
       }
@@ -232,30 +270,20 @@ export const handleDelete = (row: UserInfo) => {
     draggable: true
   }).then(async () => {
     try {
-      const res = await deleteUser(row.ID);
+      const res = await deleteUser(row.ID)
       
       if (res.data && res.data.code === 0) {
-        ElMessage({
-          message: '删除用户成功',
-          type: 'success'
-        });
-        fetchUserList(); // 刷新用户列表
+        handleApiSuccess('删除用户成功')
+        fetchUserList()
       } else {
-        ElMessage({
-          message: res.data?.msg || '删除用户失败',
-          type: 'error'
-        });
+        ElMessage.error(res.data?.msg || '删除用户失败')
       }
     } catch (error) {
-      console.error('删除用户失败:', error);
-      ElMessage({
-        message: '删除用户失败，请稍后重试',
-        type: 'error'
-      });
+      handleApiError(error, '删除用户失败')
     }
   }).catch(() => {
     // 用户取消操作，不做任何处理
-  });
+  })
 }
 
 // 用户详细信息
@@ -295,33 +323,28 @@ export const submitUserInfoForm = async () => {
     if (valid) {
       userInfoLoading.value = true
       try {
-        // 确保保留原有的昵称和启用状态
         const updateData = {
-          ID: userDetailInfo.value?.ID,
-          nickName: userDetailInfo.value?.nickName,  // 保留原有昵称
+          ...buildUserUpdateData(userDetailInfo.value!),
           phone: userInfoForm.phone,
-          email: userInfoForm.email,
-          enable: userDetailInfo.value?.enable,      // 保留原有启用状态
-          headerImg: userDetailInfo.value?.headerImg, // 保留头像
-          authorityIds: userDetailInfo.value?.authorities?.map(auth => auth.authorityId) || [] // 保留权限
+          email: userInfoForm.email
         }
         
         const res = await updateUser(updateData)
         
         if (res.data && res.data.code === 0) {
-          ElMessage.success('个人信息更新成功')
+          handleApiSuccess('个人信息更新成功')
           userInfoDialogVisible.value = false
-          // 更新本地用户信息
           if (userDetailInfo.value) {
             userDetailInfo.value.phone = userInfoForm.phone
             userDetailInfo.value.email = userInfoForm.email
           }
+          // 刷新用户列表以获取最新数据
+          fetchUserList()
         } else {
           ElMessage.error(res.data?.msg || '个人信息更新失败')
         }
       } catch (error) {
-        console.error('更新个人信息失败:', error)
-        ElMessage.error('更新个人信息失败，请稍后重试')
+        handleApiError(error, '更新个人信息失败')
       } finally {
         userInfoLoading.value = false
       }
@@ -354,28 +377,55 @@ export const fetchUserInfo = async () => {
 // 处理启用状态变化
 export const handleEnableChange = async (row: UserInfo) => {
   try {
-    const res = await updateUser({
-      ID: row.ID,
-      enable: row.enable,
-      nickName: row.nickName,
-      phone: row.phone,
-      email: row.email,
-      headerImg: row.headerImg,
-      authorityIds: [row.authorityId]
-    })
+    const res = await updateUser(buildUserUpdateData(row))
     
     if (res.data && res.data.code === 0) {
-      ElMessage.success(`用户${row.enable === 1 ? '启用' : '禁用'}成功`)
+      handleApiSuccess(`用户${row.enable === 1 ? '启用' : '禁用'}成功`)
+      updateUserStats(userList.value)
     } else {
-      // 如果更新失败，恢复原来的状态
       row.enable = row.enable === 1 ? 2 : 1
       ElMessage.error(res.data?.msg || '更新用户状态失败')
     }
   } catch (error) {
-    // 如果发生错误，恢复原来的状态
     row.enable = row.enable === 1 ? 2 : 1
-    console.error('更新用户状态失败:', error)
-    ElMessage.error('更新用户状态失败，请稍后重试')
+    handleApiError(error, '更新用户状态失败')
+  }
+}
+
+// 搜索表单数据
+export interface SearchForm {
+  userName: string
+  nickName: string
+  phone: string
+  email: string
+}
+
+export const searchForm = reactive<SearchForm>({
+  userName: '',
+  nickName: '',
+  phone: '',
+  email: ''
+})
+
+// 用户统计数据
+export interface UserStats {
+  total: number
+  enabled: number
+  disabled: number
+}
+
+export const userStats = ref<UserStats>({
+  total: 0,
+  enabled: 0,
+  disabled: 0
+})
+
+// 更新用户统计
+export const updateUserStats = (list: UserInfo[]) => {
+  userStats.value = {
+    total: list.length,
+    enabled: list.filter(user => user.enable === 1).length,
+    disabled: list.filter(user => user.enable === 2).length
   }
 }
 
@@ -385,12 +435,15 @@ export const fetchUserList = async () => {
   try {
     const res = await getUserList({
       page: currentPage.value,
-      pageSize: pageSize.value
+      pageSize: pageSize.value,
+      ...searchForm
     })
     
     if (res.data && res.data.code === 0) {
       userList.value = res.data.data.list || []
       total.value = res.data.data.total || 0
+      // 更新用户统计
+      updateUserStats(userList.value)
     } else {
       ElMessage.error(res.data?.msg || '获取用户列表失败')
     }

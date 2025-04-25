@@ -21,6 +21,70 @@
         </div>
       </template>
       
+      <!-- 用户统计卡片 -->
+      <div class="stats-cards">
+        <el-card class="stats-card" shadow="hover">
+          <template #header>
+            <div class="stats-card-header">
+              <el-icon><User /></el-icon>
+              <span>总用户数</span>
+            </div>
+          </template>
+          <div class="stats-card-content">
+            <span class="stats-number">{{ userStats.total }}</span>
+            <span class="stats-label">人</span>
+          </div>
+        </el-card>
+        <el-card class="stats-card" shadow="hover">
+          <template #header>
+            <div class="stats-card-header">
+              <el-icon><CircleCheck /></el-icon>
+              <span>启用用户</span>
+            </div>
+          </template>
+          <div class="stats-card-content">
+            <span class="stats-number">{{ userStats.enabled }}</span>
+            <span class="stats-label">人</span>
+          </div>
+        </el-card>
+        <el-card class="stats-card" shadow="hover">
+          <template #header>
+            <div class="stats-card-header">
+              <el-icon><CircleClose /></el-icon>
+              <span>禁用用户</span>
+            </div>
+          </template>
+          <div class="stats-card-content">
+            <span class="stats-number">{{ userStats.disabled }}</span>
+            <span class="stats-label">人</span>
+          </div>
+        </el-card>
+      </div>
+      
+      <!-- 搜索表单 -->
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="用户名">
+          <el-input v-model="searchForm.userName" placeholder="请输入用户名" clearable />
+        </el-form-item>
+        <el-form-item label="昵称">
+          <el-input v-model="searchForm.nickName" placeholder="请输入昵称" clearable />
+        </el-form-item>
+        <el-form-item label="手机号">
+          <el-input v-model="searchForm.phone" placeholder="请输入手机号" clearable />
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="searchForm.email" placeholder="请输入邮箱" clearable />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="fetchUserList">
+            <el-icon class="el-icon--left"><Search /></el-icon>搜索
+          </el-button>
+          <el-button @click="resetSearchForm">
+            <el-icon class="el-icon--left"><Refresh /></el-icon>重置
+          </el-button>
+        </el-form-item>
+      </el-form>
+      
       <el-table 
         :data="userList" 
         style="width: 100%" 
@@ -254,7 +318,7 @@
 </template>
 
 <script setup lang="ts">
-import { Plus, Edit, Delete, Key, User, Lock } from '@element-plus/icons-vue'
+import { Plus, Edit, Delete, Key, User, Lock, Search, Refresh, CircleCheck, CircleClose } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
 import { 
   currentPage, 
@@ -290,7 +354,12 @@ import {
   fetchRoleList,
   roleOptions,
   handleRoleChange,
-  getUserRoleIds
+  getUserRoleIds,
+  // 搜索相关
+  searchForm,
+  resetSearchForm,
+  // 统计相关
+  userStats
 } from './userManager'
 
 import {
