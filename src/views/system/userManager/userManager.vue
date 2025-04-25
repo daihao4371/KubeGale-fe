@@ -51,10 +51,10 @@
             <el-switch
               v-model="scope.row.enable"
               :active-value="1"
-              :inactive-value="0"
-              disabled
+              :inactive-value="2"
               :active-color="'#13ce66'"
               :inactive-color="'#ff4949'"
+              @change="handleEnableChange(scope.row)"
             />
           </template>
         </el-table-column>
@@ -251,6 +251,7 @@ import {
   handleAddUser, 
   handleEdit, 
   handleDelete,
+  handleEnableChange,
   // 新增导入
   dialogVisible,
   dialogTitle,

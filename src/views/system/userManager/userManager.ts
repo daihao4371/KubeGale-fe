@@ -380,3 +380,31 @@ export const fetchUserInfo = async () => {
     userInfoLoading.value = false
   }
 }
+
+// 处理启用状态变化
+export const handleEnableChange = async (row: UserInfo) => {
+  try {
+    const res = await updateUser({
+      ID: row.ID,
+      enable: row.enable,
+      nickName: row.nickName,
+      phone: row.phone,
+      email: row.email,
+      headerImg: row.headerImg,
+      authorityIds: [row.authorityId]
+    })
+    
+    if (res.data && res.data.code === 0) {
+      ElMessage.success(`用户${row.enable === 1 ? '启用' : '禁用'}成功`)
+    } else {
+      // 如果更新失败，恢复原来的状态
+      row.enable = row.enable === 1 ? 2 : 1
+      ElMessage.error(res.data?.msg || '更新用户状态失败')
+    }
+  } catch (error) {
+    // 如果发生错误，恢复原来的状态
+    row.enable = row.enable === 1 ? 2 : 1
+    console.error('更新用户状态失败:', error)
+    ElMessage.error('更新用户状态失败，请稍后重试')
+  }
+}
