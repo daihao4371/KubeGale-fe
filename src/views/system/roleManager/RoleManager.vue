@@ -22,10 +22,11 @@
         row-key="authorityId"
         border
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+        default-expand-all
       >
         <el-table-column prop="authorityId" label="角色ID" min-width="120" />
         <el-table-column prop="authorityName" label="角色名称" min-width="120" />
-        <el-table-column label="操作" min-width="400">
+        <el-table-column label="操作" min-width="400" fixed="right">
           <template #default="scope">
             <div class="operation-buttons">
               <el-button size="small" type="primary" text @click="handleSetPermission(scope.row)">
@@ -81,6 +82,39 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 编辑角色对话框 -->
+    <el-dialog
+      v-model="editRoleDialogVisible"
+      title="编辑角色"
+      width="500px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+    >
+      <el-form
+        ref="editRoleFormRef"
+        :model="editRoleForm"
+        :rules="createRoleRules"
+        label-width="100px"
+        v-loading="editRoleLoading"
+      >
+        <el-form-item label="父级角色" prop="parentId">
+          <el-input v-model="parentRoleName" disabled placeholder="根角色" />
+        </el-form-item>
+        <el-form-item label="角色ID" prop="authorityId">
+          <el-input v-model="editRoleForm.authorityId" disabled />
+        </el-form-item>
+        <el-form-item label="角色名称" prop="authorityName">
+          <el-input v-model="editRoleForm.authorityName" placeholder="请输入角色名称" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="editRoleDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitEditRole" :loading="editRoleLoading">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -101,11 +135,16 @@ import {
   createRoleLoading,
   createRoleForm,
   createRoleRules,
-  submitCreateRole
+  submitCreateRole,
+  editRoleDialogVisible,
+  editRoleLoading,
+  editRoleForm,
+  submitEditRole
 } from './roleManager'
 
 // 表单引用
 const createRoleFormRef = ref()
+const editRoleFormRef = ref()
 const parentRoleName = ref('根角色')
 
 // 页面加载时获取角色列表
