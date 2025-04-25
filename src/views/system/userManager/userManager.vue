@@ -58,9 +58,6 @@
         <el-table-column label="操作" min-width="280">
           <template #default="scope">
             <div class="operation-buttons">
-              <el-button size="small" type="primary" text @click="handleViewUserInfo(scope.row)">
-                <el-icon class="el-icon--left"><InfoFilled /></el-icon>详情
-              </el-button>
               <el-button size="small" type="primary" text @click="handleEdit(scope.row)">
                 <el-icon class="el-icon--left"><Edit /></el-icon>编辑
               </el-button>
@@ -104,9 +101,9 @@
           v-loading="dialogLoading"
         >
           <el-form-item label="用户名" prop="userName">
-            <el-input v-model="userForm.userName" placeholder="请输入用户名" />
+            <el-input v-model="userForm.userName" placeholder="请输入用户名" :disabled="dialogTitle === '编辑用户'" />
           </el-form-item>
-          <el-form-item label="密码" prop="passWord">
+          <el-form-item label="密码" prop="passWord" v-if="dialogTitle === '添加用户'">
             <el-input v-model="userForm.passWord" type="password" placeholder="请输入密码" />
           </el-form-item>
           <el-form-item label="昵称" prop="nickName">
@@ -194,7 +191,7 @@
 </template>
 
 <script setup lang="ts">
-import { Plus, Edit, Delete, Key, User, InfoFilled } from '@element-plus/icons-vue'
+import { Plus, Edit, Delete, Key, User } from '@element-plus/icons-vue'
 import { 
   currentPage, 
   pageSize, 
@@ -222,8 +219,7 @@ import {
   userDetailInfo,
   userInfoDialogVisible,
   userInfoLoading,
-  fetchUserInfo,
-  handleViewUserInfo
+  fetchUserInfo
 } from './userManager'
 
 // 页面加载时获取用户列表

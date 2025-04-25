@@ -17,6 +17,7 @@ export interface BaseUserInfo {
 export interface RegisterUserData extends BaseUserInfo {
   passWord: string
   authorityIds?: number[]
+  ID?: number // 添加可选的ID字段，用于编辑操作
 }
 
 // 用户数据类型
@@ -180,17 +181,34 @@ export const submitForm = async () => {
     if (valid) {
       dialogLoading.value = true
       try {
-        const res = await addUser(userForm)
+        let res;
+        // 根据对话框标题判断是添加还是编辑操作
+        if (dialogTitle.value === '添加用户') {
+          res = await addUser(userForm)
+        } else {
+          // 编辑用户时调用updateUser接口
+          // 编辑时不传递userName字段，确保不会修改用户名
+          res = await updateUser({
+            ID: userForm.ID,
+            nickName: userForm.nickName,
+            phone: userForm.phone,
+            email: userForm.email,
+            headerImg: userForm.headerImg,
+            authorityIds: [userForm.authorityId], // 将单个角色ID转换为数组
+            enable: userForm.enable
+          })
+        }
+        
         if (res.data && res.data.code === 0) {
-          ElMessage.success('添加用户成功')
+          ElMessage.success(dialogTitle.value === '添加用户' ? '添加用户成功' : '编辑用户成功')
           dialogVisible.value = false
           fetchUserList() // 刷新用户列表
         } else {
-          ElMessage.error(res.data?.msg || '添加用户失败')
+          ElMessage.error(res.data?.msg || (dialogTitle.value === '添加用户' ? '添加用户失败' : '编辑用户失败'))
         }
       } catch (error) {
-        console.error('添加用户出错:', error)
-        ElMessage.error('添加用户失败，请稍后重试')
+        console.error(dialogTitle.value === '添加用户' ? '添加用户出错:' : '编辑用户出错:', error)
+        ElMessage.error((dialogTitle.value === '添加用户' ? '添加用户' : '编辑用户') + '失败，请稍后重试')
       } finally {
         dialogLoading.value = false
       }
@@ -206,6 +224,7 @@ export const handleEdit = (row: UserInfo) => {
   
   // 填充表单数据
   Object.assign(userForm, {
+    ID: row.ID, // 保存用户ID，用于编辑操作
     userName: row.userName,
     nickName: row.nickName,
     headerImg: row.headerImg,
@@ -216,6 +235,11 @@ export const handleEdit = (row: UserInfo) => {
   })
   // 编辑时不需要填写密码
   userForm.passWord = ''
+  
+  // 移除密码字段的验证规则
+  if (formRef.value) {
+    formRef.value.clearValidate('passWord')
+  }
 }
 
 // 重设密码
@@ -296,37 +320,6 @@ export const handleDelete = (row: UserInfo) => {
   });
 }
 
-// 定义用户详细信息类型
-export interface UserDetailInfo {
-  ID: number
-  CreatedAt: string
-  UpdatedAt: string
-  authorities: Array<{
-    CreatedAt: string
-    UpdatedAt: string
-    authorityId: number
-    authorityName: string
-    children: any
-    dataAuthorityId: any
-    defaultRouter: string
-    menus: any
-    parentId: number
-  }>
-  authority: {
-    CreatedAt: string
-    UpdatedAt: string
-    authorityId: number
-  }
-  email: string
-  enable: number
-  headerImg: string
-  nickName: string
-  originSetting: any
-  phone: string
-  userName: string
-  uuid: string
-  msg: string
-}
 
 // 用户详细信息
 export const userDetailInfo = ref<UserDetailInfo | null>(null)
@@ -367,8 +360,6 @@ export const handleViewUserInfo = (row: UserInfo) => {
     .then(async () => {
       try {
         userInfoLoading.value = true
-        // 这里模拟获取用户详情，实际项目中应该调用后端接口获取特定用户的详情
-        // 由于后端接口只能获取当前登录用户的信息，这里仅作为示例
         const res = await getUserInfo()
         
         if (res.data && res.data.code === 0) {
