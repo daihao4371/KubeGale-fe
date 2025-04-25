@@ -43,6 +43,33 @@ const router = createRouter({
             {
               path: 'userManager',
               component: () => import('@/views/system/userManager/index.vue')
+            },
+            // 添加菜单管理路由
+            {
+              path: 'menuManager',
+              component: () => import('@/views/system/menuManager/index.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '菜单管理'
+              }
+            },
+            // 添加角色管理路由
+            {
+              path: 'roleManager',
+              component: () => import('@/views/system/roleManager/index.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '角色管理'
+              }
+            },
+            // 添加API管理路由
+            {
+              path: 'apiManager',
+              component: () => import('@/views/system/apiManager/index.vue'),
+              meta: {
+                requiresAuth: true,
+                title: 'API管理'
+              }
             }
           ]
         },
