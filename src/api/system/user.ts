@@ -1,5 +1,11 @@
 import request from '@/api/request'
 
+// 用户角色设置接口
+export interface SetUserAuthoritiesReq {
+  ID: number
+  authorityIds: number[]
+}
+
 // 获取用户列表
 export const getUserList = (data: { page: number; pageSize: number }) => {
   return request({
@@ -23,6 +29,15 @@ export const updateUser = (data: any) => {
   return request({
     url: '/user/setUserInfo',
     method: 'put',
+    data
+  })
+}
+
+// 设置用户角色
+export const setUserAuthorities = (data: SetUserAuthoritiesReq) => {
+  return request({
+    url: '/user/setUserAuthorities',
+    method: 'post',
     data
   })
 }

@@ -35,15 +35,25 @@
         <el-table-column prop="nickName" label="昵称" min-width="120" />
         <el-table-column prop="phone" label="手机号" min-width="120" />
         <el-table-column prop="email" label="邮箱" min-width="180" show-overflow-tooltip />
-        <el-table-column prop="authorityId" label="用户角色" min-width="100">
+        <el-table-column prop="authorityId" label="用户角色" min-width="200">
           <template #default="scope">
-            <el-tag 
-              type="info" 
-              effect="plain"
-              size="small"
-            >
-              {{ getRoleName(scope.row.authorityId) }}
-            </el-tag>
+            <el-cascader
+              :model-value="getUserRoleIds(scope.row)"
+              :options="roleOptions"
+              :props="{
+                checkStrictly: true,
+                value: 'value',
+                label: 'label',
+                children: 'children',
+                multiple: true,
+                emitPath: false
+              }"
+              placeholder="请选择角色"
+              clearable
+              collapse-tags
+              collapse-tags-tooltip
+              @change="(value) => handleRoleChange(value, scope.row)"
+            />
           </template>
         </el-table-column>
         <el-table-column prop="enable" label="启用" min-width="80">
@@ -119,14 +129,22 @@
             <el-input v-model="userForm.email" placeholder="请输入邮箱" />
           </el-form-item>
           <el-form-item label="角色" prop="authorityId">
-            <el-select v-model="userForm.authorityId" placeholder="请选择角色">
-              <el-option
-                v-for="(name, id) in roleMap"
-                :key="id"
-                :label="name"
-                :value="Number(id)"
-              />
-            </el-select>
+            <el-cascader
+              v-model="userForm.authorityId"
+              :options="roleOptions"
+              :props="{
+                checkStrictly: true,
+                value: 'value',
+                label: 'label',
+                children: 'children',
+                multiple: true,
+                emitPath: false
+              }"
+              placeholder="请选择角色"
+              clearable
+              collapse-tags
+              collapse-tags-tooltip
+            />
           </el-form-item>
           <el-form-item label="状态" prop="enable">
             <el-switch
@@ -244,7 +262,6 @@ import {
   total, 
   loading, 
   userList, 
-  getRoleName, 
   fetchUserList, 
   handleCurrentChange, 
   handleSizeChange, 
@@ -260,7 +277,6 @@ import {
   userFormRules,
   formRef,
   submitForm,
-  roleMap,
   // 用户详情相关
   userDetailInfo,
   userInfoDialogVisible,
@@ -269,7 +285,12 @@ import {
   userInfoFormRef,
   userInfoForm,
   userInfoFormRules,
-  submitUserInfoForm
+  submitUserInfoForm,
+  // 角色相关
+  fetchRoleList,
+  roleOptions,
+  handleRoleChange,
+  getUserRoleIds
 } from './userManager'
 
 import {
@@ -283,9 +304,10 @@ import {
   handleResetPassword
 } from './passwordManager'
 
-// 页面加载时获取用户列表
+// 页面加载时获取用户列表和角色列表
 onMounted(() => {
   fetchUserList()
+  fetchRoleList()
 })
 </script>
 

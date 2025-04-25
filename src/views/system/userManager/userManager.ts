@@ -1,64 +1,9 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getUserList, addUser, updateUser, deleteUser, getUserInfo } from '@/api/system/user'
+import { getUserList, addUser, updateUser, deleteUser, getUserInfo, setUserAuthorities } from '@/api/system/user'
 import { handleResetPassword } from './passwordManager'
-
-// 基础用户信息接口
-export interface BaseUserInfo {
-  userName: string
-  nickName: string
-  phone: string
-  email: string
-  headerImg: string
-  enable: number
-  authorityId: number
-}
-
-// 用户注册数据类型
-export interface RegisterUserData extends BaseUserInfo {
-  passWord: string
-  authorityIds?: number[]
-  ID?: number // 添加可选的ID字段，用于编辑操作
-}
-
-// 用户数据类型
-export interface UserInfo extends BaseUserInfo {
-  ID: number
-  authority?: {
-    CreatedAt: string
-    UpdatedAt: string
-  }
-  originSetting?: Record<string, unknown>
-}
-
-// 用户详细信息类型
-export interface UserDetailInfo extends UserInfo {
-  CreatedAt: string
-  UpdatedAt: string
-  authorities: Array<{
-    CreatedAt: string
-    UpdatedAt: string
-    authorityId: number
-    authorityName: string
-    children: Array<{
-      authorityId: number
-      authorityName: string
-      parentId: number
-    }>
-    dataAuthorityId: number
-    defaultRouter: string
-    menus: Array<{
-      menuId: number
-      menuName: string
-      path: string
-      component: string
-      parentId: number
-    }>
-    parentId: number
-  }>
-  uuid: string
-  msg: string
-}
+import { getAuthorityList } from '@/api/system/roles'
+import type { Authority, UserInfo, UserDetailInfo, RegisterUserData } from '@/types/system'
 
 // 分页参数
 export const currentPage = ref(1)
@@ -69,51 +14,76 @@ export const loading = ref(false)
 // 用户列表数据
 export const userList = ref<UserInfo[]>([])
 
-// 角色映射
-export const roleMap: Record<number, string> = {
-  888: '管理员',
-  999: '普通用户',
-  // 可以根据实际情况添加更多角色
-}
+// 角色列表数据
+export const roleList = ref<Authority[]>([])
+export const roleLoading = ref(false)
 
-// 获取角色名称
-export const getRoleName = (authorityId: number) => {
-  return roleMap[authorityId] || '未知角色'
-}
-
-// 获取用户列表
-export const fetchUserList = async () => {
-  loading.value = true
+// 获取角色列表
+export const fetchRoleList = async () => {
+  roleLoading.value = true
   try {
-    const res = await getUserList({
-      page: currentPage.value,
-      pageSize: pageSize.value
-    })
-    
+    const res = await getAuthorityList()
     if (res.data && res.data.code === 0) {
-      userList.value = res.data.data.list || []
-      total.value = res.data.data.total || 0
+      roleList.value = res.data.data
     } else {
-      ElMessage.error(res.data?.msg || '获取用户列表失败')
+      ElMessage.error(res.data?.msg || '获取角色列表失败')
     }
   } catch (error) {
-    console.error('获取用户列表出错:', error)
-    ElMessage.error('获取用户列表失败，请稍后重试')
+    console.error('获取角色列表失败:', error)
+    ElMessage.error('获取角色列表失败，请稍后重试')
   } finally {
-    loading.value = false
+    roleLoading.value = false
   }
 }
 
-// 处理页码变化
-export const handleCurrentChange = (val: number) => {
-  currentPage.value = val
-  fetchUserList()
+// 处理角色选择变化
+export const handleRoleChange = async (value: number[], row: UserInfo) => {
+  try {
+    const res = await setUserAuthorities({
+      ID: row.ID,
+      authorityIds: value
+    })
+    
+    if (res.data && res.data.code === 0) {
+      ElMessage.success('设置用户角色成功')
+      // 更新本地数据
+      row.authorityId = value[0] // 更新主角色ID，用于显示
+      row.authorityIds = value // 保存所有选中的角色ID
+    } else {
+      ElMessage.error(res.data?.msg || '设置用户角色失败')
+    }
+  } catch (error) {
+    console.error('设置用户角色失败:', error)
+    ElMessage.error('设置用户角色失败，请稍后重试')
+  }
 }
 
-// 处理每页条数变化
-export const handleSizeChange = (val: number) => {
-  pageSize.value = val
-  fetchUserList()
+// 格式化角色选项
+export const formatRoleOptions = (roles: Authority[]): Array<{
+  value: number
+  label: string
+  children?: Array<{
+    value: number
+    label: string
+    children?: Array<{
+      value: number
+      label: string
+    }>
+  }>
+}> => {
+  return roles.map(role => ({
+    value: role.authorityId,
+    label: role.authorityName,
+    children: role.children ? formatRoleOptions(role.children) : undefined
+  }))
+}
+
+// 获取角色选项
+export const roleOptions = computed(() => formatRoleOptions(roleList.value))
+
+// 获取用户当前选中的角色ID列表
+export const getUserRoleIds = (row: UserInfo): number[] => {
+  return row.authorityIds || [row.authorityId]
 }
 
 // 用户表单数据
@@ -407,4 +377,39 @@ export const handleEnableChange = async (row: UserInfo) => {
     console.error('更新用户状态失败:', error)
     ElMessage.error('更新用户状态失败，请稍后重试')
   }
+}
+
+// 获取用户列表
+export const fetchUserList = async () => {
+  loading.value = true
+  try {
+    const res = await getUserList({
+      page: currentPage.value,
+      pageSize: pageSize.value
+    })
+    
+    if (res.data && res.data.code === 0) {
+      userList.value = res.data.data.list || []
+      total.value = res.data.data.total || 0
+    } else {
+      ElMessage.error(res.data?.msg || '获取用户列表失败')
+    }
+  } catch (error) {
+    console.error('获取用户列表出错:', error)
+    ElMessage.error('获取用户列表失败，请稍后重试')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 处理页码变化
+export const handleCurrentChange = (val: number) => {
+  currentPage.value = val
+  fetchUserList()
+}
+
+// 处理每页条数变化
+export const handleSizeChange = (val: number) => {
+  pageSize.value = val
+  fetchUserList()
 }
