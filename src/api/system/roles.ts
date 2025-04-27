@@ -1,5 +1,5 @@
 import request from '@/api/request'
-import type { CreateAuthorityParams, UpdateAuthorityParams, DeleteAuthorityParams } from '@/views/system/roleManager/roleManager'
+import type { CreateAuthorityParams, UpdateAuthorityParams, DeleteAuthorityParams, CopyAuthorityRequest } from '@/views/system/roleManager/roleManager'
 
 // 获取角色列表
 export const getAuthorityList = () => {
@@ -32,6 +32,15 @@ export const updateAuthority = (data: UpdateAuthorityParams) => {
 export const deleteAuthority = (data: DeleteAuthorityParams) => {
   return request({
     url: '/authority/deleteAuthority',
+    method: 'post',
+    data
+  })
+}
+
+// 拷贝角色
+export const copyAuthority = (data: CopyAuthorityRequest) => {
+  return request({
+    url: '/authority/copyAuthority',
     method: 'post',
     data
   })

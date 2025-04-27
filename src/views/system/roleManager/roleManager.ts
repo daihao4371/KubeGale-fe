@@ -1,6 +1,17 @@
 import { ref, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getAuthorityList, createAuthority, updateAuthority, deleteAuthority } from '@/api/system/roles'
+import { getAuthorityList, createAuthority, updateAuthority, deleteAuthority, copyAuthority } from '@/api/system/roles'
+
+// 拷贝角色请求参数接口
+export interface CopyAuthorityRequest {
+  authority: {
+    authorityId: number
+    authorityName: string
+    parentId: number
+    defaultRouter: string
+  }
+  oldAuthorityId: number
+}
 
 // 角色信息接口
 export interface Authority {
@@ -22,6 +33,13 @@ export interface CreateRoleForm {
   authorityName: string
   parentId: number
   defaultRouter: string
+}
+
+// API 参数接口
+export interface CreateAuthorityParams extends CreateRoleForm {}
+export interface UpdateAuthorityParams extends CreateRoleForm {}
+export interface DeleteAuthorityParams {
+  AuthorityId: number
 }
 
 // 角色列表数据
@@ -58,6 +76,23 @@ export const editRoleForm = reactive<CreateRoleForm>({
   authorityName: '',
   parentId: 0,
   defaultRouter: 'dashboard'
+})
+
+// 拷贝角色对话框相关状态
+export const copyRoleDialogVisible = ref(false)
+export const copyRoleLoading = ref(false)
+export const copyRoleForm = reactive<{
+  authorityId: number
+  authorityName: string
+  parentId: number
+  oldAuthorityId: number
+  oldAuthorityName: string
+}>({
+  authorityId: 0,
+  authorityName: '',
+  parentId: 0,
+  oldAuthorityId: 0,
+  oldAuthorityName: ''
 })
 
 // 处理角色列表数据
@@ -145,14 +180,45 @@ export const handleAddSubRole = (row: Authority) => {
 
 // 拷贝角色
 export const handleCopyRole = (row: Authority) => {
-  createRoleDialogVisible.value = true
-  // 重置表单并设置父角色ID
-  Object.assign(createRoleForm, {
-    authorityId: 0,
+  copyRoleDialogVisible.value = true
+  // 设置表单数据
+  Object.assign(copyRoleForm, {
+    authorityId: row.authorityId + 1,
     authorityName: `${row.authorityName}_copy`,
     parentId: row.parentId,
-    defaultRouter: row.defaultRouter
+    oldAuthorityId: row.authorityId,
+    oldAuthorityName: row.authorityName
   })
+}
+
+// 提交拷贝角色
+export const submitCopyRole = async () => {
+  copyRoleLoading.value = true
+  try {
+    const response = await copyAuthority({
+      authority: {
+        authorityId: copyRoleForm.authorityId,
+        authorityName: copyRoleForm.authorityName,
+        parentId: copyRoleForm.parentId,
+        defaultRouter: "dashboard"
+      },
+      oldAuthorityId: copyRoleForm.oldAuthorityId
+    })
+    
+    if (response.data?.code === 0) {
+      ElMessage.success('拷贝角色成功')
+      copyRoleDialogVisible.value = false
+      // 刷新角色列表
+      fetchRoleList()
+    } else {
+      ElMessage.error(response.data?.msg || '拷贝角色失败')
+    }
+  } catch (error) {
+    console.error('拷贝角色失败:', error)
+    ElMessage.error('拷贝角色失败，请稍后重试')
+  } finally {
+    copyRoleLoading.value = false
+  }
 }
 
 // 编辑角色
@@ -216,4 +282,4 @@ export const handleDeleteRole = (row: Authority) => {
   }).catch(() => {
     // 用户取消操作，不做任何处理
   })
-} 
+}

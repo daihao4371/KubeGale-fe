@@ -115,11 +115,44 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 拷贝角色对话框 -->
+    <el-dialog
+      v-model="copyRoleDialogVisible"
+      title="拷贝角色"
+      width="500px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+    >
+      <el-form
+        ref="copyRoleFormRef"
+        :model="copyRoleForm"
+        :rules="createRoleRules"
+        label-width="100px"
+        v-loading="copyRoleLoading"
+      >
+        <el-form-item label="原角色" prop="oldAuthorityName">
+          <el-input v-model="copyRoleForm.oldAuthorityName" disabled />
+        </el-form-item>
+        <el-form-item label="角色ID" prop="authorityId">
+          <el-input-number v-model="copyRoleForm.authorityId" :min="1" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="角色名称" prop="authorityName">
+          <el-input v-model="copyRoleForm.authorityName" placeholder="请输入角色名称" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="copyRoleDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitCopyRole" :loading="copyRoleLoading">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import { Plus, Edit, Delete, Setting, CopyDocument } from '@element-plus/icons-vue'
 import {
   roleList,
@@ -139,13 +172,49 @@ import {
   editRoleDialogVisible,
   editRoleLoading,
   editRoleForm,
-  submitEditRole
+  submitEditRole,
+  copyRoleDialogVisible,
+  copyRoleLoading,
+  copyRoleForm,
+  submitCopyRole,
+  type Authority
 } from './roleManager'
 
 // 表单引用
 const createRoleFormRef = ref()
 const editRoleFormRef = ref()
+const copyRoleFormRef = ref()
 const parentRoleName = ref('根角色')
+
+// 根据 parentId 获取父角色名称
+const getParentRoleName = (parentId: number): string => {
+  if (parentId === 0) return '根角色'
+  
+  const findParentRole = (roles: Authority[]): string => {
+    for (const role of roles) {
+      if (role.authorityId === parentId) {
+        return role.authorityName
+      }
+      if (role.children && role.children.length > 0) {
+        const name = findParentRole(role.children)
+        if (name) return name
+      }
+    }
+    return ''
+  }
+  
+  const name = findParentRole(roleList.value)
+  return name || '未知角色'
+}
+
+// 监听父角色ID变化，更新父角色名称
+watch(() => createRoleForm.parentId, (newVal) => {
+  parentRoleName.value = getParentRoleName(newVal)
+})
+
+watch(() => editRoleForm.parentId, (newVal) => {
+  parentRoleName.value = getParentRoleName(newVal)
+})
 
 // 页面加载时获取角色列表
 onMounted(() => {
@@ -153,4 +222,4 @@ onMounted(() => {
 })
 </script>
 
-<style src="./roleManager.css" scoped></style> 
+<style src="./roleManager.css" scoped></style>
