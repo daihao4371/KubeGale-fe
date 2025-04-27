@@ -116,7 +116,7 @@
               clearable
               collapse-tags
               collapse-tags-tooltip
-              @change="(value) => handleRoleChange(value, scope.row)"
+              @change="(value: string[]) => handleRoleChange(value.map(v => Number(v)), scope.row)"
             />
           </template>
         </el-table-column>

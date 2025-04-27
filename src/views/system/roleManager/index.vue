@@ -3,5 +3,5 @@
 </template>
 
 <script setup lang="ts">
-import RoleManager from './roleManager.vue'
+import RoleManager from './RoleManager.vue'
 </script>
