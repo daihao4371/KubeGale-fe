@@ -82,14 +82,64 @@ export const getPolicyPathByAuthorityId = (data: { authorityId: number }) => {
   })
 }
 
+// 更新 Casbin 规则
+export const updateCasbin = (data: {
+  authorityId: number
+  casbinInfos: Array<{
+    path: string
+    method: string
+  }>
+}) => {
+  return request({
+    url: '/casbin/updateCasbin',
+    method: 'post',
+    data
+  })
+}
+
 // 设置数据权限
 export const setDataAuthority = (data: {
   authorityId: number
-  dataAuthorityId: Array<{ authorityId: number }>
+  dataAuthorityId: Array<{
+    authorityId: number
+  }>
 }) => {
   return request({
     url: '/authority/setDataAuthority',
     method: 'post',
     data
+  })
+}
+
+// 设置菜单权限
+export const addMenuAuthority = (data: {
+  menus: Array<{
+    ID: number
+    path: string
+    name: string
+    component: string
+    sort: number
+    meta: {
+      title: string
+      icon: string
+      keepAlive: boolean
+    }
+    parentId: number
+    hidden: boolean
+  }>
+  authorityId: number
+}) => {
+  return request({
+    url: '/menu/addMenuAuthority',
+    method: 'post',
+    data
+  })
+}
+
+// 刷新 Casbin 规则
+export const freshCasbin = () => {
+  return request({
+    url: '/api/freshCasbin',
+    method: 'get'
   })
 }

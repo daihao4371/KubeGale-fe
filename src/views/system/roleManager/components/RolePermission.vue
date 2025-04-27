@@ -1,34 +1,30 @@
 <template>
   <div class="role-permission-container">
     <el-tabs v-model="activeTab">
-      <el-tab-pane label="角色菜单" name="menu">
-        <el-tree
-          ref="menuTree"
-          :data="menuTreeData"
-          :props="defaultProps"
-          show-checkbox
-          node-key="ID"
-          :default-checked-keys="checkedMenuKeys"
-          @check="handleMenuCheck"
-        >
-          <template #default="{ data }">
-            <span class="custom-tree-node">
-              <span>{{ data.meta?.title || data.name }}</span>
-              <span class="node-path">{{ data.path }}</span>
-            </span>
-          </template>
-        </el-tree>
-      </el-tab-pane>
-
       <el-tab-pane label="角色API" name="api">
+        <div class="api-filter">
+          <el-input
+            v-model="filterTextName"
+            placeholder="请输入API组名称"
+            clearable
+            @clear="handleFilterClear"
+          />
+          <el-input
+            v-model="filterTextPath"
+            placeholder="请输入API路径"
+            clearable
+            @clear="handleFilterClear"
+          />
+        </div>
         <el-tree
           ref="apiTree"
           :data="apiTreeData"
           :props="apiProps"
           show-checkbox
-          node-key="ID"
-          :default-checked-keys="checkedApiKeys"
+          node-key="onlyId"
+          :default-checked-keys="apiTreeIds"
           @check="handleApiCheck"
+          :filter-node-method="filterNode"
         >
           <template #default="{ data }">
             <span class="custom-tree-node">
@@ -68,28 +64,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getBaseMenuTree, getMenuAuthority, getAllApis, getPolicyPathByAuthorityId, setDataAuthority, getAuthorityList } from '@/api/system/roles'
+import { getAllApis, getAuthorityList, updateCasbin, setDataAuthority, freshCasbin, getPolicyPathByAuthorityId } from '@/api/system/roles'
 import type { Authority } from '../roleManager'
 
 // 定义接口
-interface Menu {
-  ID: number
-  name: string
-  path: string
-  meta?: {
-    title: string
-  }
-  children?: Menu[]
-}
-
 interface Api {
   ID: number
   path: string
   description: string
   apiGroup: string
   method: string
+  onlyId?: string
 }
 
 interface ApiGroup {
@@ -99,30 +86,29 @@ interface ApiGroup {
 }
 
 const props = defineProps<{
-  role: Authority
+  role: Authority | null
 }>()
 
 const emit = defineEmits(['close'])
 
 // 状态定义
-const activeTab = ref('menu')
+const activeTab = ref('api')
 const dataAuthorityType = ref('current')
 const saving = ref(false)
+const filterTextName = ref('')
+const filterTextPath = ref('')
+const apiTreeIds = ref<string[]>([])
 
 // 树形数据
-const menuTreeData = ref<Menu[]>([])
 const apiTreeData = ref<ApiGroup[]>([])
-const checkedMenuKeys = ref<number[]>([])
-const checkedApiKeys = ref<number[]>([])
-const checkedResourceKeys = ref<number[]>([])
 const roleList = ref<Authority[]>([])
+const checkedResourceKeys = ref<number[]>([])
+
+// 树形控件引用
+const apiTree = ref()
+const resourceTree = ref()
 
 // 树形配置
-const defaultProps = {
-  children: 'children',
-  label: 'name'
-}
-
 const apiProps = {
   children: 'children',
   label: 'description'
@@ -144,39 +130,50 @@ const getMethodType = (method: string) => {
   return types[method] || 'info'
 }
 
-// 加载菜单树
-const loadMenuTree = async () => {
-  try {
-    const res = await getBaseMenuTree()
-    if (res.data?.code === 0) {
-      menuTreeData.value = res.data.data.menus
+// 创建API树
+const buildApiTree = (apis: Api[]): ApiGroup[] => {
+  const apiObj: Record<string, Api[]> = {}
+  
+  apis.forEach(item => {
+    item.onlyId = `p:${item.path}m:${item.method}`
+    if (apiObj[item.apiGroup]) {
+      apiObj[item.apiGroup].push(item)
+    } else {
+      apiObj[item.apiGroup] = [item]
     }
-  } catch (error) {
-    console.error('加载菜单树失败:', error)
-    ElMessage.error('加载菜单树失败')
-  }
+  })
+
+  return Object.entries(apiObj).map(([key, value]) => ({
+    ID: key,
+    description: `${key}组`,
+    children: value
+  }))
 }
 
 // 加载API树
 const loadApiTree = async () => {
   try {
+    // 获取所有API
     const res = await getAllApis()
     if (res.data?.code === 0) {
-      // 按apiGroup分组
-      const groups = res.data.data.apis.reduce((acc: Record<string, Api[]>, api: Api) => {
-        if (!acc[api.apiGroup]) {
-          acc[api.apiGroup] = []
+      apiTreeData.value = buildApiTree(res.data.data.apis)
+      
+      // 获取当前角色已授权的API
+      if (props.role) {
+        const policyRes = await getPolicyPathByAuthorityId({
+          authorityId: props.role.authorityId
+        })
+        if (policyRes.data?.code === 0) {
+          // 构建已授权API的唯一标识
+          apiTreeIds.value = policyRes.data.data.paths.map((item: { path: string; method: string }) => 
+            `p:${item.path}m:${item.method}`
+          )
+          // 设置树形控件的选中状态
+          if (apiTree.value) {
+            apiTree.value.setCheckedKeys(apiTreeIds.value)
+          }
         }
-        acc[api.apiGroup].push(api)
-        return acc
-      }, {})
-
-      // 转换为树形结构
-      apiTreeData.value = Object.entries(groups).map(([group, apis]) => ({
-        ID: group,
-        description: group,
-        children: apis as Api[]
-      }))
+      }
     }
   } catch (error) {
     console.error('加载API树失败:', error)
@@ -197,38 +194,51 @@ const loadRoleList = async () => {
   }
 }
 
-// 加载已选中的权限
-const loadCheckedPermissions = async () => {
-  try {
-    // 加载菜单权限
-    const menuRes = await getMenuAuthority({ authorityId: props.role.authorityId })
-    if (menuRes.data?.code === 0) {
-      checkedMenuKeys.value = menuRes.data.data.menus.map((menu: Menu) => menu.ID)
-    }
-
-    // 加载API权限
-    const apiRes = await getPolicyPathByAuthorityId({ authorityId: props.role.authorityId })
-    if (apiRes.data?.code === 0) {
-      checkedApiKeys.value = apiRes.data.data.paths.map((path: Api) => path.ID)
-    }
-  } catch (error) {
-    console.error('加载权限失败:', error)
-    ElMessage.error('加载权限失败')
-  }
-}
-
-// 处理菜单选中
-const handleMenuCheck = (data: Menu, checked: { checked: boolean }) => {
-  console.log('菜单选中变化:', data, checked)
-}
-
 // 处理API选中
-const handleApiCheck = (data: Api, checked: { checked: boolean }) => {
-  console.log('API选中变化:', data, checked)
+const handleApiCheck = () => {
+  // 不需要在这里处理，保存时会获取选中的节点
 }
+
+// 过滤节点
+const filterNode = (value: string, data: Api | ApiGroup) => {
+  if (!filterTextName.value && !filterTextPath.value) return true
+  
+  let matchesName = true
+  let matchesPath = true
+  
+  if (filterTextName.value) {
+    matchesName = Boolean(data.description && data.description.includes(filterTextName.value))
+  }
+  
+  if (filterTextPath.value) {
+    matchesPath = Boolean('path' in data && data.path && data.path.includes(filterTextPath.value))
+  }
+  
+  return matchesName && matchesPath
+}
+
+// 处理过滤清除
+const handleFilterClear = () => {
+  apiTree.value.filter('')
+}
+
+// 监听过滤条件变化
+watch([filterTextName, filterTextPath], () => {
+  apiTree.value.filter('')
+})
 
 // 处理资源权限选中
 const handleResourceCheck = (data: Authority, checked: { checked: boolean }) => {
+  if (checked.checked) {
+    if (!checkedResourceKeys.value.includes(data.authorityId)) {
+      checkedResourceKeys.value.push(data.authorityId)
+    }
+  } else {
+    const index = checkedResourceKeys.value.indexOf(data.authorityId)
+    if (index > -1) {
+      checkedResourceKeys.value.splice(index, 1)
+    }
+  }
   // 如果手动选中了角色，则清空权限范围选项
   if (checked.checked) {
     dataAuthorityType.value = ''
@@ -237,7 +247,7 @@ const handleResourceCheck = (data: Authority, checked: { checked: boolean }) => 
 
 // 处理权限范围变化
 const handleAuthorityTypeChange = (newVal: string) => {
-  if (!roleList.value.length) return
+  if (!roleList.value.length || !props.role) return
 
   // 如果是从空值切换到某个选项，需要先清空已选中的角色
   if (dataAuthorityType.value === '' && newVal !== '') {
@@ -312,22 +322,88 @@ const findRoleById = (roles: Authority[], id: number): Authority | null => {
 const handleSave = async () => {
   saving.value = true
   try {
-    // 保存数据权限
-    if (dataAuthorityType.value !== 'all') {
-      const dataAuthorityIds = checkedResourceKeys.value.map(id => ({ authorityId: id }))
-      await setDataAuthority({
-        authorityId: props.role.authorityId,
-        dataAuthorityId: dataAuthorityIds
-      })
+    // 根据当前激活的标签页执行不同的保存逻辑
+    switch (activeTab.value) {
+      case 'api':
+        await saveApiPermissions()
+        break
+      case 'resource':
+        await saveResourcePermissions()
+        break
     }
-
-    ElMessage.success('保存成功')
-    emit('close')
   } catch (error) {
     console.error('保存失败:', error)
     ElMessage.error('保存失败')
   } finally {
     saving.value = false
+  }
+}
+
+// 保存API权限
+const saveApiPermissions = async () => {
+  if (!props.role) {
+    ElMessage.error('角色信息不存在')
+    return
+  }
+
+  // 获取选中的API节点
+  const checkArr = apiTree.value.getCheckedNodes(true)
+  const casbinInfos = checkArr.map((item: Api) => ({
+    path: item.path,
+    method: item.method
+  }))
+
+  // 调用接口保存API权限
+  const res = await updateCasbin({
+    authorityId: props.role.authorityId,
+    casbinInfos
+  })
+
+  if (res.data?.code === 0) {
+    // 刷新 Casbin 规则
+    try {
+      await freshCasbin()
+      ElMessage.success('保存API权限成功')
+      emit('close')
+    } catch (error) {
+      console.error('刷新 Casbin 规则失败:', error)
+      ElMessage.error('刷新 Casbin 规则失败')
+    }
+  } else {
+    ElMessage.error(res.data?.msg || '保存API权限失败')
+  }
+}
+
+// 保存资源权限
+const saveResourcePermissions = async () => {
+  if (!props.role) {
+    ElMessage.error('角色信息不存在')
+    return
+  }
+
+  // 构建资源权限数据
+  const dataAuthorityId = checkedResourceKeys.value.map(id => ({
+    authorityId: id
+  }))
+
+  // 调用接口保存资源权限
+  const res = await setDataAuthority({
+    authorityId: props.role.authorityId,
+    dataAuthorityId
+  })
+
+  if (res.data?.code === 0) {
+    // 刷新 Casbin 规则
+    try {
+      await freshCasbin()
+      ElMessage.success('保存资源权限成功')
+      emit('close')
+    } catch (error) {
+      console.error('刷新 Casbin 规则失败:', error)
+      ElMessage.error('刷新 Casbin 规则失败')
+    }
+  } else {
+    ElMessage.error(res.data?.msg || '保存资源权限失败')
   }
 }
 
@@ -339,17 +415,33 @@ const handleCancel = () => {
 // 初始化
 onMounted(async () => {
   await Promise.all([
-    loadMenuTree(),
     loadApiTree(),
-    loadRoleList(),
-    loadCheckedPermissions()
+    loadRoleList()
   ])
 })
+
+// 监听角色变化
+watch(() => props.role, async (newVal) => {
+  if (newVal) {
+    // 重置状态
+    apiTreeIds.value = []
+    checkedResourceKeys.value = []
+    dataAuthorityType.value = 'current'
+    // 重新加载API权限
+    await loadApiTree()
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>
 .role-permission-container {
   padding: 20px;
+}
+
+.api-filter {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
 }
 
 .custom-tree-node {

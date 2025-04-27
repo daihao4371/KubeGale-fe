@@ -203,18 +203,7 @@ const parentRoleName = ref('根角色')
 
 // 权限设置对话框
 const permissionDialogVisible = ref(false)
-const currentRole = ref<Authority>({
-  CreatedAt: '',
-  UpdatedAt: '',
-  DeletedAt: null,
-  authorityId: 0,
-  authorityName: '',
-  parentId: 0,
-  dataAuthorityId: null,
-  children: null,
-  menus: null,
-  defaultRouter: ''
-})
+const currentRole = ref<Authority | null>(null)
 
 // 根据 parentId 获取父角色名称
 const getParentRoleName = (parentId: number): string => {
@@ -248,7 +237,13 @@ watch(() => editRoleForm.parentId, (newVal) => {
 
 // 设置权限
 const handleSetPermission = (row: Authority) => {
-  currentRole.value = row
+  // 确保深拷贝角色数据，避免引用问题
+  currentRole.value = {
+    ...row,
+    dataAuthorityId: row.dataAuthorityId ? [...row.dataAuthorityId] : null,
+    children: row.children ? [...row.children] : null,
+    menus: row.menus ? { ...row.menus } : null
+  }
   permissionDialogVisible.value = true
 }
 
