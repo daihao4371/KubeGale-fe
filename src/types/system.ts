@@ -60,4 +60,43 @@ export interface UserDetailInfo extends UserInfo, BaseTime {
   authorities: Array<Authority>
   uuid: string
   msg: string
+}
+
+// 以下为 API 相关类型
+export interface Api {
+  ID: number
+  path: string
+  description: string
+  apiGroup: string
+  method: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ApiState {
+  loading: boolean
+  apiList: Api[]
+  total: number
+  pageSize: number
+  currentPage: number
+  dialogVisible: boolean
+  dialogTitle: string
+  dialogType: 'create' | 'edit'
+  formLoading: boolean
+  apiGroups: string[]
+}
+
+export interface ApiForm {
+  ID?: number
+  path: string
+  description: string
+  apiGroup: string
+  method: string
+}
+
+export const defaultApiForm: ApiForm = {
+  path: '',
+  description: '',
+  apiGroup: '',
+  method: 'GET'
 } 

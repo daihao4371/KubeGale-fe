@@ -44,15 +44,6 @@ const router = createRouter({
               path: 'userManager',
               component: () => import('@/views/system/userManager/index.vue')
             },
-            // 添加菜单管理路由
-            {
-              path: 'menuManager',
-              component: () => import('@/views/system/menuManager/index.vue'),
-              meta: {
-                requiresAuth: true,
-                title: '菜单管理'
-              }
-            },
             // 添加角色管理路由
             {
               path: 'roleManager',
@@ -69,6 +60,15 @@ const router = createRouter({
               meta: {
                 requiresAuth: true,
                 title: 'API管理'
+              }
+            },
+            // 添加操作记录路由
+            {
+              path: 'menuManager',
+              component: () => import('@/views/system/menuManager/index.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '操作记录'
               }
             }
           ]

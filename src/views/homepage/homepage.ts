@@ -34,8 +34,8 @@ export default function useHomepage() {
       children: [
         { id: 'system-user', title: '用户管理', icon: 'User', path: '/system/userManager' },
         { id: 'system-role', title: '角色管理', icon: 'UserFilled', path: '/system/roleManager' },
-        { id: 'system-menu', title: '菜单管理', icon: 'Menu', path: '/system/menuManager' },
-        { id: 'system-api', title: 'API管理', icon: 'Connection', path: '/system/apiManager' }
+        { id: 'system-api', title: 'API管理', icon: 'Connection', path: '/system/apiManager' },
+        { id: 'system-menu', title: '操作记录', icon: 'Document', path: '/system/menuManager' },
       ]
     },
     { id: 'cmdb', title: 'CMDB资产管理', icon: 'DataAnalysis', path: '/homepage/cmdb' },
