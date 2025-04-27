@@ -50,6 +50,21 @@
       </el-table>
     </el-card>
 
+    <!-- 权限设置对话框 -->
+    <el-dialog
+      v-model="permissionDialogVisible"
+      title="设置权限"
+      width="800px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+    >
+      <RolePermission
+        v-if="permissionDialogVisible"
+        :role="currentRole"
+        @close="permissionDialogVisible = false"
+      />
+    </el-dialog>
+
     <!-- 创建角色对话框 -->
     <el-dialog
       v-model="createRoleDialogVisible"
@@ -152,14 +167,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { Plus, Edit, Delete, Setting, CopyDocument } from '@element-plus/icons-vue'
+import RolePermission from './components/RolePermission.vue'
 import {
   roleList,
   loading,
   fetchRoleList,
   handleAddRole,
-  handleSetPermission,
   handleAddSubRole,
   handleCopyRole,
   handleEditRole,
@@ -185,6 +200,21 @@ const createRoleFormRef = ref()
 const editRoleFormRef = ref()
 const copyRoleFormRef = ref()
 const parentRoleName = ref('根角色')
+
+// 权限设置对话框
+const permissionDialogVisible = ref(false)
+const currentRole = ref<Authority>({
+  CreatedAt: '',
+  UpdatedAt: '',
+  DeletedAt: null,
+  authorityId: 0,
+  authorityName: '',
+  parentId: 0,
+  dataAuthorityId: null,
+  children: null,
+  menus: null,
+  defaultRouter: ''
+})
 
 // 根据 parentId 获取父角色名称
 const getParentRoleName = (parentId: number): string => {
@@ -215,6 +245,12 @@ watch(() => createRoleForm.parentId, (newVal) => {
 watch(() => editRoleForm.parentId, (newVal) => {
   parentRoleName.value = getParentRoleName(newVal)
 })
+
+// 设置权限
+const handleSetPermission = (row: Authority) => {
+  currentRole.value = row
+  permissionDialogVisible.value = true
+}
 
 // 页面加载时获取角色列表
 onMounted(() => {

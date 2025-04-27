@@ -45,3 +45,51 @@ export const copyAuthority = (data: CopyAuthorityRequest) => {
     data
   })
 }
+
+// 获取基础菜单树
+export const getBaseMenuTree = () => {
+  return request({
+    url: '/menu/getBaseMenuTree',
+    method: 'post',
+    data: {}
+  })
+}
+
+// 获取角色菜单权限
+export const getMenuAuthority = (data: { authorityId: number }) => {
+  return request({
+    url: '/menu/getMenuAuthority',
+    method: 'post',
+    data
+  })
+}
+
+// 获取所有API
+export const getAllApis = () => {
+  return request({
+    url: '/api/getAllApis',
+    method: 'post',
+    data: {}
+  })
+}
+
+// 获取角色API权限
+export const getPolicyPathByAuthorityId = (data: { authorityId: number }) => {
+  return request({
+    url: '/casbin/getPolicyPathByAuthorityId',
+    method: 'post',
+    data
+  })
+}
+
+// 设置数据权限
+export const setDataAuthority = (data: {
+  authorityId: number
+  dataAuthorityId: Array<{ authorityId: number }>
+}) => {
+  return request({
+    url: '/authority/setDataAuthority',
+    method: 'post',
+    data
+  })
+}
