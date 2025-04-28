@@ -182,7 +182,6 @@ import {
   createRoleDialogVisible,
   createRoleLoading,
   createRoleForm,
-  createRoleRules,
   submitCreateRole,
   editRoleDialogVisible,
   editRoleLoading,
@@ -191,9 +190,10 @@ import {
   copyRoleDialogVisible,
   copyRoleLoading,
   copyRoleForm,
-  submitCopyRole,
-  type Authority
+  submitCopyRole
 } from './roleManager'
+import { createRoleRules } from '@/types/system'
+import type { Authority } from '@/types/system'
 
 // 表单引用
 const createRoleFormRef = ref()

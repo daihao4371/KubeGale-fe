@@ -106,4 +106,79 @@ export const defaultApiForm: ApiForm = {
   description: '',
   apiGroup: '',
   method: 'GET'
+}
+
+// 角色管理相关接口
+export interface CreateRoleForm {
+  authorityId: number
+  authorityName: string
+  parentId: number
+  defaultRouter: string
+}
+
+export interface CopyRoleForm {
+  authorityId: number
+  authorityName: string
+  parentId: number
+  oldAuthorityId: number
+  oldAuthorityName: string
+}
+
+export interface CopyAuthorityRequest {
+  authority: {
+    authorityId: number
+    authorityName: string
+    parentId: number
+    defaultRouter: string
+  }
+  oldAuthorityId: number
+}
+
+export interface DeleteAuthorityParams {
+  AuthorityId: number
+}
+
+// 角色管理状态接口
+export interface RoleState {
+  roleList: Authority[]
+  loading: boolean
+  createRoleDialogVisible: boolean
+  createRoleLoading: boolean
+  createRoleForm: CreateRoleForm
+  editRoleDialogVisible: boolean
+  editRoleLoading: boolean
+  editRoleForm: CreateRoleForm
+  copyRoleDialogVisible: boolean
+  copyRoleLoading: boolean
+  copyRoleForm: CopyRoleForm
+  permissionDialogVisible: boolean
+  currentRole: Authority | null
+}
+
+// 角色管理表单验证规则
+export const createRoleRules = {
+  authorityId: [
+    { required: true, message: '请输入角色ID', trigger: 'blur' },
+    { type: 'number', message: '角色ID必须为数字', trigger: 'blur' }
+  ],
+  authorityName: [
+    { required: true, message: '请输入角色名称', trigger: 'blur' },
+    { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
+  ]
+}
+
+// 默认角色表单数据
+export const defaultCreateRoleForm: CreateRoleForm = {
+  authorityId: 0,
+  authorityName: '',
+  parentId: 0,
+  defaultRouter: 'dashboard'
+}
+
+export const defaultCopyRoleForm: CopyRoleForm = {
+  authorityId: 0,
+  authorityName: '',
+  parentId: 0,
+  oldAuthorityId: 0,
+  oldAuthorityName: ''
 } 
