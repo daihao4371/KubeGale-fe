@@ -8,8 +8,40 @@
         </div>
       </template>
       
+      <!-- 搜索栏 -->
+      <el-form :inline="true" :model="apiManager.state.searchForm" class="search-form">
+        <el-form-item label="API路径">
+          <el-input v-model="apiManager.state.searchForm.path" placeholder="请输入API路径" clearable />
+        </el-form-item>
+        <el-form-item label="API简介">
+          <el-input v-model="apiManager.state.searchForm.description" placeholder="请输入API简介" clearable />
+        </el-form-item>
+        <el-form-item label="API分组">
+          <el-select v-model="apiManager.state.searchForm.apiGroup" placeholder="请选择API分组" clearable style="width: 160px">
+            <el-option
+              v-for="group in apiManager.state.apiGroups"
+              :key="group"
+              :label="group"
+              :value="group"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="请求方式">
+          <el-select v-model="apiManager.state.searchForm.method" placeholder="请选择请求方式" clearable style="width: 160px">
+            <el-option label="GET" value="GET" />
+            <el-option label="POST" value="POST" />
+            <el-option label="PUT" value="PUT" />
+            <el-option label="DELETE" value="DELETE" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="apiManager.handleSearch">搜索</el-button>
+          <el-button @click="apiManager.handleResetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
+      
       <el-table
-        :data="apiManager.state.apiList.slice((apiManager.state.currentPage - 1) * apiManager.state.pageSize, apiManager.state.currentPage * apiManager.state.pageSize)"
+        :data="apiManager.state.filteredApiList.slice((apiManager.state.currentPage - 1) * apiManager.state.pageSize, apiManager.state.currentPage * apiManager.state.pageSize)"
         style="width: 100%"
         v-loading="apiManager.state.loading"
         border
@@ -133,4 +165,4 @@ onMounted(() => {
 })
 </script>
 
-<style src="./apiManager.css" scoped></style> 
+<style src="./apiManager.css" scoped></style>

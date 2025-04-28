@@ -84,6 +84,13 @@ export interface ApiState {
   dialogType: 'create' | 'edit'
   formLoading: boolean
   apiGroups: string[]
+  searchForm: {
+    path: string
+    description: string
+    apiGroup: string
+    method: string
+  }
+  filteredApiList: Api[]
 }
 
 export interface ApiForm {
