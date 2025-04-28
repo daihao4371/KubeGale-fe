@@ -5,8 +5,12 @@
         <div class="card-header">
           <span>API管理</span>
           <div class="header-buttons">
-            <el-button type="success" @click="apiManager.handleFreshCasbin">刷新缓存</el-button>
-            <el-button type="primary" @click="apiManager.handleAddApi">添加API</el-button>
+            <el-button type="success" @click="apiManager.handleFreshCasbin">
+              <el-icon><Refresh /></el-icon>刷新缓存
+            </el-button>
+            <el-button type="primary" @click="apiManager.handleAddApi">
+              <el-icon><Plus /></el-icon>添加API
+            </el-button>
           </div>
         </div>
       </template>
@@ -38,8 +42,12 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="apiManager.handleSearch">搜索</el-button>
-          <el-button @click="apiManager.handleResetSearch">重置</el-button>
+          <el-button type="primary" @click="apiManager.handleSearch">
+            <el-icon><Search /></el-icon>搜索
+          </el-button>
+          <el-button @click="apiManager.handleResetSearch">
+            <el-icon><RefreshRight /></el-icon>重置
+          </el-button>
         </el-form-item>
       </el-form>
       
@@ -60,8 +68,12 @@
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link @click="apiManager.handleEdit(row)">编辑</el-button>
-            <el-button type="danger" link @click="apiManager.handleDelete(row)">删除</el-button>
+            <el-button type="primary" link @click="apiManager.handleEdit(row)">
+              <el-icon><Edit /></el-icon>编辑
+            </el-button>
+            <el-button type="danger" link @click="apiManager.handleDelete(row)">
+              <el-icon><Delete /></el-icon>删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -131,8 +143,12 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="apiManager.state.dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="apiManager.handleSubmit">确定</el-button>
+          <el-button @click="apiManager.state.dialogVisible = false">
+            <el-icon><Close /></el-icon>取消
+          </el-button>
+          <el-button type="primary" @click="apiManager.handleSubmit">
+            <el-icon><Check /></el-icon>确定
+          </el-button>
         </span>
       </template>
     </el-dialog>
@@ -143,6 +159,16 @@
 import { onMounted, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import useApiManager from './apiManager'
+import { 
+  Plus, 
+  Edit, 
+  Delete, 
+  Search, 
+  Refresh, 
+  RefreshRight, 
+  Check, 
+  Close 
+} from '@element-plus/icons-vue'
 
 const formRef = ref<FormInstance>()
 const rules: FormRules = {

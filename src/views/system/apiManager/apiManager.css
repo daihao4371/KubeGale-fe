@@ -29,3 +29,13 @@
 .empty-data {
   margin: 40px 0;
 }
+
+/* 为按钮图标添加右侧间距 */
+.el-button .el-icon {
+  margin-right: 4px;
+}
+
+/* 对于链接按钮特别处理 */
+.el-button--link .el-icon {
+  vertical-align: middle;
+}
