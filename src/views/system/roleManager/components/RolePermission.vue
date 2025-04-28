@@ -47,7 +47,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getAllApis, getPolicyPathByAuthorityId, updateCasbin, freshCasbin } from '@/api/system/roles'
-import type { Authority } from '../roleManager'
+import type { Authority } from '@/types/system'
 
 // 定义接口
 interface Api {
@@ -283,4 +283,4 @@ watch(() => props.role, async (newVal) => {
   margin-top: 20px;
   text-align: right;
 }
-</style> 
+</style>

@@ -11,6 +11,12 @@ import type {
 } from '@/types/system'
 import { createRoleRules, defaultCreateRoleForm, defaultCopyRoleForm } from '@/types/system'
 
+// 导出接口类型，解决导入错误
+export type { CreateRoleForm as CreateAuthorityParams }
+export type { CreateRoleForm as UpdateAuthorityParams }
+export type { DeleteAuthorityParams }
+export type { CopyAuthorityRequest }
+
 // 角色列表数据
 export const roleList = ref<Authority[]>([])
 export const loading = ref(false)

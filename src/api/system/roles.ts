@@ -1,4 +1,5 @@
 import request from '@/api/request'
+// 修改导入路径，使用正确的类型导入
 import type { CreateAuthorityParams, UpdateAuthorityParams, DeleteAuthorityParams, CopyAuthorityRequest } from '@/views/system/roleManager/roleManager'
 
 // 获取角色列表
