@@ -9,7 +9,7 @@ KubeGale 是一个现代化的 Kubernetes 管理平台，提供直观的用户�
 - Element Plus
 - Axios
 - Vue Router
-- Sass/SCSS
+- Vite
 
 ## 项目特点
 
@@ -24,8 +24,8 @@ KubeGale 是一个现代化的 Kubernetes 管理平台，提供直观的用户�
 
 ### 环境要求
 
-- Node.js >= 14.0.0
-- npm >= 6.0.0
+- Node.js >= 16.0.0
+- npm >= 7.0.0
 
 ### 安装依赖
 
