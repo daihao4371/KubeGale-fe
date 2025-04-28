@@ -1,11 +1,11 @@
 import { ref, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getAuthorityList, createAuthority, updateAuthority, deleteAuthority, copyAuthority } from '@/api/system/roles'
-import type { 
-  Authority, 
-  CreateRoleForm, 
-  CopyRoleForm, 
-  CopyAuthorityRequest, 
+import type {
+  Authority,
+  CreateRoleForm,
+  CopyRoleForm,
+  CopyAuthorityRequest,
   DeleteAuthorityParams,
   RoleState
 } from '@/types/system'
@@ -97,11 +97,6 @@ export const submitCreateRole = async () => {
   }
 }
 
-// 设置权限
-export const handleSetPermission = (row: Authority) => {
-  ElMessage.info('设置权限功能正在开发中...')
-}
-
 // 新增子角色
 export const handleAddSubRole = (row: Authority) => {
   createRoleDialogVisible.value = true
@@ -139,7 +134,7 @@ export const submitCopyRole = async () => {
       },
       oldAuthorityId: copyRoleForm.oldAuthorityId
     })
-    
+
     if (response.data?.code === 0) {
       ElMessage.success('拷贝角色成功')
       copyRoleDialogVisible.value = false

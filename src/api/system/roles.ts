@@ -144,3 +144,4 @@ export const freshCasbin = () => {
     method: 'get'
   })
 }
+
