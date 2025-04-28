@@ -147,3 +147,17 @@ export const getMethodType = (method: string) => {
   }
   return types[method] || 'info'
 }
+
+// 格式化JSON字符串
+export const formatJSON = (jsonString: string | undefined) => {
+  if (!jsonString) return '-'
+  try {
+    // 尝试解析JSON字符串
+    const parsed = JSON.parse(jsonString)
+    // 格式化为带缩进的JSON字符串
+    return JSON.stringify(parsed, null, 2)
+  } catch (e) {
+    // 如果解析失败，直接返回原始字符串
+    return jsonString
+  }
+}

@@ -8,26 +8,33 @@
   position: absolute;
   top: 0;
   left: 0;
+  background: #f5f7fa;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .sidebar {
-  width: 220px;
-  background-color: #001529;
+  width: 240px;
+  background: linear-gradient(180deg, #001529 0%, #002140 100%);
   color: #fff;
   height: 100%;
   overflow-y: auto;
   transition: width 0.3s;
   flex-shrink: 0;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 10;
 }
 
 .sidebar-header {
   height: 64px;
   display: flex;
   align-items: center;
-  padding-left: 20px;
-  font-size: 18px;
-  font-weight: bold;
-  border-bottom: 1px solid #002140;
+  padding-left: 24px;
+  font-size: 20px;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  letter-spacing: 1px;
 }
 
 .sidebar-menu {
@@ -38,96 +45,105 @@
 }
 
 .menu-item {
-  padding: 12px 20px;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .menu-item:hover {
-  background-color: #1890ff;
+  background: rgba(24, 144, 255, 0.2);
 }
 
 .menu-item.active {
-  background-color: rgba(24, 144, 255, 0.7); /* 改为半透明 */
-  border-left: 3px solid #fff;
-  transition: all 0.3s ease;
+  background: rgba(24, 144, 255, 0.3);
+  border-left: 3px solid #1890ff;
 }
 
 .menu-item-icon {
-  margin-right: 10px;
-  font-size: 16px;
+  margin-right: 12px;
+  font-size: 18px;
   width: 24px;
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.menu-item:hover .menu-item-icon {
+  transform: scale(1.1);
 }
 
 .logout-item {
   margin-top: auto;
-  border-top: 1px solid #002140;
-  background-color: #00284d;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 40, 77, 0.5);
 }
 
 .logout-item:hover {
-  background-color: #f56c6c;
+  background: rgba(245, 108, 108, 0.2);
 }
 
 .main-content {
   flex: 1;
-  background-color: #f0f2f5;
+  background: #f5f7fa;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  width: calc(100vw - 220px);
+  width: calc(100vw - 240px);
   padding: 0;
 }
 
 .header {
   height: 64px;
-  background-color: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   display: flex;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 24px;
   justify-content: space-between;
   width: 100%;
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 9;
 }
 
 .content {
-  margin: 24px 16px;
+  margin: 24px;
   padding: 24px;
   background: #fff;
   min-height: calc(100vh - 184px);
-  border-radius: 4px;
+  border-radius: 8px;
   flex: 1;
   overflow-y: auto;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
 }
 
 .menu-title {
   font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-
-/* 添加到现有的 CSS 文件中 */
-/* 子菜单样式优化 */
-.menu-item-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+.menu-item:hover .menu-title {
+  transform: translateX(4px);
 }
 
 .menu-arrow {
   margin-left: auto;
+  transition: transform 0.3s ease;
 }
 
 .submenu {
-  padding-left: 20px;
-  width: calc(100% - 20px);
-  background-color: #00284d;
+  padding-left: 24px;
+  width: calc(100% - 24px);
+  background: rgba(0, 40, 77, 0.3);
   border-radius: 0 0 4px 4px;
   overflow: hidden;
   transition: all 0.3s;
@@ -139,9 +155,9 @@
 .submenu-item {
   display: flex;
   align-items: center;
-  padding: 10px 15px;
+  padding: 10px 16px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
   margin: 2px 0;
   position: relative;
 }
@@ -153,7 +169,7 @@
   top: 50%;
   width: 6px;
   height: 1px;
-  background-color: #1890ff;
+  background: #1890ff;
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -163,13 +179,12 @@
 }
 
 .submenu-item:hover {
-  background-color: rgba(24, 144, 255, 0.3);
+  background: rgba(24, 144, 255, 0.2);
 }
 
 .submenu-item.active {
-  background-color: rgba(24, 144, 255, 0.6); /* 改为半透明 */
-  color: white;
-  transition: all 0.3s ease;
+  background: rgba(24, 144, 255, 0.3);
+  color: #fff;
 }
 
 .submenu-item.active:before {
@@ -177,28 +192,11 @@
 }
 
 .parent-active {
-  background-color: rgba(0, 33, 64, 0.8); /* 改为半透明 */
+  background: rgba(0, 33, 64, 0.5);
   border-left: 3px solid #1890ff;
-  transition: all 0.3s ease;
 }
 
 /* 添加悬停效果增强交互感 */
-.menu-item:hover {
-  background-color: rgba(24, 144, 255, 0.5); /* 改为半透明 */
-  transition: all 0.3s ease;
-}
-
-.submenu-item:hover {
-  background-color: rgba(24, 144, 255, 0.4); /* 改为半透明 */
-  transition: all 0.3s ease;
-}
-
-/* 添加选中和悬停时的过渡动画 */
-.menu-item, .submenu-item {
-  position: relative;
-  overflow: hidden;
-}
-
 .menu-item:after, .submenu-item:after {
   content: "";
   position: absolute;
@@ -206,7 +204,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
 }
@@ -214,4 +212,45 @@
 .menu-item:hover:after, .submenu-item:hover:after,
 .menu-item.active:after, .submenu-item.active:after {
   transform: translateX(0);
+}
+
+/* 添加页面加载动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 768px) {
+  .sidebar {
+    width: 64px;
+  }
+  
+  .sidebar-header {
+    padding-left: 0;
+    justify-content: center;
+  }
+  
+  .menu-title {
+    display: none;
+  }
+  
+  .menu-item {
+    padding: 12px;
+    justify-content: center;
+  }
+  
+  .menu-item-icon {
+    margin-right: 0;
+  }
+  
+  .main-content {
+    width: calc(100vw - 64px);
+  }
 }

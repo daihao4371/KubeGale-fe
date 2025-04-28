@@ -26,7 +26,7 @@ export interface LoginResponse {
       enable: number
       headerImg: string
       nickName: string
-      originSetting: any
+      originSetting: Record<string, unknown>  // 修改：将 any 改为 Record<string, unknown>
       phone: string
       userName: string
       uuid: string
@@ -37,7 +37,7 @@ export interface LoginResponse {
 export interface LogoutResponse {
   code: number
   msg: string
-  data: any
+  data: Record<string, unknown>  // 修改：将 any 改为 Record<string, unknown>
 }
 
 export function login(data: LoginParams) {

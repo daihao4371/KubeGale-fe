@@ -60,7 +60,7 @@ const saveToken = (token: string) => {
 }
 
 // 保存用户信息到localStorage
-const saveUserInfo = (userInfo: any) => {
+const saveUserInfo = (userInfo: Record<string, unknown>) => {
   localStorage.setItem('userInfo', JSON.stringify(userInfo))
 }
 
