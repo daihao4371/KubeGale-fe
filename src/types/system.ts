@@ -208,7 +208,7 @@ export interface SysOperationRecord {
   user: User
   operator_name?: string
   operator_real_name?: string
-  ID?: number
+  ID: number  // 修改为必填字段
   CreatedAt?: string
   UpdatedAt?: string
 }

@@ -11,18 +11,18 @@ export const getOperationRecordList = (params: OperationRecordParams) => {
 }
 
 // 删除操作记录
-export const deleteOperationRecord = (id: number) => {
+export const deleteOperationRecord = (ID: number) => {
   return request({
     url: '/sysOperationRecord/deleteSysOperationRecord',
     method: 'delete',
-    params: { id }
+    data: { ID }
   })
 }
 
 // 批量删除操作记录
 export const batchDeleteOperationRecord = (ids: number[]) => {
   return request({
-    url: '/sysOperationRecord/batchDeleteSysOperationRecord',
+    url: '/sysOperationRecord/deleteSysOperationRecordByIds',
     method: 'delete',
     data: { ids }
   })

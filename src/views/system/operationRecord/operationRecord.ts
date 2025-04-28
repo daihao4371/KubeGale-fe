@@ -74,7 +74,9 @@ export const handleDelete = async (row: SysOperationRecord) => {
     await ElMessageBox.confirm('确定要删除该条记录吗？', '提示', {
       type: 'warning'
     })
-    const res = await deleteOperationRecord(row.id)
+    // 使用ID字段而不是id字段
+    const ID = row.ID || row.id
+    const res = await deleteOperationRecord(ID)
     if (res.data?.code === 0) {
       ElMessage.success('删除成功')
       fetchData()
@@ -96,7 +98,8 @@ export const handleBatchDelete = async () => {
     await ElMessageBox.confirm('确定要删除选中的记录吗？', '提示', {
       type: 'warning'
     })
-    const ids = operationState.selectedRows.map(row => row.id)
+    // 使用ID字段而不是id字段，确保兼容性
+    const ids = operationState.selectedRows.map(row => row.ID || row.id)
     const res = await batchDeleteOperationRecord(ids)
     if (res.data?.code === 0) {
       ElMessage.success('批量删除成功')
