@@ -50,7 +50,9 @@
 }
 
 .menu-item.active {
-  background-color: #1890ff;
+  background-color: rgba(24, 144, 255, 0.7); /* 改为半透明 */
+  border-left: 3px solid #fff;
+  transition: all 0.3s ease;
 }
 
 .menu-item-icon {
@@ -123,12 +125,15 @@
 }
 
 .submenu {
-  margin-left: 10px;
-  width: 100%;
+  padding-left: 20px;
+  width: calc(100% - 20px);
   background-color: #00284d;
   border-radius: 0 0 4px 4px;
   overflow: hidden;
   transition: all 0.3s;
+  border-left: 2px solid #1890ff;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 .submenu-item {
@@ -138,6 +143,23 @@
   cursor: pointer;
   transition: background-color 0.3s;
   margin: 2px 0;
+  position: relative;
+}
+
+.submenu-item:before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  width: 6px;
+  height: 1px;
+  background-color: #1890ff;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.submenu-item:hover:before {
+  opacity: 1;
 }
 
 .submenu-item:hover {
@@ -145,6 +167,51 @@
 }
 
 .submenu-item.active {
-  background-color: #1890ff;
+  background-color: rgba(24, 144, 255, 0.6); /* 改为半透明 */
   color: white;
+  transition: all 0.3s ease;
+}
+
+.submenu-item.active:before {
+  opacity: 1;
+}
+
+.parent-active {
+  background-color: rgba(0, 33, 64, 0.8); /* 改为半透明 */
+  border-left: 3px solid #1890ff;
+  transition: all 0.3s ease;
+}
+
+/* 添加悬停效果增强交互感 */
+.menu-item:hover {
+  background-color: rgba(24, 144, 255, 0.5); /* 改为半透明 */
+  transition: all 0.3s ease;
+}
+
+.submenu-item:hover {
+  background-color: rgba(24, 144, 255, 0.4); /* 改为半透明 */
+  transition: all 0.3s ease;
+}
+
+/* 添加选中和悬停时的过渡动画 */
+.menu-item, .submenu-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-item:after, .submenu-item:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.menu-item:hover:after, .submenu-item:hover:after,
+.menu-item.active:after, .submenu-item.active:after {
+  transform: translateX(0);
 }

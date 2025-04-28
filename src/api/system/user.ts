@@ -1,5 +1,11 @@
 import request from '@/api/request'
 
+// 用户角色设置接口
+export interface SetUserAuthoritiesReq {
+  ID: number
+  authorityIds: number[]
+}
+
 // 获取用户列表
 export const getUserList = (data: { page: number; pageSize: number }) => {
   return request({
@@ -12,7 +18,7 @@ export const getUserList = (data: { page: number; pageSize: number }) => {
 // 添加用户
 export const addUser = (data: any) => {
   return request({
-    url: '/user/register',
+    url: '/user/admin_register',
     method: 'post',
     data
   })
@@ -27,20 +33,47 @@ export const updateUser = (data: any) => {
   })
 }
 
-// 删除用户
-export const deleteUser = (data: { id: string }) => {
+// 设置用户角色
+export const setUserAuthorities = (data: SetUserAuthoritiesReq) => {
   return request({
-    url: '/user/deleteUser',
-    method: 'delete',
+    url: '/user/setUserAuthorities',
+    method: 'post',
     data
   })
 }
 
+// 删除用户
+export const deleteUser = (id: number) => {
+  return request({
+    url: '/user/deleteUser',
+    method: 'delete',
+    data: { id }
+  })
+}
+
 // 重设密码
-export const resetPassword = (data: { id: string; newPassword: string }) => {
+export const resetPassword = (data: { ID: number; newPassword: string }) => {
   return request({
     url: '/user/resetPassword',
     method: 'post',
     data
   })
 }
+
+// 获取用户信息
+export const getUserInfo = () => {
+  return request({
+    url: '/user/getUserInfo',
+    method: 'get'
+  })
+}
+
+// 修改密码
+export const changePassword = (data: any) => {
+  return request({
+    url: '/user/changePassword',
+    method: 'post',
+    data
+  })
+}
+

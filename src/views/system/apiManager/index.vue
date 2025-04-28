@@ -1,27 +1,9 @@
 <template>
-  <div class="api-manager-container">
-    <el-card class="box-card">
-      <template #header>
-        <div class="card-header">
-          <span>API管理</span>
-          <el-button type="primary" @click="handleAddApi">添加API</el-button>
-        </div>
-      </template>
-      
-      <div class="empty-data">
-        <el-empty description="API管理功能正在开发中..."></el-empty>
-      </div>
-    </el-card>
-  </div>
+  <ApiManager />
 </template>
 
 <script setup lang="ts">
-import { ElMessage } from 'element-plus'
-
-// 添加API
-const handleAddApi = () => {
-  ElMessage.info('添加API功能正在开发中...')
-}
+import ApiManager from './apiManager.vue'
 </script>
 
 <style scoped>

@@ -3,13 +3,13 @@
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
-          <span>菜单管理</span>
+          <span>操作记录</span>
           <el-button type="primary" @click="handleAddMenu">添加菜单</el-button>
         </div>
       </template>
       
       <div class="empty-data">
-        <el-empty description="菜单管理功能正在开发中..."></el-empty>
+        <el-empty description="操作记录功能正在开发中..."></el-empty>
       </div>
     </el-card>
   </div>
@@ -20,7 +20,7 @@ import { ElMessage } from 'element-plus'
 
 // 添加菜单
 const handleAddMenu = () => {
-  ElMessage.info('添加菜单功能正在开发中...')
+  ElMessage.info('添加操作记录功能正在开发中...')
 }
 </script>
 

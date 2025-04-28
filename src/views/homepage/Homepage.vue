@@ -13,7 +13,10 @@
         >
           <div
             class="menu-item"
-            :class="{ active: activeMenu === item.id }"
+            :class="{ 
+              active: activeMenu === item.id,
+              'parent-active': hasActiveChild(item)
+            }"
             @click="selectMenu(item.id)"
           >
             <el-icon class="menu-item-icon">
@@ -59,13 +62,19 @@
     <!-- 主内容区 -->
     <div class="main-content">
       <div class="header">
-        <div>
+        <div class="header-left">
           <el-breadcrumb separator="/">
-            <el-breadcrumb-item>首页</el-breadcrumb-item>
-            <el-breadcrumb-item>{{ menuItems.find(item => item.id === activeMenu)?.title }}</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item 
+              v-for="(item, index) in recentPages" 
+              :key="index"
+              :to="{ path: item.path }"
+            >
+              {{ item.title }}
+            </el-breadcrumb-item>
           </el-breadcrumb>
         </div>
-        <div>
+        <div class="header-right">
           <span>欢迎，{{ username }} | </span>
           <span>{{ currentTime }}</span>
         </div>
@@ -109,7 +118,9 @@ const {
   selectMenu,
   username,
   currentTime,
-  handleLogout
+  handleLogout,
+  hasActiveChild,
+  recentPages
 } = useHomepage()
 </script>
 <style src="./homepage.css"></style>
