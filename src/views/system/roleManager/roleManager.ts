@@ -29,7 +29,7 @@ export const copyRoleLoading = ref(false)
 export const copyRoleForm = reactive<CopyRoleForm>({ ...defaultCopyRoleForm })
 
 // 处理角色列表数据
-const processRoleData = (roles: any[]): Authority[] => {
+const processRoleData = (roles: Partial<Authority>[]): Authority[] => {
   if (!Array.isArray(roles)) {
     console.error('角色数据格式错误:', roles)
     return []
@@ -38,7 +38,7 @@ const processRoleData = (roles: any[]): Authority[] => {
   return roles.map(role => ({
     ...role,
     children: role.children && Array.isArray(role.children) ? processRoleData(role.children) : []
-  }))
+  })) as Authority[]
 }
 
 // 获取角色列表

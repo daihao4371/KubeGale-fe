@@ -1,6 +1,6 @@
 import request from '@/api/request'
 // 修改导入路径，使用正确的类型导入
-import type { CreateAuthorityParams, UpdateAuthorityParams, DeleteAuthorityParams, CopyAuthorityRequest } from '@/views/system/roleManager/roleManager'
+import type { CreateRoleForm, CopyRoleForm } from '@/types/system'
 
 // 获取角色列表
 export const getAuthorityList = () => {
@@ -12,7 +12,7 @@ export const getAuthorityList = () => {
 }
 
 // 创建角色
-export const createAuthority = (data: CreateAuthorityParams) => {
+export const createAuthority = (data: CreateRoleForm) => {
   return request({
     url: '/authority/createAuthority',
     method: 'post',
@@ -21,7 +21,7 @@ export const createAuthority = (data: CreateAuthorityParams) => {
 }
 
 // 更新角色
-export const updateAuthority = (data: UpdateAuthorityParams) => {
+export const updateAuthority = (data: CreateRoleForm) => {
   return request({
     url: '/authority/updateAuthority',
     method: 'put',
@@ -30,7 +30,7 @@ export const updateAuthority = (data: UpdateAuthorityParams) => {
 }
 
 // 删除角色
-export const deleteAuthority = (data: DeleteAuthorityParams) => {
+export const deleteAuthority = (data: { AuthorityId: number }) => {
   return request({
     url: '/authority/deleteAuthority',
     method: 'post',
@@ -39,7 +39,15 @@ export const deleteAuthority = (data: DeleteAuthorityParams) => {
 }
 
 // 拷贝角色
-export const copyAuthority = (data: CopyAuthorityRequest) => {
+export const copyAuthority = (data: {
+  authority: {
+    authorityId: number
+    authorityName: string
+    parentId: number
+    defaultRouter: string
+  }
+  oldAuthorityId: number
+}) => {
   return request({
     url: '/authority/copyAuthority',
     method: 'post',
