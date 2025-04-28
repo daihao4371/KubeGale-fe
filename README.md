@@ -35,7 +35,7 @@ npm install
 
 ### 开发环境运行
 ```
-npm run serve
+npm run dev
 ```
 
 ### 生产环境构建
@@ -49,23 +49,33 @@ npm run lint
 ```
 ### 项目结构
 ```
-kubegale-front/
+KubeGale-fe/
 ├── public/              # 静态资源
 ├── src/                 # 源代码
 │   ├── api/             # API 请求
+│   │   ├── request.ts   # Axios 请求配置
+│   │   └── system/      # 系统相关 API
 │   ├── assets/          # 资源文件
 │   ├── components/      # 公共组件
-│   ├── layouts/         # 布局组件
-│   ├── pages/           # 页面组件
+│   │   └── layout/      # 布局组件
+│   ├── views/           # 视图组件
+│   │   ├── dashboard/   # 仪表盘
+│   │   ├── kubernetes/  # Kubernetes 管理
+│   │   ├── system/      # 系统管理
+│   │   │   ├── apiManager/    # API 管理
+│   │   │   ├── roleManager/   # 角色管理
+│   │   │   └── userManager/   # 用户管理
+│   │   └── login/       # 登录页面
 │   ├── router/          # 路由配置
 │   ├── store/           # 状态管理
 │   ├── utils/           # 工具函数
 │   ├── App.vue          # 根组件
 │   └── main.ts          # 入口文件
-├── .env.development     # 开发环境配置
+├── .env                 # 环境变量
 ├── .eslintrc.js         # ESLint 配置
 ├── tsconfig.json        # TypeScript 配置
-└── vue.config.js        # Vue CLI 配置
+├── vite.config.ts       # Vite 配置
+└── package.json         # 项目依赖
 ```
 
 ## 功能模块
