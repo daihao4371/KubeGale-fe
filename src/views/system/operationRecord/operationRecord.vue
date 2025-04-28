@@ -48,11 +48,19 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column label="操作人" width="120">
+        <el-table-column label="操作人" width="150">
           <template #default="scope">
-            <span :class="{ 'system-user': !scope.row.user || (!scope.row.user.username && !scope.row.user.nickname) }">
-              {{ formatUser(scope.row.user, scope.row) }}
-            </span>
+            <div :class="{ 'system-user': !scope.row.user || (!scope.row.user.username && !scope.row.user.nickname) }">
+              <template v-if="scope.row.user && (scope.row.user.username || scope.row.user.userName) && (scope.row.user.nickname || scope.row.user.nickName) && (scope.row.user.username || scope.row.user.userName) !== (scope.row.user.nickname || scope.row.user.nickName)">
+                <div class="user-info">
+                  <span class="user-name">{{ (scope.row.user.username || scope.row.user.userName) }}</span>
+                  <span class="user-real-name">{{ (scope.row.user.nickname || scope.row.user.nickName) }}</span>
+                </div>
+              </template>
+              <template v-else>
+                {{ formatUser(scope.row.user, scope.row) }}
+              </template>
+            </div>
           </template>
         </el-table-column>
         <el-table-column prop="CreatedAt" label="操作时间" width="180">
@@ -149,11 +157,30 @@ import {
   getMethodType
 } from './operationRecord'
 
-function formatUser(user: Record<string, any> | undefined, row: Record<string, any>): string {
+// 修改 formatUser 函数的类型定义
+function formatUser(user: Record<string, unknown> | undefined, row: Record<string, unknown>): string {
+  let username = '';
+  let realName = '';
+  
   if (user) {
-    return user.username || user.nickname || '-'
+    // 获取用户名
+    username = (user.username || user.userName || user.operator_name || '-') as string;
+    // 获取真实姓名
+    realName = (user.nickname || user.nickName || user.operator_real_name || '-') as string;
+  } else {
+    // 如果没有user对象，则尝试从row中获取
+    username = (row.username || row.userName || row.operator_name || '-') as string;
+    realName = (row.nickname || row.nickName || row.operator_real_name || '-') as string;
   }
-  return row.username || row.nickname || '-'
+  
+  // 如果用户名和真实姓名都存在且不同，则同时显示
+  if (username !== '-' && realName !== '-' && username !== realName) {
+    return `${username} (${realName})`;
+  } else if (username !== '-') {
+    return username;
+  } else {
+    return realName;
+  }
 }
 
 function formatDate(date: string) {

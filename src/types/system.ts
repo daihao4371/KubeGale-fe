@@ -187,8 +187,8 @@ export const defaultCopyRoleForm: CopyRoleForm = {
 export interface User {
   id: number
   username: string
-  realName?: string
   nickname?: string
+  realName?: string  // 添加真实姓名字段
 }
 
 export interface SysOperationRecord {
@@ -232,4 +232,4 @@ export interface OperationRecordState {
   pageSize: number
   currentPage: number
   searchForm: OperationRecordParams
-} 
+}
