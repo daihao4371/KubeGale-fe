@@ -1,41 +1,7 @@
 <template>
-  <div class="menu-manager-container">
-    <el-card class="box-card">
-      <template #header>
-        <div class="card-header">
-          <span>操作记录</span>
-          <el-button type="primary" @click="handleAddMenu">添加菜单</el-button>
-        </div>
-      </template>
-      
-      <div class="empty-data">
-        <el-empty description="操作记录功能正在开发中..."></el-empty>
-      </div>
-    </el-card>
-  </div>
+  <OperationRecord />
 </template>
 
 <script setup lang="ts">
-import { ElMessage } from 'element-plus'
-
-// 添加菜单
-const handleAddMenu = () => {
-  ElMessage.info('添加操作记录功能正在开发中...')
-}
+import OperationRecord from './operationRecord.vue'
 </script>
-
-<style scoped>
-.menu-manager-container {
-  padding: 20px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.empty-data {
-  margin: 40px 0;
-}
-</style>

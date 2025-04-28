@@ -181,4 +181,55 @@ export const defaultCopyRoleForm: CopyRoleForm = {
   parentId: 0,
   oldAuthorityId: 0,
   oldAuthorityName: ''
+}
+
+// 操作记录相关接口
+export interface User {
+  id: number
+  username: string
+  realName?: string
+  nickname?: string
+}
+
+export interface SysOperationRecord {
+  id: number
+  created_at: string
+  updated_at: string
+  ip: string
+  method: string
+  path: string
+  status: number
+  latency: string | number
+  agent: string
+  error_message: string
+  body: string
+  resp: string
+  user_id: number
+  user: User
+  operator_name?: string
+  operator_real_name?: string
+  ID?: number
+  CreatedAt?: string
+  UpdatedAt?: string
+}
+
+export interface OperationRecordParams {
+  page?: number
+  pageSize?: number
+  path?: string
+  method?: string
+  status?: number
+  ip?: string
+  userId?: number
+  startTime?: string
+  endTime?: string
+}
+
+export interface OperationRecordState {
+  loading: boolean
+  operationList: SysOperationRecord[]
+  total: number
+  pageSize: number
+  currentPage: number
+  searchForm: OperationRecordParams
 } 
