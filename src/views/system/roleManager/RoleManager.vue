@@ -48,6 +48,9 @@
           </template>
         </el-table-column>
       </el-table>
+      
+      <!-- 当角色列表为空时显示提示 -->
+      <el-empty v-if="roleList.length === 0 && !loading" description="暂无角色数据"></el-empty>
     </el-card>
 
     <!-- 权限设置对话框 -->
@@ -167,7 +170,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, nextTick } from 'vue'
 import { Plus, Edit, Delete, Setting, CopyDocument } from '@element-plus/icons-vue'
 import RolePermission from './components/RolePermission.vue'
 import {
@@ -238,18 +241,19 @@ watch(() => editRoleForm.parentId, (newVal) => {
 // 设置权限
 const handleSetPermission = (row: Authority) => {
   // 确保深拷贝角色数据，避免引用问题
-  currentRole.value = {
-    ...row,
-    dataAuthorityId: row.dataAuthorityId ? [...row.dataAuthorityId] : null,
-    children: row.children ? [...row.children] : null,
-    menus: row.menus ? { ...row.menus } : null
-  }
+  currentRole.value = JSON.parse(JSON.stringify(row))
   permissionDialogVisible.value = true
 }
 
 // 页面加载时获取角色列表
-onMounted(() => {
-  fetchRoleList()
+onMounted(async () => {
+  await fetchRoleList()
+  
+  // 如果角色列表为空，尝试再次获取
+  if (roleList.value.length === 0) {
+    await nextTick()
+    await fetchRoleList()
+  }
 })
 </script>
 

@@ -1,21 +1,13 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getAuthorityList, createAuthority, updateAuthority, deleteAuthority, copyAuthority } from '@/api/system/roles'
 import type {
   Authority,
   CreateRoleForm,
   CopyRoleForm,
-  CopyAuthorityRequest,
-  DeleteAuthorityParams,
   RoleState
 } from '@/types/system'
 import { createRoleRules, defaultCreateRoleForm, defaultCopyRoleForm } from '@/types/system'
-
-// 导出接口类型，解决导入错误
-export type { CreateRoleForm as CreateAuthorityParams }
-export type { CreateRoleForm as UpdateAuthorityParams }
-export type { DeleteAuthorityParams }
-export type { CopyAuthorityRequest }
 
 // 角色列表数据
 export const roleList = ref<Authority[]>([])
@@ -37,11 +29,12 @@ export const copyRoleLoading = ref(false)
 export const copyRoleForm = reactive<CopyRoleForm>({ ...defaultCopyRoleForm })
 
 // 处理角色列表数据
-const processRoleData = (roles: Authority[]): Authority[] => {
+const processRoleData = (roles: any[]): Authority[] => {
   if (!Array.isArray(roles)) {
     console.error('角色数据格式错误:', roles)
     return []
   }
+  
   return roles.map(role => ({
     ...role,
     children: role.children && Array.isArray(role.children) ? processRoleData(role.children) : []
@@ -54,8 +47,15 @@ export const fetchRoleList = async () => {
   try {
     const res = await getAuthorityList()
     console.log('获取角色列表响应:', res)
+    
+    // 增强错误处理和数据验证
+    if (!res || !res.data) {
+      throw new Error('获取角色列表响应为空')
+    }
+    
     if (res.data?.code === 0 && Array.isArray(res.data.data)) {
       roleList.value = processRoleData(res.data.data)
+      console.log('处理后的角色列表:', roleList.value)
     } else {
       ElMessage.error(res.data?.msg || '获取角色列表失败')
       roleList.value = []
