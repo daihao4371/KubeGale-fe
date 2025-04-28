@@ -1,6 +1,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import type { FormInstance } from 'element-plus'
 import { login } from '@/api/login/login'
 import { getCaptcha } from '@/api/login/captcha'
 
@@ -8,7 +9,7 @@ export default function useLogin() {
   const router = useRouter()
   const captchaImg = ref('')
   const captchaId = ref('')
-  
+
   // 登录表单
   const loginForm = reactive({
     username: '',
@@ -16,14 +17,14 @@ export default function useLogin() {
     captcha: '',
     captchaId: ''
   })
-  
+
   // 表单验证规则
   const rules = {
     username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
     password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
     captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
   }
-  
+
   // 获取验证码
   const refreshCaptcha = async () => {
     try {
@@ -33,13 +34,14 @@ export default function useLogin() {
         captchaId.value = res.data.data.captchaId
         loginForm.captchaId = res.data.data.captchaId
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('获取验证码失败:', error)
       ElMessage.error('获取验证码失败')
     }
   }
-  
+
   // 登录方法
-  const handleLogin = async (formEl: any) => {
+  const handleLogin = async (formEl: FormInstance) => {
     if (!formEl) return
     await formEl.validate(async (valid: boolean) => {
       if (valid) {
@@ -60,15 +62,13 @@ export default function useLogin() {
           ElMessage.error('登录失败，请稍后重试')
           refreshCaptcha()
         }
-      } else {
-        return false
       }
     })
   }
-  
+
   // 初始化获取验证码
   refreshCaptcha()
-  
+
   return {
     loginForm,
     rules,
