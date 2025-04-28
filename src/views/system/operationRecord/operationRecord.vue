@@ -35,7 +35,7 @@
       <!-- 操作按钮 -->
       <div class="operation-buttons">
         <el-button type="danger" :disabled="!operationState.selectedRows.length" @click="handleBatchDelete">
-          批量删除
+          <el-icon><Delete /></el-icon> 批量删除
         </el-button>
       </div>
 
@@ -86,8 +86,12 @@
         <el-table-column prop="path" label="请求路径" min-width="200" show-overflow-tooltip />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link @click="handleDetail(row)">详情</el-button>
-            <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
+            <el-button type="primary" link @click="handleDetail(row)">
+              <el-icon><View /></el-icon> 详情
+            </el-button>
+            <el-button type="danger" link @click="handleDelete(row)">
+              <el-icon><Delete /></el-icon> 删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -112,6 +116,7 @@
       title="操作详情"
       width="800px"
       :close-on-click-modal="false"
+      class="operation-detail-dialog"
     >
       <el-descriptions :column="2" border>
         <el-descriptions-item label="操作人">
@@ -127,10 +132,10 @@
         <el-descriptions-item label="请求方法">{{ operationState.currentDetail?.method }}</el-descriptions-item>
         <el-descriptions-item label="请求路径">{{ operationState.currentDetail?.path }}</el-descriptions-item>
         <el-descriptions-item label="请求体" :span="2">
-          <pre>{{ operationState.currentDetail?.body }}</pre>
+          <pre class="json-content">{{ formatJSON(operationState.currentDetail?.body) }}</pre>
         </el-descriptions-item>
         <el-descriptions-item label="响应体" :span="2">
-          <pre>{{ operationState.currentDetail?.resp }}</pre>
+          <pre class="json-content">{{ formatJSON(operationState.currentDetail?.resp) }}</pre>
         </el-descriptions-item>
         <el-descriptions-item label="错误信息" :span="2">
           <pre>{{ operationState.currentDetail?.error_message }}</pre>
@@ -142,6 +147,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { Delete, View } from '@element-plus/icons-vue'
 import {
   operationState,
   fetchData,
@@ -154,7 +160,8 @@ import {
   handleSizeChange,
   handleCurrentChange,
   getStatusType,
-  getMethodType
+  getMethodType,
+  formatJSON
 } from './operationRecord'
 
 // 修改 formatUser 函数的类型定义
