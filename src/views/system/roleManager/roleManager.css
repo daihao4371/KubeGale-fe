@@ -1,32 +1,46 @@
 .role-manager-container {
-  padding: 20px;
+  padding: 24px;
+  background: #f5f7fa;
+  min-height: calc(100vh - 48px);
 }
 
 .box-card {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.box-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 16px 0;
 }
 
 .header-left {
   display: flex;
   flex-direction: column;
+  gap: 4px;
 }
 
 .header-title {
-  font-size: 18px;
-  font-weight: 500;
-  color: #303133;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  letter-spacing: 0.5px;
 }
 
 .header-subtitle {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 4px;
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 2px;
 }
 
 .operation-buttons {
@@ -35,6 +49,146 @@
 }
 
 .operation-buttons .el-button {
-  padding: 6px 10px;
-  font-size: 12px;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.operation-buttons .el-button:hover {
+  transform: translateY(-1px);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.operation-buttons .el-button--primary {
+  color: #3b82f6;
+  border: none;
+}
+
+.operation-buttons .el-button--primary:hover {
+  color: #2563eb;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.operation-buttons .el-button--danger {
+  color: #ef4444;
+  border: none;
+}
+
+.operation-buttons .el-button--danger:hover {
+  color: #dc2626;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* 表格样式优化 */
+.el-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.el-table th {
+  background: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+  padding: 12px 0;
+}
+
+.el-table td {
+  padding: 12px 0;
+}
+
+.el-table--border {
+  border: 1px solid #e5e7eb;
+}
+
+.el-table--border th,
+.el-table--border td {
+  border-right: 1px solid #e5e7eb;
+}
+
+/* 对话框样式优化 */
+.el-dialog {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.el-dialog__header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  margin: 0;
+}
+
+.el-dialog__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.el-dialog__body {
+  padding: 24px;
+}
+
+.el-dialog__footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  margin: 0;
+}
+
+/* 空状态样式优化 */
+.el-empty {
+  padding: 40px 0;
+}
+
+.el-empty__description {
+  color: #6b7280;
+  margin-top: 12px;
+}
+
+/* 表单样式优化 */
+.el-form-item__label {
+  font-weight: 500;
+  color: #374151;
+}
+
+.el-input__inner {
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.el-input__inner:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.role-manager-container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 768px) {
+  .role-manager-container {
+    padding: 16px;
+  }
+  
+  .operation-buttons {
+    flex-wrap: wrap;
+  }
+  
+  .operation-buttons .el-button {
+    margin-bottom: 8px;
+  }
 } 
