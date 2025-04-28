@@ -218,6 +218,24 @@ export default function useApiManager() {
     state.currentPage = 1
   }
 
+  // 刷新Casbin缓存
+  const handleFreshCasbin = async () => {
+    try {
+      state.loading = true
+      const res = await freshCasbin()
+      if (res.data?.code === 0) {
+        ElMessage.success('刷新缓存成功')
+      } else {
+        ElMessage.error(res.data?.msg || '刷新缓存失败')
+      }
+    } catch (error) {
+      console.error('刷新缓存失败:', error)
+      ElMessage.error('刷新缓存失败')
+    } finally {
+      state.loading = false
+    }
+  }
+
   return {
     state,
     form,
@@ -230,6 +248,7 @@ export default function useApiManager() {
     handleDelete,
     handleSubmit,
     handleSearch,
-    handleResetSearch
+    handleResetSearch,
+    handleFreshCasbin  // 添加到返回对象中
   }
 }

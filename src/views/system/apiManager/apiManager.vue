@@ -4,7 +4,10 @@
       <template #header>
         <div class="card-header">
           <span>API管理</span>
-          <el-button type="primary" @click="apiManager.handleAddApi">添加API</el-button>
+          <div class="header-buttons">
+            <el-button type="success" @click="apiManager.handleFreshCasbin">刷新缓存</el-button>
+            <el-button type="primary" @click="apiManager.handleAddApi">添加API</el-button>
+          </div>
         </div>
       </template>
       
