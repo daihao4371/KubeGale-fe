@@ -23,7 +23,14 @@ export default function useApiManager() {
     dialogTitle: '',
     dialogType: 'create',
     formLoading: false,
-    apiGroups: []
+    apiGroups: [],
+    searchForm: {
+      path: '',
+      description: '',
+      apiGroup: '',
+      method: ''
+    },
+    filteredApiList: []
   })
 
   const form = ref<ApiForm>({ ...defaultApiForm })
@@ -47,6 +54,10 @@ export default function useApiManager() {
       if (res.data?.code === 0) {
         state.apiList = res.data.data.apis
         state.total = state.apiList.length
+        state.filteredApiList = state.apiList
+        
+        // 加载API分组，确保搜索栏可以使用
+        await loadApiGroups()
       } else {
         ElMessage.error(res.data?.msg || '获取API列表失败')
       }
@@ -179,6 +190,52 @@ export default function useApiManager() {
     }
   }
 
+  // 搜索方法
+  const handleSearch = () => {
+    let filtered = state.apiList
+    if (state.searchForm.path) {
+      filtered = filtered.filter(api => api.path.includes(state.searchForm.path))
+    }
+    if (state.searchForm.description) {
+      filtered = filtered.filter(api => api.description.includes(state.searchForm.description))
+    }
+    if (state.searchForm.apiGroup) {
+      filtered = filtered.filter(api => api.apiGroup === state.searchForm.apiGroup)
+    }
+    if (state.searchForm.method) {
+      filtered = filtered.filter(api => api.method === state.searchForm.method)
+    }
+    state.filteredApiList = filtered
+    state.total = filtered.length
+    state.currentPage = 1
+  }
+
+  // 重置搜索
+  const handleResetSearch = () => {
+    state.searchForm = { path: '', description: '', apiGroup: '', method: '' }
+    state.filteredApiList = state.apiList
+    state.total = state.apiList.length
+    state.currentPage = 1
+  }
+
+  // 刷新Casbin缓存
+  const handleFreshCasbin = async () => {
+    try {
+      state.loading = true
+      const res = await freshCasbin()
+      if (res.data?.code === 0) {
+        ElMessage.success('刷新缓存成功')
+      } else {
+        ElMessage.error(res.data?.msg || '刷新缓存失败')
+      }
+    } catch (error) {
+      console.error('刷新缓存失败:', error)
+      ElMessage.error('刷新缓存失败')
+    } finally {
+      state.loading = false
+    }
+  }
+
   return {
     state,
     form,
@@ -189,6 +246,9 @@ export default function useApiManager() {
     handleAddApi,
     handleEdit,
     handleDelete,
-    handleSubmit
+    handleSubmit,
+    handleSearch,
+    handleResetSearch,
+    handleFreshCasbin  // 添加到返回对象中
   }
 }

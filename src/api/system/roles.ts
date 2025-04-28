@@ -1,5 +1,6 @@
 import request from '@/api/request'
-import type { CreateAuthorityParams, UpdateAuthorityParams, DeleteAuthorityParams, CopyAuthorityRequest } from '@/views/system/roleManager/roleManager'
+// 修改导入路径，使用正确的类型导入
+import type { CreateRoleForm, CopyRoleForm } from '@/types/system'
 
 // 获取角色列表
 export const getAuthorityList = () => {
@@ -11,7 +12,7 @@ export const getAuthorityList = () => {
 }
 
 // 创建角色
-export const createAuthority = (data: CreateAuthorityParams) => {
+export const createAuthority = (data: CreateRoleForm) => {
   return request({
     url: '/authority/createAuthority',
     method: 'post',
@@ -20,7 +21,7 @@ export const createAuthority = (data: CreateAuthorityParams) => {
 }
 
 // 更新角色
-export const updateAuthority = (data: UpdateAuthorityParams) => {
+export const updateAuthority = (data: CreateRoleForm) => {
   return request({
     url: '/authority/updateAuthority',
     method: 'put',
@@ -29,7 +30,7 @@ export const updateAuthority = (data: UpdateAuthorityParams) => {
 }
 
 // 删除角色
-export const deleteAuthority = (data: DeleteAuthorityParams) => {
+export const deleteAuthority = (data: { AuthorityId: number }) => {
   return request({
     url: '/authority/deleteAuthority',
     method: 'post',
@@ -38,7 +39,15 @@ export const deleteAuthority = (data: DeleteAuthorityParams) => {
 }
 
 // 拷贝角色
-export const copyAuthority = (data: CopyAuthorityRequest) => {
+export const copyAuthority = (data: {
+  authority: {
+    authorityId: number
+    authorityName: string
+    parentId: number
+    defaultRouter: string
+  }
+  oldAuthorityId: number
+}) => {
   return request({
     url: '/authority/copyAuthority',
     method: 'post',
@@ -94,52 +103,5 @@ export const updateCasbin = (data: {
     url: '/casbin/updateCasbin',
     method: 'post',
     data
-  })
-}
-
-// 设置数据权限
-export const setDataAuthority = (data: {
-  authorityId: number
-  dataAuthorityId: Array<{
-    authorityId: number
-  }>
-}) => {
-  return request({
-    url: '/authority/setDataAuthority',
-    method: 'post',
-    data
-  })
-}
-
-// 设置菜单权限
-export const addMenuAuthority = (data: {
-  menus: Array<{
-    ID: number
-    path: string
-    name: string
-    component: string
-    sort: number
-    meta: {
-      title: string
-      icon: string
-      keepAlive: boolean
-    }
-    parentId: number
-    hidden: boolean
-  }>
-  authorityId: number
-}) => {
-  return request({
-    url: '/menu/addMenuAuthority',
-    method: 'post',
-    data
-  })
-}
-
-// 刷新 Casbin 规则
-export const freshCasbin = () => {
-  return request({
-    url: '/api/freshCasbin',
-    method: 'get'
   })
 }

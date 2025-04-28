@@ -5,7 +5,10 @@
 </template>
 
 <script setup lang="ts">
-// 无需额外逻辑
+// 使用 defineOptions 定义组件名称
+defineOptions({
+  name: 'SystemLayout'
+})
 </script>
 
 <style scoped>

@@ -1,0 +1,86 @@
+.search-form {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  background: #f5f7fa;
+  border-radius: 4px;
+  padding: 16px 24px;
+}
+
+.search-form .el-form-item {
+  margin-right: 24px;
+  margin-bottom: 0;
+}
+
+.search-form .el-form-item:last-child {
+  margin-right: 0;
+}
+
+.operation-record-container {
+  padding: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.operation-buttons {
+  margin-bottom: 20px;
+}
+
+.operation-table {
+  margin-top: 20px;
+}
+
+.pagination-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.method-tag {
+  min-width: 60px;
+  text-align: center;
+}
+
+.status-tag {
+  min-width: 60px;
+  text-align: center;
+}
+
+.operation-detail {
+  max-width: 300px;
+  word-break: break-all;
+}
+
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* 系统用户样式 */
+.system-user {
+  color: #909399;
+  font-style: italic;
+}
+
+/* 用户名和真实姓名组合样式 */
+.user-info {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 120px;
+}
+
+.user-name {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.user-real-name {
+  font-size: 12px;
+  color: #909399;
+}

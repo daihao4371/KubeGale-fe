@@ -1,46 +1,13 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getAuthorityList, createAuthority, updateAuthority, deleteAuthority, copyAuthority } from '@/api/system/roles'
-
-// 拷贝角色请求参数接口
-export interface CopyAuthorityRequest {
-  authority: {
-    authorityId: number
-    authorityName: string
-    parentId: number
-    defaultRouter: string
-  }
-  oldAuthorityId: number
-}
-
-// 角色信息接口
-export interface Authority {
-  CreatedAt: string
-  UpdatedAt: string
-  DeletedAt: string | null
-  authorityId: number
-  authorityName: string
-  parentId: number
-  dataAuthorityId: Authority[] | null
-  children: Authority[] | null
-  menus: Record<string, unknown> | null
-  defaultRouter: string
-}
-
-// 创建角色表单接口
-export interface CreateRoleForm {
-  authorityId: number
-  authorityName: string
-  parentId: number
-  defaultRouter: string
-}
-
-// API 参数接口
-export interface CreateAuthorityParams extends CreateRoleForm {}
-export interface UpdateAuthorityParams extends CreateRoleForm {}
-export interface DeleteAuthorityParams {
-  AuthorityId: number
-}
+import type {
+  Authority,
+  CreateRoleForm,
+  CopyRoleForm,
+  RoleState
+} from '@/types/system'
+import { createRoleRules, defaultCreateRoleForm, defaultCopyRoleForm } from '@/types/system'
 
 // 角色列表数据
 export const roleList = ref<Authority[]>([])
@@ -49,62 +16,29 @@ export const loading = ref(false)
 // 创建角色对话框相关状态
 export const createRoleDialogVisible = ref(false)
 export const createRoleLoading = ref(false)
-export const createRoleForm = reactive<CreateRoleForm>({
-  authorityId: 0,
-  authorityName: '',
-  parentId: 0,
-  defaultRouter: 'dashboard'
-})
-
-// 表单验证规则
-export const createRoleRules = {
-  authorityId: [
-    { required: true, message: '请输入角色ID', trigger: 'blur' },
-    { type: 'number', message: '角色ID必须为数字', trigger: 'blur' }
-  ],
-  authorityName: [
-    { required: true, message: '请输入角色名称', trigger: 'blur' },
-    { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
-  ]
-}
+export const createRoleForm = reactive<CreateRoleForm>({ ...defaultCreateRoleForm })
 
 // 编辑角色对话框相关状态
 export const editRoleDialogVisible = ref(false)
 export const editRoleLoading = ref(false)
-export const editRoleForm = reactive<CreateRoleForm>({
-  authorityId: 0,
-  authorityName: '',
-  parentId: 0,
-  defaultRouter: 'dashboard'
-})
+export const editRoleForm = reactive<CreateRoleForm>({ ...defaultCreateRoleForm })
 
 // 拷贝角色对话框相关状态
 export const copyRoleDialogVisible = ref(false)
 export const copyRoleLoading = ref(false)
-export const copyRoleForm = reactive<{
-  authorityId: number
-  authorityName: string
-  parentId: number
-  oldAuthorityId: number
-  oldAuthorityName: string
-}>({
-  authorityId: 0,
-  authorityName: '',
-  parentId: 0,
-  oldAuthorityId: 0,
-  oldAuthorityName: ''
-})
+export const copyRoleForm = reactive<CopyRoleForm>({ ...defaultCopyRoleForm })
 
 // 处理角色列表数据
-const processRoleData = (roles: Authority[]): Authority[] => {
+const processRoleData = (roles: Partial<Authority>[]): Authority[] => {
   if (!Array.isArray(roles)) {
     console.error('角色数据格式错误:', roles)
     return []
   }
+  
   return roles.map(role => ({
     ...role,
     children: role.children && Array.isArray(role.children) ? processRoleData(role.children) : []
-  }))
+  })) as Authority[]
 }
 
 // 获取角色列表
@@ -113,8 +47,15 @@ export const fetchRoleList = async () => {
   try {
     const res = await getAuthorityList()
     console.log('获取角色列表响应:', res)
+    
+    // 增强错误处理和数据验证
+    if (!res || !res.data) {
+      throw new Error('获取角色列表响应为空')
+    }
+    
     if (res.data?.code === 0 && Array.isArray(res.data.data)) {
       roleList.value = processRoleData(res.data.data)
+      console.log('处理后的角色列表:', roleList.value)
     } else {
       ElMessage.error(res.data?.msg || '获取角色列表失败')
       roleList.value = []
@@ -132,12 +73,7 @@ export const fetchRoleList = async () => {
 export const handleAddRole = () => {
   createRoleDialogVisible.value = true
   // 重置表单
-  Object.assign(createRoleForm, {
-    authorityId: 0,
-    authorityName: '',
-    parentId: 0,
-    defaultRouter: 'dashboard'
-  })
+  Object.assign(createRoleForm, defaultCreateRoleForm)
 }
 
 // 提交创建角色表单
@@ -161,20 +97,13 @@ export const submitCreateRole = async () => {
   }
 }
 
-// 设置权限
-export const handleSetPermission = (row: Authority) => {
-  ElMessage.info('设置权限功能正在开发中...')
-}
-
 // 新增子角色
 export const handleAddSubRole = (row: Authority) => {
   createRoleDialogVisible.value = true
   // 重置表单并设置父角色ID
   Object.assign(createRoleForm, {
-    authorityId: 0,
-    authorityName: '',
-    parentId: row.authorityId,
-    defaultRouter: 'dashboard'
+    ...defaultCreateRoleForm,
+    parentId: row.authorityId
   })
 }
 
@@ -183,6 +112,7 @@ export const handleCopyRole = (row: Authority) => {
   copyRoleDialogVisible.value = true
   // 设置表单数据
   Object.assign(copyRoleForm, {
+    ...defaultCopyRoleForm,
     authorityId: row.authorityId + 1,
     authorityName: `${row.authorityName}_copy`,
     parentId: row.parentId,
@@ -204,7 +134,7 @@ export const submitCopyRole = async () => {
       },
       oldAuthorityId: copyRoleForm.oldAuthorityId
     })
-    
+
     if (response.data?.code === 0) {
       ElMessage.success('拷贝角色成功')
       copyRoleDialogVisible.value = false

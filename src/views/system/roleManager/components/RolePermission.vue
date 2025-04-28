@@ -46,8 +46,10 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getAllApis, getPolicyPathByAuthorityId, updateCasbin, freshCasbin } from '@/api/system/roles'
-import type { Authority } from '../roleManager'
+import { getAllApis, getPolicyPathByAuthorityId, updateCasbin } from '@/api/system/roles'
+import { freshCasbin } from '@/api/system/apis'
+
+import type { Authority } from '@/types/system'
 
 // 定义接口
 interface Api {
@@ -126,7 +128,7 @@ const loadApiTree = async () => {
   try {
     // 获取所有API
     const res = await getAllApis()
-    if (res.data?.code === 0) {
+    if (res.data?.code === 0 && Array.isArray(res.data.data.apis)) {
       apiTreeData.value = buildApiTree(res.data.data.apis)
       
       // 获取当前角色已授权的API
@@ -134,7 +136,7 @@ const loadApiTree = async () => {
         const policyRes = await getPolicyPathByAuthorityId({
           authorityId: props.role.authorityId
         })
-        if (policyRes.data?.code === 0) {
+        if (policyRes.data?.code === 0 && Array.isArray(policyRes.data.data.paths)) {
           // 构建已授权API的唯一标识
           apiTreeIds.value = policyRes.data.data.paths.map((item: { path: string; method: string }) => 
             `p:${item.path}m:${item.method}`
@@ -143,8 +145,14 @@ const loadApiTree = async () => {
           if (apiTree.value) {
             apiTree.value.setCheckedKeys(apiTreeIds.value)
           }
+        } else {
+          console.error('获取角色API权限失败:', policyRes)
+          apiTreeIds.value = []
         }
       }
+    } else {
+      console.error('获取所有API失败:', res)
+      apiTreeData.value = []
     }
   } catch (error) {
     console.error('加载API树失败:', error)
@@ -240,7 +248,9 @@ const handleCancel = () => {
 
 // 初始化
 onMounted(async () => {
-  await loadApiTree()
+  if (props.role) {
+    await loadApiTree()
+  }
 })
 
 // 监听角色变化
@@ -283,4 +293,4 @@ watch(() => props.role, async (newVal) => {
   margin-top: 20px;
   text-align: right;
 }
-</style> 
+</style>

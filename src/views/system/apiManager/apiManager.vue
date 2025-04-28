@@ -4,12 +4,55 @@
       <template #header>
         <div class="card-header">
           <span>API管理</span>
-          <el-button type="primary" @click="apiManager.handleAddApi">添加API</el-button>
+          <div class="header-buttons">
+            <el-button type="success" @click="apiManager.handleFreshCasbin">
+              <el-icon><Refresh /></el-icon>刷新缓存
+            </el-button>
+            <el-button type="primary" @click="apiManager.handleAddApi">
+              <el-icon><Plus /></el-icon>添加API
+            </el-button>
+          </div>
         </div>
       </template>
       
+      <!-- 搜索栏 -->
+      <el-form :inline="true" :model="apiManager.state.searchForm" class="search-form">
+        <el-form-item label="API路径">
+          <el-input v-model="apiManager.state.searchForm.path" placeholder="请输入API路径" clearable />
+        </el-form-item>
+        <el-form-item label="API简介">
+          <el-input v-model="apiManager.state.searchForm.description" placeholder="请输入API简介" clearable />
+        </el-form-item>
+        <el-form-item label="API分组">
+          <el-select v-model="apiManager.state.searchForm.apiGroup" placeholder="请选择API分组" clearable style="width: 160px">
+            <el-option
+              v-for="group in apiManager.state.apiGroups"
+              :key="group"
+              :label="group"
+              :value="group"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="请求方式">
+          <el-select v-model="apiManager.state.searchForm.method" placeholder="请选择请求方式" clearable style="width: 160px">
+            <el-option label="GET" value="GET" />
+            <el-option label="POST" value="POST" />
+            <el-option label="PUT" value="PUT" />
+            <el-option label="DELETE" value="DELETE" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="apiManager.handleSearch">
+            <el-icon><Search /></el-icon>搜索
+          </el-button>
+          <el-button @click="apiManager.handleResetSearch">
+            <el-icon><RefreshRight /></el-icon>重置
+          </el-button>
+        </el-form-item>
+      </el-form>
+      
       <el-table
-        :data="apiManager.state.apiList.slice((apiManager.state.currentPage - 1) * apiManager.state.pageSize, apiManager.state.currentPage * apiManager.state.pageSize)"
+        :data="apiManager.state.filteredApiList.slice((apiManager.state.currentPage - 1) * apiManager.state.pageSize, apiManager.state.currentPage * apiManager.state.pageSize)"
         style="width: 100%"
         v-loading="apiManager.state.loading"
         border
@@ -25,8 +68,12 @@
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link @click="apiManager.handleEdit(row)">编辑</el-button>
-            <el-button type="danger" link @click="apiManager.handleDelete(row)">删除</el-button>
+            <el-button type="primary" link @click="apiManager.handleEdit(row)">
+              <el-icon><Edit /></el-icon>编辑
+            </el-button>
+            <el-button type="danger" link @click="apiManager.handleDelete(row)">
+              <el-icon><Delete /></el-icon>删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -96,8 +143,12 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="apiManager.state.dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="apiManager.handleSubmit">确定</el-button>
+          <el-button @click="apiManager.state.dialogVisible = false">
+            <el-icon><Close /></el-icon>取消
+          </el-button>
+          <el-button type="primary" @click="apiManager.handleSubmit">
+            <el-icon><Check /></el-icon>确定
+          </el-button>
         </span>
       </template>
     </el-dialog>
@@ -108,6 +159,16 @@
 import { onMounted, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import useApiManager from './apiManager'
+import { 
+  Plus, 
+  Edit, 
+  Delete, 
+  Search, 
+  Refresh, 
+  RefreshRight, 
+  Check, 
+  Close 
+} from '@element-plus/icons-vue'
 
 const formRef = ref<FormInstance>()
 const rules: FormRules = {
@@ -133,4 +194,4 @@ onMounted(() => {
 })
 </script>
 
-<style src="./apiManager.css" scoped></style> 
+<style src="./apiManager.css" scoped></style>

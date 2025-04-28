@@ -65,7 +65,7 @@ const router = createRouter({
             // 添加操作记录路由
             {
               path: 'menuManager',
-              component: () => import('@/views/system/menuManager/index.vue'),
+              component: () => import('@/views/system/operationRecord/index.vue'),
               meta: {
                 requiresAuth: true,
                 title: '操作记录'
