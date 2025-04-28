@@ -48,8 +48,18 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="operator_name" label="操作人" width="120" />
-        <el-table-column prop="created_at" label="操作时间" width="180" />
+        <el-table-column label="操作人" width="120">
+          <template #default="scope">
+            <span :class="{ 'system-user': !scope.row.user || (!scope.row.user.username && !scope.row.user.nickname) }">
+              {{ formatUser(scope.row.user, scope.row) }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="CreatedAt" label="操作时间" width="180">
+          <template #default="scope">
+            {{ formatDate(scope.row.CreatedAt) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="status" label="状态码" width="100">
           <template #default="{ row }">
             <el-tag :type="getStatusType(row.status)">
@@ -96,8 +106,14 @@
       :close-on-click-modal="false"
     >
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="操作人">{{ operationState.currentDetail?.operator_name }}</el-descriptions-item>
-        <el-descriptions-item label="操作时间">{{ operationState.currentDetail?.created_at }}</el-descriptions-item>
+        <el-descriptions-item label="操作人">
+          <span :class="{ 'system-user': !operationState.currentDetail?.user || (!operationState.currentDetail?.user.username && !operationState.currentDetail?.user.nickname) }">
+            {{ operationState.currentDetail ? formatUser(operationState.currentDetail.user, operationState.currentDetail) : '-' }}
+          </span>
+        </el-descriptions-item>
+        <el-descriptions-item label="操作时间">
+          {{ formatDate(operationState.currentDetail?.CreatedAt ?? '') }}
+        </el-descriptions-item>
         <el-descriptions-item label="状态码">{{ operationState.currentDetail?.status }}</el-descriptions-item>
         <el-descriptions-item label="请求IP">{{ operationState.currentDetail?.ip }}</el-descriptions-item>
         <el-descriptions-item label="请求方法">{{ operationState.currentDetail?.method }}</el-descriptions-item>
@@ -132,6 +148,18 @@ import {
   getStatusType,
   getMethodType
 } from './operationRecord'
+
+function formatUser(user: Record<string, any> | undefined, row: Record<string, any>): string {
+  if (user) {
+    return user.username || user.nickname || '-'
+  }
+  return row.username || row.nickname || '-'
+}
+
+function formatDate(date: string) {
+  if (!date) return '-'
+  return date.replace('T', ' ').replace(/\..+/, '')
+}
 
 // 页面加载时获取数据
 onMounted(() => {
