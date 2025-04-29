@@ -2,6 +2,24 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { logout } from '@/api/login/login'
+import { 
+  Setting, 
+  Document, 
+  Ship, 
+  Monitor, 
+  Tools, 
+  Box, 
+  Connection,
+  SwitchButton,
+  ArrowDown,
+  ArrowRight,
+  User,
+  UserFilled,
+  Menu,
+  HomeFilled,
+  DataAnalysis,
+  ChatDotRound
+} from '@element-plus/icons-vue'
 
 interface MenuItem {
   id: string
@@ -38,6 +56,7 @@ export default function useHomepage() {
         { id: 'system-menu', title: '操作记录', icon: 'Document', path: '/system/menuManager' },
       ]
     },
+    { id: 'im', title: 'IM通知管理', icon: 'ChatDotRound', path: '/homepage/im' },
     { id: 'cmdb', title: 'CMDB资产管理', icon: 'DataAnalysis', path: '/homepage/cmdb' },
     { id: 'kubernetes', title: 'k8s管理', icon: 'Ship', path: '/homepage/kubernetes' },
     { id: 'prometheus', title: 'Prometheus监控管理', icon: 'Monitor', path: '/homepage/prometheus' },

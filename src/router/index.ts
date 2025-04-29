@@ -73,6 +73,16 @@ const router = createRouter({
             }
           ]
         },
+        // 添加IM通知管理路由
+        {
+          path: 'im',
+          name: 'im',
+          component: () => import('@/views/im/index.vue'),
+          meta: {
+            requiresAuth: true,
+            title: 'IM通知管理'
+          }
+        },
         {
           path: 'cmdb',
           name: 'cmdb',
