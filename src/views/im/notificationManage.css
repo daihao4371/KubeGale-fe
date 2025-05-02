@@ -26,9 +26,10 @@
   gap: 10px;
 }
 .search-form {
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f8f8;
+  border-radius: 4px;
 }
 :deep(.el-button--primary.is-link) {
   color: #409eff;
@@ -66,9 +67,23 @@
 }
 
 .pagination-container {
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
+}
+
+.empty-data {
+  margin: 40px 0;
+}
+
+/* 为按钮图标添加右侧间距 */
+.el-button .el-icon {
+  margin-right: 4px;
+}
+
+/* 对于链接按钮特别处理 */
+.el-button--link .el-icon {
+  vertical-align: middle;
 }
 
 /* 响应式布局 */

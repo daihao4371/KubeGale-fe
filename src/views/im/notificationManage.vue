@@ -1,59 +1,68 @@
 <template>
   <div class="notification-manage">
-    <div class="search-bar">
-      <el-input
-        v-model="searchName"
-        placeholder="请输入通知名称搜索"
-        class="search-input"
-        :prefix-icon="Search"
-        clearable
-        @clear="handleReset"
-      />
-      <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
-      <el-button @click="handleReset">重置</el-button>
-    </div>
+    <el-card class="box-card">
+      <template #header>
+        <div class="card-header">
+          <span>通知管理</span>
+          <div class="header-buttons">
+            <el-button type="primary" :icon="Plus" @click="handleAddDingTalk">添加钉钉机器人</el-button>
+            <el-button type="primary" :icon="Plus" @click="handleAddFeishu">添加飞书机器人</el-button>
+          </div>
+        </div>
+      </template>
 
-    <div class="operation-bar">
-      <el-button type="primary" :icon="Plus" @click="handleAddDingTalk">添加钉钉机器人</el-button>
-      <el-button type="primary" :icon="Plus" @click="handleAddFeishu">添加飞书机器人</el-button>
-    </div>
+      <!-- 搜索栏 -->
+      <div class="search-form">
+        <el-input
+          v-model="searchName"
+          placeholder="请输入通知名称搜索"
+          class="search-input"
+          :prefix-icon="Search"
+          clearable
+          @clear="handleReset"
+          style="width: 300px; margin-right: 10px;"
+        />
+        <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
+        <el-button :icon="RefreshRight" @click="handleReset">重置</el-button>
+      </div>
 
-    <el-table
-      v-loading="loading"
-      :data="tableData"
-      style="width: 100%"
-      border
-    >
-      <el-table-column prop="name" label="名称" />
-      <el-table-column prop="type" label="类型">
-        <template #default="{ row }">
-          <el-tag :type="row.type === 'dingtalk' ? 'success' : 'warning'">
-            {{ row.type === 'dingtalk' ? '钉钉' : '飞书' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="notificationPolicy" label="通知策略" />
-      <el-table-column prop="robotURL" label="Webhook地址" show-overflow-tooltip />
-      <el-table-column prop="createdAt" label="创建时间" width="180" />
-      <el-table-column label="操作" width="150" fixed="right">
-        <template #default="{ row }">
-          <el-button :icon="Edit" link type="primary" @click="handleEdit(row)">编辑</el-button>
-          <el-button :icon="Delete" link type="danger" @click="handleDelete(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+      <el-table
+        v-loading="loading"
+        :data="tableData"
+        style="width: 100%"
+        border
+      >
+        <el-table-column prop="name" label="名称" min-width="120" />
+        <el-table-column prop="type" label="类型" width="100">
+          <template #default="{ row }">
+            <el-tag :type="row.type === 'dingtalk' ? 'success' : 'warning'">
+              {{ row.type === 'dingtalk' ? '钉钉' : '飞书' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="notificationPolicy" label="通知策略" min-width="120" />
+        <el-table-column prop="robotURL" label="Webhook地址" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="createdAt" label="创建时间" width="180" />
+        <el-table-column label="操作" width="150" fixed="right">
+          <template #default="{ row }">
+            <el-button :icon="Edit" link type="primary" @click="handleEdit(row)">编辑</el-button>
+            <el-button :icon="Delete" link type="danger" @click="handleDelete(row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <div class="pagination-container">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        :total="total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
-    </div>
+      <div class="pagination-container">
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
+    </el-card>
 
     <!-- 钉钉机器人对话框 -->
     <el-dialog
@@ -116,13 +125,11 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dingTalkDialogVisible = false">取消</el-button>
-          <el-button
-            type="primary"
-            :loading="formLoading"
-            @click="submitDingTalkForm(dingTalkFormRef)"
-          >
-            确定
+          <el-button @click="dingTalkDialogVisible = false">
+            <el-icon><Close /></el-icon>取消
+          </el-button>
+          <el-button type="primary" :loading="formLoading" @click="submitDingTalkForm(dingTalkFormRef)">
+            <el-icon><Check /></el-icon>确定
           </el-button>
         </span>
       </template>
@@ -182,13 +189,11 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="feishuDialogVisible = false">取消</el-button>
-          <el-button
-            type="primary"
-            :loading="formLoading"
-            @click="submitFeishuForm(feishuFormRef)"
-          >
-            确定
+          <el-button @click="feishuDialogVisible = false">
+            <el-icon><Close /></el-icon>取消
+          </el-button>
+          <el-button type="primary" :loading="formLoading" @click="submitFeishuForm(feishuFormRef)">
+            <el-icon><Check /></el-icon>确定
           </el-button>
         </span>
       </template>
@@ -198,8 +203,16 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Edit, Delete, Search, Plus } from '@element-plus/icons-vue'
 import type { FormInstance } from 'element-plus'
+import { 
+  Plus, 
+  Edit, 
+  Delete, 
+  Search, 
+  RefreshRight,
+  Check,
+  Close
+} from '@element-plus/icons-vue'
 import {
   searchName,
   handleSearch,
@@ -230,5 +243,5 @@ const dingTalkFormRef = ref<FormInstance>()
 const feishuFormRef = ref<FormInstance>()
 </script>
 
-<style src="./notificationManage.css"></style>
+<style src="./notificationManage.css" scoped></style>
 
