@@ -52,11 +52,11 @@ export const updateFeiShu = (data: UpdateNotificationParams) => {
 }
 
 // 删除通知配置
-export const deleteNotification = (data: DeleteNotificationParams) => {
+export const deleteNotification = (params: DeleteNotificationParams) => {
   return request<ApiResponse>({
     url: '/notification/deleteNotification',
     method: 'delete',
-    data
+    params
   })
 }
 

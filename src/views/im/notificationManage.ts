@@ -99,7 +99,10 @@ const handleDelete = async (row: NotificationItem) => {
       type: 'warning',
     })
     
-    const response = await deleteNotification({ id: row.id })
+    const response = await deleteNotification({ 
+      id: row.id,
+      type: row.type as 'dingtalk' | 'feishu'
+    })
     if (response.data?.code === 0) {
       ElMessage.success('删除成功')
       handleSearch()

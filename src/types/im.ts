@@ -54,6 +54,7 @@ export interface UpdateNotificationParams {
 // 删除通知请求参数
 export interface DeleteNotificationParams {
   id: number
+  type: 'dingtalk' | 'feishu'
 }
 
 // 测试通知请求参数
