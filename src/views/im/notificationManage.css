@@ -42,3 +42,40 @@
 :deep(.el-button--danger.is-link:hover) {
   color: #ff9999;
 }
+
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 300px;
+}
+
+.operation-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* 响应式布局 */
+@media screen and (max-width: 768px) {
+  .search-bar {
+    flex-direction: column;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .operation-bar {
+    flex-direction: column;
+  }
+}

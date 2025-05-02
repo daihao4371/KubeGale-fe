@@ -1,64 +1,108 @@
 <template>
   <div class="notification-manage">
-    <el-card class="box-card">
-      <template #header>
-        <div class="card-header">
-          <span>通知管理</span>
-          <div class="header-buttons">
-            <el-button type="primary" @click="handleAddDingTalk">
-              <el-icon><Plus /></el-icon>添加钉钉通知
-            </el-button>
-            <el-button type="success" @click="handleAddFeishu">
-              <el-icon><Bell /></el-icon>添加飞书通知
-            </el-button>
-          </div>
-        </div>
-      </template>
-      <!-- 搜索栏 -->
-      <el-form :inline="true" class="search-form" @submit.prevent>
-        <el-form-item label="名称">
-          <el-input v-model="searchName" placeholder="请输入名称" clearable @keyup.enter="handleSearch" />
+    <div class="search-bar">
+      <el-input
+        v-model="searchName"
+        placeholder="请输入通知名称搜索"
+        class="search-input"
+        :prefix-icon="Search"
+        clearable
+        @clear="handleReset"
+      />
+      <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
+      <el-button @click="handleReset">重置</el-button>
+    </div>
+
+    <div class="operation-bar">
+      <el-button type="primary" :icon="Plus" @click="handleAddDingTalk">添加钉钉机器人</el-button>
+      <el-button type="primary" :icon="Plus" @click="handleAddFeishu">添加飞书机器人</el-button>
+    </div>
+
+    <el-table
+      v-loading="loading"
+      :data="filteredData"
+      style="width: 100%"
+      border
+    >
+      <el-table-column prop="name" label="名称" />
+      <el-table-column prop="type" label="类型">
+        <template #default="{ row }">
+          <el-tag :type="row.type === 'dingtalk' ? 'success' : 'warning'">
+            {{ row.type === 'dingtalk' ? '钉钉' : '飞书' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="notification_policy" label="通知策略" />
+      <el-table-column prop="send_daily_stats" label="每日统计" width="100">
+        <template #default="{ row }">
+          <el-tag :type="row.send_daily_stats ? 'success' : 'info'">
+            {{ row.send_daily_stats ? '是' : '否' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="robot_url" label="Webhook地址" show-overflow-tooltip />
+      <el-table-column prop="created_at" label="创建时间" width="180" />
+      <el-table-column label="操作" width="150" fixed="right">
+        <template #default="{ row }">
+          <el-button :icon="Edit" link type="primary" @click="handleEdit(row)">编辑</el-button>
+          <el-button :icon="Delete" link type="danger" @click="handleDelete(row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- 钉钉机器人对话框 -->
+    <el-dialog
+      v-model="dingTalkDialogVisible"
+      title="添加钉钉机器人"
+      width="600px"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        ref="dingTalkFormRef"
+        :model="dingTalkForm"
+        :rules="dingTalkFormRules"
+        label-width="120px"
+      >
+        <el-form-item label="名称" prop="name">
+          <el-input v-model="dingTalkForm.name" placeholder="请输入机器人名称" />
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">
-            <el-icon><Search /></el-icon>搜索
-          </el-button>
-          <el-button @click="handleReset">
-            <el-icon><RefreshRight /></el-icon>重置
-          </el-button>
+        <el-form-item label="通知策略" prop="notification_policy">
+          <el-select v-model="dingTalkForm.notification_policy" placeholder="请选择通知策略">
+            <el-option label="所有通知" value="all" />
+            <el-option label="仅重要通知" value="important" />
+            <el-option label="仅紧急通知" value="urgent" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="每日统计" prop="send_daily_stats">
+          <el-switch v-model="dingTalkForm.send_daily_stats" />
+        </el-form-item>
+        <el-form-item label="Webhook地址" prop="robot_url">
+          <el-input v-model="dingTalkForm.robot_url" placeholder="请输入钉钉机器人的Webhook地址" />
+        </el-form-item>
+        <el-form-item label="签名密钥" prop="signature_key">
+          <el-input v-model="dingTalkForm.signature_key" placeholder="请输入签名密钥（可选）" />
         </el-form-item>
       </el-form>
-      <el-table :data="filteredData" style="width: 100%;" height="100%" border empty-text="暂无数据">
-        <el-table-column prop="name" label="名称" min-width="180" />
-        <el-table-column prop="address" label="地址" min-width="300" />
-        <el-table-column prop="type" label="类型" min-width="120" />
-        <el-table-column prop="strategy" label="通知策略" min-width="180" />
-        <el-table-column prop="createTime" label="创建时间" min-width="180" />
-        <el-table-column label="操作" min-width="160" fixed="right">
-          <template #default="scope">
-            <el-button
-              type="primary"
-              link
-              @click="handleEdit(scope.row)"
-            >
-              <el-icon><Edit /></el-icon>编辑
-            </el-button>
-            <el-button
-              type="danger"
-              link
-              @click="handleDelete(scope.row)"
-            >
-              <el-icon><Delete /></el-icon>删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dingTalkDialogVisible = false">取消</el-button>
+          <el-button
+            type="primary"
+            :loading="formLoading"
+            @click="submitDingTalkForm(dingTalkFormRef)"
+          >
+            确定
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Edit, Delete, Search, RefreshRight, Plus, Bell } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+import { Edit, Delete, Search, Plus } from '@element-plus/icons-vue'
+import type { FormInstance } from 'element-plus'
 import {
   searchName,
   handleSearch,
@@ -67,8 +111,16 @@ import {
   handleEdit,
   handleDelete,
   handleAddDingTalk,
-  handleAddFeishu
+  handleAddFeishu,
+  dingTalkDialogVisible,
+  dingTalkForm,
+  dingTalkFormRules,
+  formLoading,
+  submitDingTalkForm,
+  loading
 } from './notificationManage'
+
+const dingTalkFormRef = ref<FormInstance>()
 </script>
 
 <style src="./notificationManage.css"></style>

@@ -1,8 +1,23 @@
-import request from '@/api/request'
+import request from '@/utils/request'
+import type {
+  ApiResponse,
+  CreateDingTalkParams,
+  CreateFeiShuParams,
+  UpdateNotificationParams,
+  DeleteNotificationParams,
+  TestNotificationParams,
+  CardContentParams,
+  GetNotificationListParams,
+  GetNotificationDetailParams,
+  NotificationListResponse,
+  CreateUpdateResponse,
+  DingTalkCardContent,
+  NotificationItem
+} from '@/types/im'
 
 // 创建钉钉通知
-export const createDingTalk = (data: any) => {
-  return request({
+export const createDingTalk = (data: CreateDingTalkParams) => {
+  return request<ApiResponse<CreateUpdateResponse>>({
     url: '/notification/createDingTalk',
     method: 'post',
     data
@@ -10,8 +25,8 @@ export const createDingTalk = (data: any) => {
 }
 
 // 创建飞书通知
-export const createFeiShu = (data: any) => {
-  return request({
+export const createFeiShu = (data: CreateFeiShuParams) => {
+  return request<ApiResponse<CreateUpdateResponse>>({
     url: '/notification/createFeiShu',
     method: 'post',
     data
@@ -19,8 +34,8 @@ export const createFeiShu = (data: any) => {
 }
 
 // 更新钉钉通知
-export const updateDingTalk = (data: any) => {
-  return request({
+export const updateDingTalk = (data: UpdateNotificationParams) => {
+  return request<ApiResponse<CreateUpdateResponse>>({
     url: '/notification/updateDingTalk',
     method: 'put',
     data
@@ -28,8 +43,8 @@ export const updateDingTalk = (data: any) => {
 }
 
 // 更新飞书通知
-export const updateFeiShu = (data: any) => {
-  return request({
+export const updateFeiShu = (data: UpdateNotificationParams) => {
+  return request<ApiResponse<CreateUpdateResponse>>({
     url: '/notification/updateFeiShu',
     method: 'put',
     data
@@ -37,8 +52,8 @@ export const updateFeiShu = (data: any) => {
 }
 
 // 删除通知配置
-export const deleteNotification = (data: any) => {
-  return request({
+export const deleteNotification = (data: DeleteNotificationParams) => {
+  return request<ApiResponse>({
     url: '/notification/deleteNotification',
     method: 'delete',
     data
@@ -46,8 +61,8 @@ export const deleteNotification = (data: any) => {
 }
 
 // 测试通知发送
-export const testNotification = (data: any) => {
-  return request({
+export const testNotification = (data: TestNotificationParams) => {
+  return request<ApiResponse>({
     url: '/notification/testNotification',
     method: 'post',
     data
@@ -55,8 +70,8 @@ export const testNotification = (data: any) => {
 }
 
 // 创建卡片内容
-export const createCardContent = (data: any) => {
-  return request({
+export const createCardContent = (data: CardContentParams) => {
+  return request<ApiResponse<CreateUpdateResponse>>({
     url: '/notification/createCardContent',
     method: 'post',
     data
@@ -64,8 +79,8 @@ export const createCardContent = (data: any) => {
 }
 
 // 更新卡片内容
-export const updateCardContent = (data: any) => {
-  return request({
+export const updateCardContent = (data: CardContentParams) => {
+  return request<ApiResponse<CreateUpdateResponse>>({
     url: '/notification/updateCardContent',
     method: 'put',
     data
@@ -73,8 +88,8 @@ export const updateCardContent = (data: any) => {
 }
 
 // 获取通知配置列表
-export const getNotificationList = (data: any) => {
-  return request({
+export const getNotificationList = (data: GetNotificationListParams) => {
+  return request<ApiResponse<NotificationListResponse>>({
     url: '/notification/getNotificationList',
     method: 'post',
     data
@@ -82,8 +97,8 @@ export const getNotificationList = (data: any) => {
 }
 
 // 根据ID获取通知配置
-export const getNotificationById = (params: any) => {
-  return request({
+export const getNotificationById = (params: GetNotificationDetailParams) => {
+  return request<ApiResponse<NotificationItem>>({
     url: '/notification/getNotificationById',
     method: 'get',
     params
@@ -91,8 +106,8 @@ export const getNotificationById = (params: any) => {
 }
 
 // 根据通知ID获取卡片内容
-export const getCardContent = (params: any) => {
-  return request({
+export const getCardContent = (params: GetNotificationDetailParams) => {
+  return request<ApiResponse<DingTalkCardContent>>({
     url: '/notification/getCardContent',
     method: 'get',
     params
