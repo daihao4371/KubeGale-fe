@@ -42,7 +42,11 @@
         </el-table-column>
         <el-table-column prop="notificationPolicy" label="通知策略" min-width="120" />
         <el-table-column prop="robotURL" label="Webhook地址" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="createdAt" label="创建时间" width="180" />
+        <el-table-column prop="createdAt" label="创建时间" width="180">
+          <template #default="{ row }">
+            {{ formatDate(row.createdAt) }}
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
             <el-button :icon="Edit" link type="primary" @click="handleEdit(row)">编辑</el-button>
@@ -204,6 +208,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { FormInstance } from 'element-plus'
+import dayjs from 'dayjs'
 import { 
   Plus, 
   Edit, 
@@ -241,6 +246,11 @@ import {
 
 const dingTalkFormRef = ref<FormInstance>()
 const feishuFormRef = ref<FormInstance>()
+
+// 格式化日期
+const formatDate = (date: string) => {
+  return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
+}
 </script>
 
 <style src="./notificationManage.css" scoped></style>
