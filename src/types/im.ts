@@ -25,19 +25,16 @@ export interface FeiShuCardContent {
 // 创建钉钉通知请求参数
 export interface CreateDingTalkParams {
   name: string
-  notification_policy: string
-  send_daily_stats: boolean
-  signature_key: string
-  robot_url: string
+  notificationPolicy: string
+  robotURL: string
   card_content: DingTalkCardContent
 }
 
 // 创建飞书通知请求参数
 export interface CreateFeiShuParams {
   name: string
-  notification_policy: string
-  send_daily_stats: boolean
-  robot_url: string
+  notificationPolicy: string
+  robotURL: string
   card_content: FeiShuCardContent
 }
 
@@ -74,9 +71,9 @@ export interface CardContentParams {
 // 获取通知列表请求参数
 export interface GetNotificationListParams {
   page?: number
-  page_size?: number
-  name?: string
-  type?: string
+  pageSize?: number
+  orderKey?: string
+  desc?: boolean
 }
 
 // 获取通知详情请求参数
@@ -89,20 +86,17 @@ export interface NotificationItem {
   id: number
   name: string
   type: string
-  notification_policy: string
-  send_daily_stats: boolean
-  created_at: string
-  updated_at: string
-  robot_url?: string
-  signature_key?: string
-  app_id?: string
-  app_secret?: string
+  notificationPolicy: string
+  robotURL: string
+  createdAt: string
 }
 
 // 通知列表响应
 export interface NotificationListResponse {
   total: number
-  items: NotificationItem[]
+  list: NotificationItem[]
+  page: number
+  pageSize: number
 }
 
 // 创建/更新响应

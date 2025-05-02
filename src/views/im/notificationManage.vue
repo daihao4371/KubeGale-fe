@@ -20,7 +20,7 @@
 
     <el-table
       v-loading="loading"
-      :data="filteredData"
+      :data="tableData"
       style="width: 100%"
       border
     >
@@ -32,16 +32,9 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="notification_policy" label="通知策略" />
-      <el-table-column prop="send_daily_stats" label="每日统计" width="100">
-        <template #default="{ row }">
-          <el-tag :type="row.send_daily_stats ? 'success' : 'info'">
-            {{ row.send_daily_stats ? '是' : '否' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="robot_url" label="Webhook地址" show-overflow-tooltip />
-      <el-table-column prop="created_at" label="创建时间" width="180" />
+      <el-table-column prop="notificationPolicy" label="通知策略" />
+      <el-table-column prop="robotURL" label="Webhook地址" show-overflow-tooltip />
+      <el-table-column prop="createdAt" label="创建时间" width="180" />
       <el-table-column label="操作" width="150" fixed="right">
         <template #default="{ row }">
           <el-button :icon="Edit" link type="primary" @click="handleEdit(row)">编辑</el-button>
@@ -49,6 +42,18 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <div class="pagination-container">
+      <el-pagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        :total="total"
+        layout="total, sizes, prev, pager, next, jumper"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
 
     <!-- 钉钉机器人对话框 -->
     <el-dialog
@@ -66,21 +71,47 @@
         <el-form-item label="名称" prop="name">
           <el-input v-model="dingTalkForm.name" placeholder="请输入机器人名称" />
         </el-form-item>
-        <el-form-item label="通知策略" prop="notification_policy">
-          <el-select v-model="dingTalkForm.notification_policy" placeholder="请选择通知策略">
+        <el-form-item label="通知策略" prop="notificationPolicy">
+          <el-select v-model="dingTalkForm.notificationPolicy" placeholder="请选择通知策略">
             <el-option label="所有通知" value="all" />
             <el-option label="仅重要通知" value="important" />
             <el-option label="仅紧急通知" value="urgent" />
           </el-select>
         </el-form-item>
-        <el-form-item label="每日统计" prop="send_daily_stats">
-          <el-switch v-model="dingTalkForm.send_daily_stats" />
+        <el-form-item label="Webhook地址" prop="robotURL">
+          <el-input v-model="dingTalkForm.robotURL" placeholder="请输入钉钉机器人的Webhook地址" />
         </el-form-item>
-        <el-form-item label="Webhook地址" prop="robot_url">
-          <el-input v-model="dingTalkForm.robot_url" placeholder="请输入钉钉机器人的Webhook地址" />
+        <el-divider>卡片内容配置</el-divider>
+        <el-form-item label="告警级别" prop="card_content.alert_level">
+          <el-select v-model="dingTalkForm.card_content.alert_level" placeholder="请选择告警级别">
+            <el-option label="严重" value="Critical" />
+            <el-option label="警告" value="Warning" />
+            <el-option label="信息" value="Info" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="签名密钥" prop="signature_key">
-          <el-input v-model="dingTalkForm.signature_key" placeholder="请输入签名密钥（可选）" />
+        <el-form-item label="告警名称" prop="card_content.alert_name">
+          <el-input v-model="dingTalkForm.card_content.alert_name" placeholder="请输入告警名称" />
+        </el-form-item>
+        <el-form-item label="告警内容" prop="card_content.alert_content">
+          <el-input
+            v-model="dingTalkForm.card_content.alert_content"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入告警内容"
+          />
+        </el-form-item>
+        <el-form-item label="通知用户" prop="card_content.notified_users">
+          <el-input v-model="dingTalkForm.card_content.notified_users" placeholder="请输入通知用户，如: @王五 @赵六" />
+        </el-form-item>
+        <el-form-item label="处理人" prop="card_content.alert_handler">
+          <el-input v-model="dingTalkForm.card_content.alert_handler" placeholder="请输入处理人" />
+        </el-form-item>
+        <el-form-item label="功能开关">
+          <el-space>
+            <el-checkbox v-model="dingTalkForm.card_content.claim_alert">认领告警</el-checkbox>
+            <el-checkbox v-model="dingTalkForm.card_content.resolve_alert">解决告警</el-checkbox>
+            <el-checkbox v-model="dingTalkForm.card_content.mute_alert">静默告警</el-checkbox>
+          </el-space>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -113,18 +144,15 @@
         <el-form-item label="名称" prop="name">
           <el-input v-model="feishuForm.name" placeholder="请输入机器人名称" />
         </el-form-item>
-        <el-form-item label="通知策略" prop="notification_policy">
-          <el-select v-model="feishuForm.notification_policy" placeholder="请选择通知策略">
+        <el-form-item label="通知策略" prop="notificationPolicy">
+          <el-select v-model="feishuForm.notificationPolicy" placeholder="请选择通知策略">
             <el-option label="所有通知" value="all" />
             <el-option label="仅重要通知" value="important" />
             <el-option label="仅紧急通知" value="urgent" />
           </el-select>
         </el-form-item>
-        <el-form-item label="每日统计" prop="send_daily_stats">
-          <el-switch v-model="feishuForm.send_daily_stats" />
-        </el-form-item>
-        <el-form-item label="Webhook地址" prop="robot_url">
-          <el-input v-model="feishuForm.robot_url" placeholder="请输入飞书机器人的Webhook地址" />
+        <el-form-item label="Webhook地址" prop="robotURL">
+          <el-input v-model="feishuForm.robotURL" placeholder="请输入飞书机器人的Webhook地址" />
         </el-form-item>
         <el-divider>卡片内容配置</el-divider>
         <el-form-item label="告警级别" prop="card_content.alert_level">
@@ -176,7 +204,7 @@ import {
   searchName,
   handleSearch,
   handleReset,
-  filteredData,
+  tableData,
   handleEdit,
   handleDelete,
   handleAddDingTalk,
@@ -190,7 +218,12 @@ import {
   feishuDialogVisible,
   feishuForm,
   feishuFormRules,
-  submitFeishuForm
+  submitFeishuForm,
+  currentPage,
+  pageSize,
+  total,
+  handleSizeChange,
+  handleCurrentChange
 } from './notificationManage'
 
 const dingTalkFormRef = ref<FormInstance>()

@@ -5,18 +5,19 @@ import { getNotificationList, createDingTalk, deleteNotification, createFeiShu }
 import type { NotificationItem, CreateDingTalkParams, CreateFeiShuParams, FeiShuCardContent } from '@/types/im'
 
 const searchName = ref('')
-const filteredData = ref<NotificationItem[]>([])
+const tableData = ref<NotificationItem[]>([])
 const loading = ref(false)
+const currentPage = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
 const dingTalkDialogVisible = ref(false)
 const formLoading = ref(false)
 const feishuDialogVisible = ref(false)
 
 const defaultDingTalkForm: CreateDingTalkParams = {
   name: '',
-  notification_policy: 'all',
-  send_daily_stats: true,
-  signature_key: '',
-  robot_url: '',
+  notificationPolicy: 'all',
+  robotURL: '',
   card_content: {
     alert_level: 'warning',
     alert_name: '',
@@ -36,9 +37,8 @@ const dingTalkForm = ref<CreateDingTalkParams>({ ...defaultDingTalkForm })
 
 const feishuForm = ref<CreateFeiShuParams>({
   name: '',
-  notification_policy: 'all',
-  send_daily_stats: true,
-  robot_url: '',
+  notificationPolicy: 'all',
+  robotURL: '',
   card_content: {
     alert_level: 'Critical',
     alert_name: '',
@@ -51,11 +51,17 @@ const feishuForm = ref<CreateFeiShuParams>({
 const handleSearch = async () => {
   loading.value = true
   try {
-    const response = await getNotificationList({})
-    if (response.data?.code === 0 && response.data.data.items) {
-      filteredData.value = response.data.data.items.filter(item =>
-        item.name.toLowerCase().includes(searchName.value.toLowerCase())
-      )
+    const response = await getNotificationList({
+      page: currentPage.value,
+      pageSize: pageSize.value,
+      orderKey: 'created_at',
+      desc: true
+    })
+    if (response.data?.code === 0 && response.data.data) {
+      tableData.value = response.data.data.list
+      total.value = response.data.data.total
+      currentPage.value = response.data.data.page
+      pageSize.value = response.data.data.pageSize
     }
   } catch (error) {
     console.error('获取通知列表失败:', error)
@@ -65,8 +71,19 @@ const handleSearch = async () => {
   }
 }
 
+const handleSizeChange = (val: number) => {
+  pageSize.value = val
+  handleSearch()
+}
+
+const handleCurrentChange = (val: number) => {
+  currentPage.value = val
+  handleSearch()
+}
+
 const handleReset = () => {
   searchName.value = ''
+  currentPage.value = 1
   handleSearch()
 }
 
@@ -102,9 +119,27 @@ const dingTalkFormRules: FormRules = {
     { required: true, message: '请输入名称', trigger: 'blur' },
     { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
   ],
-  robot_url: [
+  notificationPolicy: [
+    { required: true, message: '请选择通知策略', trigger: 'change' }
+  ],
+  robotURL: [
     { required: true, message: '请输入机器人 Webhook 地址', trigger: 'blur' },
     { type: 'url', message: '请输入有效的URL地址', trigger: 'blur' }
+  ],
+  'card_content.alert_level': [
+    { required: true, message: '请选择告警级别', trigger: 'change' }
+  ],
+  'card_content.alert_name': [
+    { required: true, message: '请输入告警名称', trigger: 'blur' }
+  ],
+  'card_content.alert_content': [
+    { required: true, message: '请输入告警内容', trigger: 'blur' }
+  ],
+  'card_content.notified_users': [
+    { required: true, message: '请输入通知用户', trigger: 'blur' }
+  ],
+  'card_content.alert_handler': [
+    { required: true, message: '请输入处理人', trigger: 'blur' }
   ]
 }
 
@@ -116,9 +151,8 @@ const handleAddDingTalk = () => {
 const handleAddFeishu = () => {
   feishuForm.value = {
     name: '',
-    notification_policy: 'all',
-    send_daily_stats: true,
-    robot_url: '',
+    notificationPolicy: 'all',
+    robotURL: '',
     card_content: {
       alert_level: 'Critical',
       alert_name: '',
@@ -161,7 +195,10 @@ const feishuFormRules: FormRules = {
     { required: true, message: '请输入名称', trigger: 'blur' },
     { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
   ],
-  robot_url: [
+  notificationPolicy: [
+    { required: true, message: '请选择通知策略', trigger: 'change' }
+  ],
+  robotURL: [
     { required: true, message: '请输入机器人 Webhook 地址', trigger: 'blur' },
     { type: 'url', message: '请输入有效的URL地址', trigger: 'blur' }
   ],
@@ -215,7 +252,7 @@ export {
   searchName,
   handleSearch,
   handleReset,
-  filteredData,
+  tableData,
   handleEdit,
   handleDelete,
   handleAddDingTalk,
@@ -229,5 +266,10 @@ export {
   feishuDialogVisible,
   feishuForm,
   feishuFormRules,
-  submitFeishuForm
+  submitFeishuForm,
+  currentPage,
+  pageSize,
+  total,
+  handleSizeChange,
+  handleCurrentChange
 }
