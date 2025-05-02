@@ -1,14 +1,15 @@
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
-import { getNotificationList, createDingTalk, deleteNotification } from '@/api/im/notification'
-import type { NotificationItem, CreateDingTalkParams } from '@/types/im'
+import { getNotificationList, createDingTalk, deleteNotification, createFeiShu } from '@/api/im/notification'
+import type { NotificationItem, CreateDingTalkParams, CreateFeiShuParams, FeiShuCardContent } from '@/types/im'
 
 const searchName = ref('')
 const filteredData = ref<NotificationItem[]>([])
 const loading = ref(false)
 const dingTalkDialogVisible = ref(false)
 const formLoading = ref(false)
+const feishuDialogVisible = ref(false)
 
 const defaultDingTalkForm: CreateDingTalkParams = {
   name: '',
@@ -32,6 +33,20 @@ const defaultDingTalkForm: CreateDingTalkParams = {
 }
 
 const dingTalkForm = ref<CreateDingTalkParams>({ ...defaultDingTalkForm })
+
+const feishuForm = ref<CreateFeiShuParams>({
+  name: '',
+  notification_policy: 'all',
+  send_daily_stats: true,
+  robot_url: '',
+  card_content: {
+    alert_level: 'Critical',
+    alert_name: '',
+    alert_content: '',
+    notified_users: '',
+    alert_handler: ''
+  }
+})
 
 const handleSearch = async () => {
   loading.value = true
@@ -99,7 +114,20 @@ const handleAddDingTalk = () => {
 }
 
 const handleAddFeishu = () => {
-  console.log('添加飞书机器人')
+  feishuForm.value = {
+    name: '',
+    notification_policy: 'all',
+    send_daily_stats: true,
+    robot_url: '',
+    card_content: {
+      alert_level: 'Critical',
+      alert_name: '',
+      alert_content: '',
+      notified_users: '',
+      alert_handler: ''
+    }
+  }
+  feishuDialogVisible.value = true
 }
 
 const submitDingTalkForm = async (formEl: FormInstance | undefined) => {
@@ -113,6 +141,58 @@ const submitDingTalkForm = async (formEl: FormInstance | undefined) => {
         if (response.data?.code === 0) {
           ElMessage.success('添加成功')
           dingTalkDialogVisible.value = false
+          handleSearch()
+          formEl.resetFields()
+        } else {
+          ElMessage.error(response.data?.msg || '添加失败')
+        }
+      } catch (error) {
+        console.error('添加失败:', error)
+        ElMessage.error('添加失败')
+      } finally {
+        formLoading.value = false
+      }
+    }
+  })
+}
+
+const feishuFormRules: FormRules = {
+  name: [
+    { required: true, message: '请输入名称', trigger: 'blur' },
+    { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
+  ],
+  robot_url: [
+    { required: true, message: '请输入机器人 Webhook 地址', trigger: 'blur' },
+    { type: 'url', message: '请输入有效的URL地址', trigger: 'blur' }
+  ],
+  'card_content.alert_level': [
+    { required: true, message: '请选择告警级别', trigger: 'change' }
+  ],
+  'card_content.alert_name': [
+    { required: true, message: '请输入告警名称', trigger: 'blur' }
+  ],
+  'card_content.alert_content': [
+    { required: true, message: '请输入告警内容', trigger: 'blur' }
+  ],
+  'card_content.notified_users': [
+    { required: true, message: '请输入通知用户', trigger: 'blur' }
+  ],
+  'card_content.alert_handler': [
+    { required: true, message: '请输入处理人', trigger: 'blur' }
+  ]
+}
+
+const submitFeishuForm = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  
+  await formEl.validate(async (valid) => {
+    if (valid) {
+      formLoading.value = true
+      try {
+        const response = await createFeiShu(feishuForm.value)
+        if (response.data?.code === 0) {
+          ElMessage.success('添加成功')
+          feishuDialogVisible.value = false
           handleSearch()
           formEl.resetFields()
         } else {
@@ -145,5 +225,9 @@ export {
   dingTalkFormRules,
   formLoading,
   submitDingTalkForm,
-  loading
+  loading,
+  feishuDialogVisible,
+  feishuForm,
+  feishuFormRules,
+  submitFeishuForm
 }

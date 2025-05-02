@@ -13,6 +13,15 @@ export interface DingTalkCardContent {
   unresolved_alert: boolean
 }
 
+// 飞书通知卡片内容
+export interface FeiShuCardContent {
+  alert_level: string
+  alert_name: string
+  alert_content: string
+  notified_users: string
+  alert_handler: string
+}
+
 // 创建钉钉通知请求参数
 export interface CreateDingTalkParams {
   name: string
@@ -28,9 +37,8 @@ export interface CreateFeiShuParams {
   name: string
   notification_policy: string
   send_daily_stats: boolean
-  app_id: string
-  app_secret: string
-  card_content: DingTalkCardContent  // 暂时复用钉钉的卡片内容结构，如有不同可以单独定义
+  robot_url: string
+  card_content: FeiShuCardContent
 }
 
 // 更新通知请求参数
