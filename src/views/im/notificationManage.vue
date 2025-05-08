@@ -31,27 +31,28 @@
         style="width: 100%"
         border
       >
-        <el-table-column prop="name" label="名称" min-width="120" />
-        <el-table-column prop="type" label="类型" width="100">
+        <el-table-column prop="name" label="名称" />
+        <el-table-column prop="type" label="类型" width="80">
           <template #default="{ row }">
             <el-tag type="warning">
               {{ row.type === 'feishu' ? '飞书' : row.type }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="notification_policy" label="通知策略" min-width="120" />
-        <el-table-column prop="robot_url" label="Webhook地址" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="notification_policy" label="通知策略" width="200" />
+        <el-table-column prop="robot_url" label="Webhook地址" width="300" show-overflow-tooltip />
         <el-table-column prop="created_at" label="创建时间" width="180">
           <template #default="{ row }">
             {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="280" fixed="right">
+        <el-table-column label="操作" fixed="right" min-width="380">
           <template #default="{ row }">
-            <el-button :icon="View" link type="primary" @click="handleView(row)">详情</el-button>
-            <el-button :icon="Edit" link type="primary" @click="handleEdit(row)">编辑</el-button>
-            <el-button :icon="Delete" link type="danger" @click="handleDelete(row)">删除</el-button>
-            <el-button :icon="Search" link type="success" @click="handleTest(row)">测试</el-button>
+            <el-button :icon="View" size="small" link type="primary" @click="handleView(row)">详情</el-button>
+            <el-button :icon="Edit" size="small" link type="primary" @click="handleEdit(row)">编辑</el-button>
+            <el-button :icon="Delete" size="small" link type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button :icon="Search" size="small" link type="success" @click="handleTest(row)">测试</el-button>
+            <el-button :icon="Document" size="small" link type="info" @click="handleGetCardContent(row)">卡片内容</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -226,12 +227,47 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 卡片内容对话框 -->
+    <el-dialog
+      v-model="cardContentDialogVisible"
+      title="卡片内容"
+      width="600px"
+      :close-on-click-modal="false"
+    >
+      <template v-if="cardContentData">
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="告警级别">
+            <el-tag :type="cardContentData.alert_level === 'Critical' ? 'danger' : 'warning'">
+              {{ cardContentData.alert_level }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="告警名称">{{ cardContentData.alert_name }}</el-descriptions-item>
+          <el-descriptions-item label="通知策略">{{ cardContentData.notification_policy }}</el-descriptions-item>
+          <el-descriptions-item label="告警内容">{{ cardContentData.alert_content }}</el-descriptions-item>
+          <el-descriptions-item label="通知用户">{{ cardContentData.notified_users }}</el-descriptions-item>
+          <el-descriptions-item label="处理人">{{ cardContentData.alert_handler }}</el-descriptions-item>
+          <el-descriptions-item label="告警时间">{{ formatDate(cardContentData.alert_time) }}</el-descriptions-item>
+          <el-descriptions-item label="上次相似告警">{{ cardContentData.last_similar_alert }}</el-descriptions-item>
+          <el-descriptions-item label="状态">
+            <el-tag :type="cardContentData.unresolved_alert ? 'danger' : 'success'">
+              {{ cardContentData.unresolved_alert ? '未解决' : '已解决' }}
+            </el-tag>
+          </el-descriptions-item>
+        </el-descriptions>
+      </template>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="cardContentDialogVisible = false">关闭</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Plus, Search, RefreshRight, Edit, Delete, Close, Check, View } from '@element-plus/icons-vue'
+import { Plus, Search, RefreshRight, Edit, Delete, Close, Check, View, Document } from '@element-plus/icons-vue'
 import type { FormInstance } from 'element-plus'
 import dayjs from 'dayjs'
 import {
@@ -259,7 +295,10 @@ import {
   sendTestMessage,
   detailDialogVisible,
   detailData,
-  handleView
+  handleView,
+  handleGetCardContent,
+  cardContentDialogVisible,
+  cardContentData
 } from './notificationManage'
 
 const feishuFormRef = ref<FormInstance>()

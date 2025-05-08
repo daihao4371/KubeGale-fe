@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { getNotificationList, deleteNotification, createFeiShu, getNotificationById, getCardContent, testNotification, updateFeiShu } from '@/api/im/notification'
-import type { NotificationItem, CreateFeiShuParams, FeiShuCardContent, UpdateNotificationParams } from '@/types/im'
+import type { NotificationItem, CreateFeiShuParams, FeiShuCardContent, UpdateNotificationParams, NotificationConfig, NotificationCardContent } from '@/types/im'
 
 const searchName = ref('')
 const tableData = ref<NotificationItem[]>([])
@@ -300,8 +300,8 @@ const handleView = async (row: NotificationItem) => {
     const res = await getNotificationById({ id: row.id, type: 'feishu' });
     if (res.data?.code === 0 && res.data.data) {
       detailData.value = {
-        config: res.data.data.config,
-        cardContent: res.data.data.card_content
+        config: res.data.data.config || null,
+        cardContent: res.data.data.card_content || null
       }
       detailDialogVisible.value = true
     } else {
@@ -310,6 +310,26 @@ const handleView = async (row: NotificationItem) => {
   } catch (error) {
     console.error('获取通知详情失败:', error)
     ElMessage.error('获取通知详情失败')
+  }
+}
+
+// 卡片内容对话框相关变量
+const cardContentDialogVisible = ref(false)
+const cardContentData = ref<NotificationCardContent | null>(null)
+
+// 处理获取卡片内容
+const handleGetCardContent = async (row: NotificationItem) => {
+  try {
+    const res = await getCardContent({ notification_id: row.id });
+    if (res.data?.code === 0 && res.data.data) {
+      cardContentData.value = res.data.data
+      cardContentDialogVisible.value = true
+    } else {
+      ElMessage.error('获取卡片内容失败')
+    }
+  } catch (error) {
+    console.error('获取卡片内容失败:', error)
+    ElMessage.error('获取卡片内容失败')
   }
 }
 
@@ -338,5 +358,8 @@ export {
   sendTestMessage,
   detailDialogVisible,
   detailData,
-  handleView
+  handleView,
+  handleGetCardContent,
+  cardContentDialogVisible,
+  cardContentData
 }

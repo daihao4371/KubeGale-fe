@@ -11,7 +11,8 @@ import type {
   NotificationListResponse,
   CreateUpdateResponse,
   NotificationItem,
-  DingTalkCardContent
+  DingTalkCardContent,
+  NotificationCardContent
 } from '@/types/im'
 
 // 创建飞书通知
@@ -87,8 +88,8 @@ export const getNotificationById = (params: GetNotificationDetailParams) => {
 }
 
 // 根据通知ID获取卡片内容
-export const getCardContent = (params: GetNotificationDetailParams) => {
-  return request<ApiResponse<{ config: NotificationItem; card_content: DingTalkCardContent }>>({
+export const getCardContent = (params: { notification_id: number }) => {
+  return request<ApiResponse<NotificationCardContent>>({
     url: '/notification/getCardContent',
     method: 'get',
     params

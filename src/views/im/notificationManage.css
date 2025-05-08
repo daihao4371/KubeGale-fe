@@ -100,3 +100,10 @@
     flex-direction: column;
   }
 }
+
+.el-table .el-button {
+  margin-right: 6px;
+}
+.el-table .el-button:last-child {
+  margin-right: 0;
+}
