@@ -94,6 +94,9 @@
         <el-form-item label="Webhook地址" prop="robotURL">
           <el-input v-model="dingTalkForm.robotURL" placeholder="请输入钉钉机器人的Webhook地址" />
         </el-form-item>
+        <el-form-item label="签名密钥" prop="signatureKey">
+          <el-input v-model="dingTalkForm.signatureKey" placeholder="请输入签名密钥" />
+        </el-form-item>
         <el-divider>卡片内容配置</el-divider>
         <el-form-item label="告警级别" prop="card_content.alert_level">
           <el-select v-model="dingTalkForm.card_content.alert_level" placeholder="请选择告警级别">

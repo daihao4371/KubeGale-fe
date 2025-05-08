@@ -12,7 +12,8 @@ import type {
   NotificationListResponse,
   CreateUpdateResponse,
   DingTalkCardContent,
-  NotificationItem
+  NotificationItem,
+  UpdateDingTalkParams
 } from '@/types/im'
 
 // 创建钉钉通知
@@ -34,7 +35,7 @@ export const createFeiShu = (data: CreateFeiShuParams) => {
 }
 
 // 更新钉钉通知
-export const updateDingTalk = (data: UpdateNotificationParams) => {
+export const updateDingTalk = (data: UpdateDingTalkParams) => {
   return request<ApiResponse<CreateUpdateResponse>>({
     url: '/notification/updateDingTalk',
     method: 'put',
@@ -107,7 +108,7 @@ export const getNotificationById = (params: GetNotificationDetailParams) => {
 
 // 根据通知ID获取卡片内容
 export const getCardContent = (params: GetNotificationDetailParams) => {
-  return request<ApiResponse<DingTalkCardContent>>({
+  return request<ApiResponse<{ config: NotificationItem; card_content: DingTalkCardContent }>>({
     url: '/notification/getCardContent',
     method: 'get',
     params

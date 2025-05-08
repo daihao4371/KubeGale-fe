@@ -24,14 +24,17 @@ export interface FeiShuCardContent {
 
 // 创建钉钉通知请求参数
 export interface CreateDingTalkParams {
+  id?: number
   name: string
   notificationPolicy: string
   robotURL: string
+  signatureKey?: string
   card_content: DingTalkCardContent
 }
 
 // 创建飞书通知请求参数
 export interface CreateFeiShuParams {
+  id?: number
   name: string
   notificationPolicy: string
   robotURL: string
@@ -79,7 +82,8 @@ export interface GetNotificationListParams {
 
 // 获取通知详情请求参数
 export interface GetNotificationDetailParams {
-  id: number
+  id?: number
+  notification_id?: number
 }
 
 // 通知列表项
@@ -90,6 +94,21 @@ export interface NotificationItem {
   notificationPolicy: string
   robotURL: string
   createdAt: string
+  sendDailyStats?: boolean
+  signatureKey?: string
+  cardContent?: {
+    alertLevel: string
+    alertName: string
+    notificationPolicy: string
+    alertContent: string
+    notifiedUsers: string
+    lastSimilarAlert?: string
+    alertHandler: string
+    claimAlert: boolean
+    resolveAlert: boolean
+    muteAlert: boolean
+    unresolvedAlert: boolean
+  }
 }
 
 // 通知列表响应
@@ -110,4 +129,28 @@ export interface ApiResponse<T = Record<string, never>> {
   code: number
   data: T
   msg: string
+}
+
+// 更新钉钉通知请求参数
+export interface UpdateDingTalkParams {
+  id: number
+  name: string
+  notification_policy: string
+  send_daily_stats: boolean
+  signature_key: string
+  robot_url: string
+  type: 'dingtalk' | 'feishu'
+  card_content: {
+    alert_level: string
+    alert_name: string
+    notification_policy: string
+    alert_content: string
+    notified_users: string
+    last_similar_alert?: string
+    alert_handler: string
+    claim_alert: boolean
+    resolve_alert: boolean
+    mute_alert: boolean
+    unresolved_alert: boolean
+  }
 }
