@@ -107,10 +107,46 @@ export interface GetNotificationListParams {
   desc?: boolean
 }
 
+// 通知配置详情
+export interface NotificationConfig {
+  id: number
+  name: string
+  type: string
+  notification_policy: string
+  send_daily_stats: boolean
+  created_at: string
+  updated_at: string
+  robot_url: string
+}
+
+// 通知卡片内容
+export interface NotificationCardContent {
+  id: number
+  notification_id: number
+  alert_level: string
+  alert_name: string
+  notification_policy: string
+  alert_content: string
+  alert_time: string
+  notified_users: string
+  last_similar_alert: string
+  alert_handler: string
+  claim_alert: boolean
+  resolve_alert: boolean
+  mute_alert: boolean
+  unresolved_alert: boolean
+}
+
+// 通知详情响应
+export interface NotificationDetailResponse {
+  config: NotificationConfig
+  card_content: NotificationCardContent
+}
+
 // 获取通知详情请求参数
 export interface GetNotificationDetailParams {
-  id?: number
-  notification_id?: number
+  id: number
+  type: 'feishu'
 }
 
 // 通知列表项
@@ -121,21 +157,10 @@ export interface NotificationItem {
   notification_policy: string
   robot_url: string
   created_at: string
-  send_daily_stats?: boolean
-  signature_key?: string
-  card_content?: {
-    alert_level: string
-    alert_name: string
-    notification_policy: string
-    alert_content: string
-    notified_users: string
-    last_similar_alert?: string
-    alert_handler: string
-    claim_alert: boolean
-    resolve_alert: boolean
-    mute_alert: boolean
-    unresolved_alert: boolean
-  }
+  updated_at: string
+  send_daily_stats: boolean
+  config?: NotificationConfig
+  card_content?: NotificationCardContent
 }
 
 // 通知列表响应

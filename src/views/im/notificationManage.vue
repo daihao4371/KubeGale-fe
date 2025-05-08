@@ -46,8 +46,9 @@
             {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="220" fixed="right">
+        <el-table-column label="操作" width="280" fixed="right">
           <template #default="{ row }">
+            <el-button :icon="View" link type="primary" @click="handleView(row)">详情</el-button>
             <el-button :icon="Edit" link type="primary" @click="handleEdit(row)">编辑</el-button>
             <el-button :icon="Delete" link type="danger" @click="handleDelete(row)">删除</el-button>
             <el-button :icon="Search" link type="success" @click="handleTest(row)">测试</el-button>
@@ -173,12 +174,64 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 详情对话框 -->
+    <el-dialog
+      v-model="detailDialogVisible"
+      title="通知详情"
+      width="600px"
+      :close-on-click-modal="false"
+    >
+      <template v-if="detailData.config && detailData.cardContent">
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="名称">{{ detailData.config.name }}</el-descriptions-item>
+          <el-descriptions-item label="类型">
+            <el-tag type="warning">{{ detailData.config.type === 'feishu' ? '飞书' : detailData.config.type }}</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="通知策略">{{ detailData.config.notification_policy }}</el-descriptions-item>
+          <el-descriptions-item label="Webhook地址">{{ detailData.config.robot_url }}</el-descriptions-item>
+          <el-descriptions-item label="每日统计">
+            <el-tag :type="detailData.config.send_daily_stats ? 'success' : 'info'">
+              {{ detailData.config.send_daily_stats ? '是' : '否' }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="创建时间">{{ formatDate(detailData.config.created_at) }}</el-descriptions-item>
+          <el-descriptions-item label="更新时间">{{ formatDate(detailData.config.updated_at) }}</el-descriptions-item>
+        </el-descriptions>
+
+        <el-divider>卡片内容</el-divider>
+
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="告警级别">
+            <el-tag :type="detailData.cardContent.alert_level === 'Critical' ? 'danger' : 'warning'">
+              {{ detailData.cardContent.alert_level }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="告警名称">{{ detailData.cardContent.alert_name }}</el-descriptions-item>
+          <el-descriptions-item label="通知策略">{{ detailData.cardContent.notification_policy }}</el-descriptions-item>
+          <el-descriptions-item label="告警内容">{{ detailData.cardContent.alert_content }}</el-descriptions-item>
+          <el-descriptions-item label="通知用户">{{ detailData.cardContent.notified_users }}</el-descriptions-item>
+          <el-descriptions-item label="处理人">{{ detailData.cardContent.alert_handler }}</el-descriptions-item>
+          <el-descriptions-item label="告警时间">{{ formatDate(detailData.cardContent.alert_time) }}</el-descriptions-item>
+          <el-descriptions-item label="状态">
+            <el-tag :type="detailData.cardContent.unresolved_alert ? 'danger' : 'success'">
+              {{ detailData.cardContent.unresolved_alert ? '未解决' : '已解决' }}
+            </el-tag>
+          </el-descriptions-item>
+        </el-descriptions>
+      </template>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="detailDialogVisible = false">关闭</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Plus, Search, RefreshRight, Edit, Delete, Close, Check } from '@element-plus/icons-vue'
+import { Plus, Search, RefreshRight, Edit, Delete, Close, Check, View } from '@element-plus/icons-vue'
 import type { FormInstance } from 'element-plus'
 import dayjs from 'dayjs'
 import {
@@ -203,7 +256,10 @@ import {
   testLoading,
   testMessage,
   handleTest,
-  sendTestMessage
+  sendTestMessage,
+  detailDialogVisible,
+  detailData,
+  handleView
 } from './notificationManage'
 
 const feishuFormRef = ref<FormInstance>()

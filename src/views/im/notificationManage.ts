@@ -66,33 +66,37 @@ const handleReset = () => {
 
 const handleEdit = async (row: NotificationItem) => {
   try {
-    const res = await getCardContent({ notification_id: row.id });
+    const res = await getNotificationById({ id: row.id, type: 'feishu' });
     if (res.data?.code === 0 && res.data.data) {
       const config = res.data.data.config;
-      const c = res.data.data.card_content;
-      feishuForm.value = {
-        id: row.id,
-        name: config.name || row.name,
-        type: 'feishu',
-        enabled: true,
-        webhook_url: config.robot_url || row.robot_url,
-        description: '',
-        tags: [],
-        notify_events: ['deployment', 'error', 'warning'],
-        receivers: ['all'],
-        send_daily_stats: true,
-        card_content: {
-          alert_level: c.alert_level || 'Critical',
-          alert_name: c.alert_name || '',
-          notification_policy: c.notification_policy || 'critical,warning',
-          alert_content: c.alert_content || '',
-          notified_users: c.notified_users || '@all',
-          alert_handler: c.alert_handler || '',
-          claim_alert: c.claim_alert || false,
-          resolve_alert: c.resolve_alert || false,
-          mute_alert: c.mute_alert || false,
-          unresolved_alert: c.unresolved_alert || true
+      const cardContent = res.data.data.card_content;
+      if (config && cardContent) {
+        feishuForm.value = {
+          id: config.id,
+          name: config.name,
+          type: 'feishu',
+          enabled: true,
+          webhook_url: config.robot_url,
+          description: '',
+          tags: [],
+          notify_events: config.notification_policy.split(','),
+          receivers: ['all'],
+          send_daily_stats: config.send_daily_stats,
+          card_content: {
+            alert_level: cardContent.alert_level,
+            alert_name: cardContent.alert_name,
+            notification_policy: cardContent.notification_policy,
+            alert_content: cardContent.alert_content,
+            notified_users: cardContent.notified_users,
+            alert_handler: cardContent.alert_handler,
+            claim_alert: cardContent.claim_alert,
+            resolve_alert: cardContent.resolve_alert,
+            mute_alert: cardContent.mute_alert,
+            unresolved_alert: cardContent.unresolved_alert
+          }
         }
+      } else {
+        fallbackToFeishuRowData(row);
       }
     } else {
       fallbackToFeishuRowData(row);
@@ -113,9 +117,9 @@ const fallbackToFeishuRowData = (row: NotificationItem) => {
     webhook_url: row.robot_url,
     description: '',
     tags: [],
-    notify_events: ['deployment', 'error', 'warning'],
+    notify_events: row.notification_policy.split(','),
     receivers: ['all'],
-    send_daily_stats: true,
+    send_daily_stats: row.send_daily_stats || false,
     card_content: {
       alert_level: 'Critical',
       alert_name: '',
@@ -243,31 +247,6 @@ const submitFeishuForm = async (formEl: FormInstance | undefined) => {
 // 初始加载
 handleSearch()
 
-export {
-  searchName,
-  handleSearch,
-  handleReset,
-  tableData,
-  handleEdit,
-  handleDelete,
-  handleAddFeishu,
-  feishuDialogVisible,
-  feishuForm,
-  feishuFormRules,
-  submitFeishuForm,
-  loading,
-  currentPage,
-  pageSize,
-  total,
-  handleSizeChange,
-  handleCurrentChange,
-  testDialogVisible,
-  testLoading,
-  testMessage,
-  handleTest,
-  sendTestMessage
-}
-
 // 添加测试对话框相关变量
 const testDialogVisible = ref(false)
 const testLoading = ref(false)
@@ -303,4 +282,61 @@ const sendTestMessage = async () => {
   } finally {
     testLoading.value = false
   }
+}
+
+// 添加详情对话框相关变量
+const detailDialogVisible = ref(false)
+const detailData = ref<{
+  config: NotificationConfig | null
+  cardContent: NotificationCardContent | null
+}>({
+  config: null,
+  cardContent: null
+})
+
+// 处理详情按钮点击
+const handleView = async (row: NotificationItem) => {
+  try {
+    const res = await getNotificationById({ id: row.id, type: 'feishu' });
+    if (res.data?.code === 0 && res.data.data) {
+      detailData.value = {
+        config: res.data.data.config,
+        cardContent: res.data.data.card_content
+      }
+      detailDialogVisible.value = true
+    } else {
+      ElMessage.error('获取通知详情失败')
+    }
+  } catch (error) {
+    console.error('获取通知详情失败:', error)
+    ElMessage.error('获取通知详情失败')
+  }
+}
+
+export {
+  searchName,
+  handleSearch,
+  handleReset,
+  tableData,
+  handleEdit,
+  handleDelete,
+  handleAddFeishu,
+  feishuDialogVisible,
+  feishuForm,
+  feishuFormRules,
+  submitFeishuForm,
+  loading,
+  currentPage,
+  pageSize,
+  total,
+  handleSizeChange,
+  handleCurrentChange,
+  testDialogVisible,
+  testLoading,
+  testMessage,
+  handleTest,
+  sendTestMessage,
+  detailDialogVisible,
+  detailData,
+  handleView
 }
