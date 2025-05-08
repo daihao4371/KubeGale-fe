@@ -44,19 +44,40 @@ export interface CreateFeiShuParams {
   notify_events?: string[]
   receivers?: string[]
   send_daily_stats?: boolean
+  card_content?: {
+    alert_level: string
+    alert_name: string
+    notification_policy: string
+    alert_content: string
+    notified_users: string
+    alert_handler: string
+    claim_alert: boolean
+    resolve_alert: boolean
+    mute_alert: boolean
+    unresolved_alert: boolean
+  }
 }
 
 // 更新通知请求参数
 export interface UpdateNotificationParams {
   id: number
-  name?: string
-  notification_policy?: string
-  send_daily_stats?: boolean
-  signature_key?: string
-  robot_url?: string
-  app_id?: string
-  app_secret?: string
-  card_content?: FeiShuCardContent
+  name: string
+  notification_policy: string
+  robot_url: string
+  send_daily_stats: boolean
+  card_content: {
+    alert_level: string
+    alert_name: string
+    notification_policy: string
+    alert_content: string
+    notified_users: string
+    alert_handler: string
+    claim_alert: boolean
+    resolve_alert: boolean
+    mute_alert: boolean
+    unresolved_alert: boolean
+    alert_time: string
+  }
 }
 
 // 删除通知请求参数
