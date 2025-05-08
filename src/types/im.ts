@@ -36,9 +36,14 @@ export interface CreateDingTalkParams {
 export interface CreateFeiShuParams {
   id?: number
   name: string
-  notificationPolicy: string
-  robotURL: string
-  card_content: FeiShuCardContent
+  type: 'feishu'
+  enabled: boolean
+  webhook_url: string
+  description?: string
+  tags?: string[]
+  notify_events?: string[]
+  receivers?: string[]
+  send_daily_stats?: boolean
 }
 
 // 更新通知请求参数
@@ -122,7 +127,7 @@ export interface NotificationListResponse {
 
 // 创建/更新响应
 export interface CreateUpdateResponse {
-  id: number
+  id?: number
 }
 
 // 通用响应格式

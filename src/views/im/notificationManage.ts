@@ -15,15 +15,14 @@ const formLoading = ref(false)
 
 const feishuForm = ref<CreateFeiShuParams>({
   name: '',
-  notificationPolicy: 'all',
-  robotURL: '',
-  card_content: {
-    alert_level: 'Critical',
-    alert_name: '',
-    alert_content: '',
-    notified_users: '',
-    alert_handler: ''
-  }
+  type: 'feishu',
+  enabled: true,
+  webhook_url: '',
+  description: '',
+  tags: [],
+  notify_events: ['deployment', 'error', 'warning'],
+  receivers: ['all'],
+  send_daily_stats: true
 })
 
 const handleSearch = async () => {
@@ -76,15 +75,14 @@ const handleEdit = async (row: NotificationItem) => {
         feishuForm.value = {
           id: row.id,
           name: config.name || row.name,
-          notificationPolicy: config.notification_policy || row.notification_policy || 'all',
-          robotURL: config.robot_url || row.robot_url,
-          card_content: {
-            alert_level: c.alert_level || 'Critical',
-            alert_name: c.alert_name || '',
-            alert_content: c.alert_content || '',
-            notified_users: c.notified_users || '',
-            alert_handler: c.alert_handler || ''
-          }
+          type: 'feishu',
+          enabled: true,
+          webhook_url: config.robot_url || row.robot_url,
+          description: '',
+          tags: [],
+          notify_events: ['deployment', 'error', 'warning'],
+          receivers: ['all'],
+          send_daily_stats: true
         }
       } else {
         fallbackToFeishuRowData(row);
@@ -102,19 +100,17 @@ const handleEdit = async (row: NotificationItem) => {
 }
 
 const fallbackToFeishuRowData = (row: NotificationItem) => {
-  const cardContent = row.card_content;
   feishuForm.value = {
     id: row.id,
     name: row.name,
-    notificationPolicy: row.notification_policy || 'all',
-    robotURL: row.robot_url,
-    card_content: {
-      alert_level: cardContent?.alert_level || 'Critical',
-      alert_name: cardContent?.alert_name || '',
-      alert_content: cardContent?.alert_content || '',
-      notified_users: cardContent?.notified_users || '',
-      alert_handler: cardContent?.alert_handler || ''
-    }
+    type: 'feishu',
+    enabled: true,
+    webhook_url: row.robot_url,
+    description: '',
+    tags: [],
+    notify_events: ['deployment', 'error', 'warning'],
+    receivers: ['all'],
+    send_daily_stats: true
   }
 }
 
@@ -148,42 +144,29 @@ const feishuFormRules: FormRules = {
     { required: true, message: '请输入名称', trigger: 'blur' },
     { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
   ],
-  notificationPolicy: [
-    { required: true, message: '请选择通知策略', trigger: 'change' }
-  ],
-  robotURL: [
+  webhook_url: [
     { required: true, message: '请输入机器人 Webhook 地址', trigger: 'blur' },
     { type: 'url', message: '请输入有效的URL地址', trigger: 'blur' }
   ],
-  'card_content.alert_level': [
-    { required: true, message: '请选择告警级别', trigger: 'change' }
+  notify_events: [
+    { required: true, message: '请选择通知事件', trigger: 'change' }
   ],
-  'card_content.alert_name': [
-    { required: true, message: '请输入告警名称', trigger: 'blur' }
-  ],
-  'card_content.alert_content': [
-    { required: true, message: '请输入告警内容', trigger: 'blur' }
-  ],
-  'card_content.notified_users': [
-    { required: true, message: '请输入通知用户', trigger: 'blur' }
-  ],
-  'card_content.alert_handler': [
-    { required: true, message: '请输入处理人', trigger: 'blur' }
+  receivers: [
+    { required: true, message: '请选择接收者', trigger: 'change' }
   ]
 }
 
 const handleAddFeishu = () => {
   feishuForm.value = {
     name: '',
-    notificationPolicy: 'all',
-    robotURL: '',
-    card_content: {
-      alert_level: 'Critical',
-      alert_name: '',
-      alert_content: '',
-      notified_users: '',
-      alert_handler: ''
-    }
+    type: 'feishu',
+    enabled: true,
+    webhook_url: '',
+    description: '',
+    tags: [],
+    notify_events: ['deployment', 'error', 'warning'],
+    receivers: ['all'],
+    send_daily_stats: true
   }
   feishuDialogVisible.value = true
 }
@@ -194,25 +177,18 @@ const submitFeishuForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       formLoading.value = true
       try {
-        let response
-        if (feishuForm.value.id) {
-          // 更新操作
-          response = await createFeiShu(feishuForm.value)
-        } else {
-          // 创建操作
-          response = await createFeiShu(feishuForm.value)
-        }
+        const response = await createFeiShu(feishuForm.value)
         if (response.data?.code === 0) {
-          ElMessage.success(feishuForm.value.id ? '更新成功' : '添加成功')
+          ElMessage.success('添加成功')
           feishuDialogVisible.value = false
           handleSearch()
           formEl.resetFields()
         } else {
-          ElMessage.error(response.data?.msg || (feishuForm.value.id ? '更新失败' : '添加失败'))
+          ElMessage.error(response.data?.msg || '添加失败')
         }
       } catch (error) {
-        console.error(feishuForm.value.id ? '更新失败:' : '添加失败:', error)
-        ElMessage.error(feishuForm.value.id ? '更新失败' : '添加失败')
+        console.error('添加失败:', error)
+        ElMessage.error('添加失败')
       } finally {
         formLoading.value = false
       }

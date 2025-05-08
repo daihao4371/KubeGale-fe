@@ -84,40 +84,53 @@
         <el-form-item label="名称" prop="name">
           <el-input v-model="feishuForm.name" placeholder="请输入机器人名称" />
         </el-form-item>
-        <el-form-item label="通知策略" prop="notificationPolicy">
-          <el-select v-model="feishuForm.notificationPolicy" placeholder="请选择通知策略">
-            <el-option label="所有通知" value="all" />
-            <el-option label="仅重要通知" value="important" />
-            <el-option label="仅紧急通知" value="urgent" />
-          </el-select>
+        <el-form-item label="Webhook地址" prop="webhook_url">
+          <el-input v-model="feishuForm.webhook_url" placeholder="请输入飞书机器人的Webhook地址" />
         </el-form-item>
-        <el-form-item label="Webhook地址" prop="robotURL">
-          <el-input v-model="feishuForm.robotURL" placeholder="请输入飞书机器人的Webhook地址" />
-        </el-form-item>
-        <el-divider>卡片内容配置</el-divider>
-        <el-form-item label="告警级别" prop="card_content.alert_level">
-          <el-select v-model="feishuForm.card_content.alert_level" placeholder="请选择告警级别">
-            <el-option label="严重" value="Critical" />
-            <el-option label="警告" value="Warning" />
-            <el-option label="信息" value="Info" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="告警名称" prop="card_content.alert_name">
-          <el-input v-model="feishuForm.card_content.alert_name" placeholder="请输入告警名称" />
-        </el-form-item>
-        <el-form-item label="告警内容" prop="card_content.alert_content">
+        <el-form-item label="描述" prop="description">
           <el-input
-            v-model="feishuForm.card_content.alert_content"
+            v-model="feishuForm.description"
             type="textarea"
             :rows="3"
-            placeholder="请输入告警内容"
+            placeholder="请输入描述信息"
           />
         </el-form-item>
-        <el-form-item label="通知用户" prop="card_content.notified_users">
-          <el-input v-model="feishuForm.card_content.notified_users" placeholder="请输入通知用户，如: @王五 @赵六" />
+        <el-form-item label="标签" prop="tags">
+          <el-select
+            v-model="feishuForm.tags"
+            multiple
+            filterable
+            allow-create
+            default-first-option
+            placeholder="请选择或输入标签"
+          >
+            <el-option label="测试" value="测试" />
+            <el-option label="飞书" value="飞书" />
+            <el-option label="通知" value="通知" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="处理人" prop="card_content.alert_handler">
-          <el-input v-model="feishuForm.card_content.alert_handler" placeholder="请输入处理人" />
+        <el-form-item label="通知事件" prop="notify_events">
+          <el-select
+            v-model="feishuForm.notify_events"
+            multiple
+            placeholder="请选择通知事件"
+          >
+            <el-option label="部署" value="deployment" />
+            <el-option label="错误" value="error" />
+            <el-option label="警告" value="warning" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="接收者" prop="receivers">
+          <el-select
+            v-model="feishuForm.receivers"
+            multiple
+            placeholder="请选择接收者"
+          >
+            <el-option label="所有人" value="all" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="每日统计" prop="send_daily_stats">
+          <el-switch v-model="feishuForm.send_daily_stats" />
         </el-form-item>
       </el-form>
       <template #footer>
