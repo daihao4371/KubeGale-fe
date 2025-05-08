@@ -51,7 +51,7 @@ export interface UpdateNotificationParams {
   robot_url?: string
   app_id?: string
   app_secret?: string
-  card_content?: any
+  card_content?: FeiShuCardContent
 }
 
 // 删除通知请求参数
@@ -70,7 +70,7 @@ export interface TestNotificationParams {
 // 卡片内容请求参数
 export interface CardContentParams {
   notification_id: number
-  card_content: any
+  card_content: FeiShuCardContent
 }
 
 // 获取通知列表请求参数
@@ -92,23 +92,23 @@ export interface NotificationItem {
   id: number
   name: string
   type: string
-  notificationPolicy: string
-  robotURL: string
-  createdAt: string
-  sendDailyStats?: boolean
-  signatureKey?: string
-  cardContent?: {
-    alertLevel: string
-    alertName: string
-    notificationPolicy: string
-    alertContent: string
-    notifiedUsers: string
-    lastSimilarAlert?: string
-    alertHandler: string
-    claimAlert: boolean
-    resolveAlert: boolean
-    muteAlert: boolean
-    unresolvedAlert: boolean
+  notification_policy: string
+  robot_url: string
+  created_at: string
+  send_daily_stats?: boolean
+  signature_key?: string
+  card_content?: {
+    alert_level: string
+    alert_name: string
+    notification_policy: string
+    alert_content: string
+    notified_users: string
+    last_similar_alert?: string
+    alert_handler: string
+    claim_alert: boolean
+    resolve_alert: boolean
+    mute_alert: boolean
+    unresolved_alert: boolean
   }
 }
 

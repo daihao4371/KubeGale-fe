@@ -76,8 +76,8 @@ const handleEdit = async (row: NotificationItem) => {
         feishuForm.value = {
           id: row.id,
           name: config.name || row.name,
-          notificationPolicy: config.notificationPolicy || row.notificationPolicy || 'all',
-          robotURL: config.robotURL || row.robotURL,
+          notificationPolicy: config.notification_policy || row.notification_policy || 'all',
+          robotURL: config.robot_url || row.robot_url,
           card_content: {
             alert_level: c.alert_level || 'Critical',
             alert_name: c.alert_name || '',
@@ -102,18 +102,18 @@ const handleEdit = async (row: NotificationItem) => {
 }
 
 const fallbackToFeishuRowData = (row: NotificationItem) => {
-  const cardContent = row.cardContent;
+  const cardContent = row.card_content;
   feishuForm.value = {
     id: row.id,
     name: row.name,
-    notificationPolicy: row.notificationPolicy || 'all',
-    robotURL: row.robotURL,
+    notificationPolicy: row.notification_policy || 'all',
+    robotURL: row.robot_url,
     card_content: {
-      alert_level: cardContent?.alertLevel || 'Critical',
-      alert_name: cardContent?.alertName || '',
-      alert_content: cardContent?.alertContent || '',
-      notified_users: cardContent?.notifiedUsers || '',
-      alert_handler: cardContent?.alertHandler || ''
+      alert_level: cardContent?.alert_level || 'Critical',
+      alert_name: cardContent?.alert_name || '',
+      alert_content: cardContent?.alert_content || '',
+      notified_users: cardContent?.notified_users || '',
+      alert_handler: cardContent?.alert_handler || ''
     }
   }
 }

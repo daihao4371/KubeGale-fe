@@ -39,11 +39,11 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="notificationPolicy" label="通知策略" min-width="120" />
-        <el-table-column prop="robotURL" label="Webhook地址" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="createdAt" label="创建时间" width="180">
+        <el-table-column prop="notification_policy" label="通知策略" min-width="120" />
+        <el-table-column prop="robot_url" label="Webhook地址" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="created_at" label="创建时间" width="180">
           <template #default="{ row }">
-            {{ formatDate(row.createdAt) }}
+            {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="220" fixed="right">
