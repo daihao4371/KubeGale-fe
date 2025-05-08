@@ -240,7 +240,12 @@ export {
   pageSize,
   total,
   handleSizeChange,
-  handleCurrentChange
+  handleCurrentChange,
+  testDialogVisible,
+  testLoading,
+  testMessage,
+  handleTest,
+  sendTestMessage
 }
 
 // 添加测试对话框相关变量

@@ -50,6 +50,7 @@
           <template #default="{ row }">
             <el-button :icon="Edit" link type="primary" @click="handleEdit(row)">编辑</el-button>
             <el-button :icon="Delete" link type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button :icon="Search" link type="success" @click="handleTest(row)">测试</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -130,6 +131,35 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 测试通知对话框 -->
+    <el-dialog
+      v-model="testDialogVisible"
+      title="测试通知"
+      width="500px"
+      :close-on-click-modal="false"
+    >
+      <el-form label-width="100px">
+        <el-form-item label="测试消息">
+          <el-input
+            v-model="testMessage"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入测试消息内容（可选）"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="testDialogVisible = false">
+            <el-icon><Close /></el-icon>取消
+          </el-button>
+          <el-button type="primary" :loading="testLoading" @click="sendTestMessage">
+            <el-icon><Check /></el-icon>发送测试
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -155,7 +185,12 @@ import {
   pageSize,
   total,
   handleSizeChange,
-  handleCurrentChange
+  handleCurrentChange,
+  testDialogVisible,
+  testLoading,
+  testMessage,
+  handleTest,
+  sendTestMessage
 } from './notificationManage'
 
 const feishuFormRef = ref<FormInstance>()
