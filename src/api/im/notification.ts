@@ -1,7 +1,6 @@
 import request from '@/utils/request'
 import type {
   ApiResponse,
-  CreateDingTalkParams,
   CreateFeiShuParams,
   UpdateNotificationParams,
   DeleteNotificationParams,
@@ -11,34 +10,15 @@ import type {
   GetNotificationDetailParams,
   NotificationListResponse,
   CreateUpdateResponse,
-  DingTalkCardContent,
   NotificationItem,
-  UpdateDingTalkParams
+  DingTalkCardContent
 } from '@/types/im'
-
-// 创建钉钉通知
-export const createDingTalk = (data: CreateDingTalkParams) => {
-  return request<ApiResponse<CreateUpdateResponse>>({
-    url: '/notification/createDingTalk',
-    method: 'post',
-    data
-  })
-}
 
 // 创建飞书通知
 export const createFeiShu = (data: CreateFeiShuParams) => {
   return request<ApiResponse<CreateUpdateResponse>>({
     url: '/notification/createFeiShu',
     method: 'post',
-    data
-  })
-}
-
-// 更新钉钉通知
-export const updateDingTalk = (data: UpdateDingTalkParams) => {
-  return request<ApiResponse<CreateUpdateResponse>>({
-    url: '/notification/updateDingTalk',
-    method: 'put',
     data
   })
 }

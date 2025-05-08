@@ -51,26 +51,26 @@ export interface UpdateNotificationParams {
   robot_url?: string
   app_id?: string
   app_secret?: string
-  card_content?: DingTalkCardContent
+  card_content?: any
 }
 
 // 删除通知请求参数
 export interface DeleteNotificationParams {
   id: number
-  type: 'dingtalk' | 'feishu'
+  type: 'feishu'
 }
 
 // 测试通知请求参数
 export interface TestNotificationParams {
   id: number
-  type: 'dingtalk' | 'feishu'
+  type: 'feishu'
   message?: string
 }
 
 // 卡片内容请求参数
 export interface CardContentParams {
   notification_id: number
-  card_content: DingTalkCardContent
+  card_content: any
 }
 
 // 获取通知列表请求参数
