@@ -47,10 +47,11 @@
             {{ formatDate(row.createdAt) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column label="操作" width="220" fixed="right">
           <template #default="{ row }">
             <el-button :icon="Edit" link type="primary" @click="handleEdit(row)">编辑</el-button>
             <el-button :icon="Delete" link type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button :icon="MessageBox" link type="success" @click="handleTest(row)">测试</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,7 +72,7 @@
     <!-- 钉钉机器人对话框 -->
     <el-dialog
       v-model="dingTalkDialogVisible"
-      title="添加钉钉机器人"
+      :title="dingTalkForm.id ? '编辑钉钉机器人' : '添加钉钉机器人'"
       width="600px"
       :close-on-click-modal="false"
     >
@@ -134,6 +135,9 @@
         <span class="dialog-footer">
           <el-button @click="dingTalkDialogVisible = false">
             <el-icon><Close /></el-icon>取消
+          </el-button>
+          <el-button v-if="dingTalkForm.id" @click="resetDingTalkForm">
+            <el-icon><RefreshLeft /></el-icon>重置
           </el-button>
           <el-button type="primary" :loading="formLoading" @click="submitDingTalkForm(dingTalkFormRef)">
             <el-icon><Check /></el-icon>确定
@@ -205,22 +209,51 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 添加测试对话框 -->
+    <el-dialog
+      v-model="testDialogVisible"
+      title="发送测试消息"
+      width="500px"
+      :close-on-click-modal="false"
+    >
+      <el-form label-width="100px">
+        <el-form-item label="通知名称">
+          <el-input v-model="testItemName" disabled />
+        </el-form-item>
+        <el-form-item label="通知类型">
+          <el-tag :type="currentTestItem?.type === 'dingtalk' ? 'success' : 'warning'">
+            {{ currentTestItem?.type === 'dingtalk' ? '钉钉' : '飞书' }}
+          </el-tag>
+        </el-form-item>
+        <el-form-item label="测试消息">
+          <el-input
+            v-model="testMessage"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入测试消息内容（可选）"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="testDialogVisible = false">
+            <el-icon><Close /></el-icon>取消
+          </el-button>
+          <el-button type="primary" :loading="testLoading" @click="sendTestMessage">
+            <el-icon><MessageBox /></el-icon>发送测试
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { Plus, Search, RefreshRight, Edit, Delete, Close, Check, RefreshLeft, MessageBox } from '@element-plus/icons-vue'
 import type { FormInstance } from 'element-plus'
 import dayjs from 'dayjs'
-import { 
-  Plus, 
-  Edit, 
-  Delete, 
-  Search, 
-  RefreshRight,
-  Check,
-  Close
-} from '@element-plus/icons-vue'
 import {
   searchName,
   handleSearch,
@@ -244,7 +277,14 @@ import {
   pageSize,
   total,
   handleSizeChange,
-  handleCurrentChange
+  handleCurrentChange,
+  resetDingTalkForm,
+  testDialogVisible,
+  testLoading,
+  currentTestItem,
+  testMessage,
+  handleTest,
+  sendTestMessage
 } from './notificationManage'
 
 const dingTalkFormRef = ref<FormInstance>()
@@ -254,6 +294,16 @@ const feishuFormRef = ref<FormInstance>()
 const formatDate = (date: string) => {
   return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
 }
+
+// 添加计算属性
+const testItemName = computed({
+  get: () => currentTestItem.value?.name || '',
+  set: (val) => {
+    if (currentTestItem.value) {
+      currentTestItem.value.name = val
+    }
+  }
+})
 </script>
 
 <style src="./notificationManage.css" scoped></style>

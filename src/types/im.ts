@@ -63,7 +63,8 @@ export interface DeleteNotificationParams {
 // 测试通知请求参数
 export interface TestNotificationParams {
   id: number
-  test_content?: string
+  type: 'dingtalk' | 'feishu'
+  message?: string
 }
 
 // 卡片内容请求参数

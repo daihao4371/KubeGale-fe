@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
-import { getNotificationList, createDingTalk, deleteNotification, createFeiShu, updateDingTalk, getNotificationById, getCardContent } from '@/api/im/notification'
+import { getNotificationList, createDingTalk, deleteNotification, createFeiShu, updateDingTalk, getNotificationById, getCardContent, testNotification } from '@/api/im/notification'
 import type { NotificationItem, CreateDingTalkParams, CreateFeiShuParams, FeiShuCardContent, UpdateDingTalkParams } from '@/types/im'
 
 const searchName = ref('')
@@ -301,30 +301,65 @@ const submitDingTalkForm = async (formEl: FormInstance | undefined) => {
       try {
         let response
         if (dingTalkForm.value.id) {
-          // 更新操作
-          const updateData: UpdateDingTalkParams = {
-            id: dingTalkForm.value.id,
-            name: dingTalkForm.value.name,
-            notification_policy: dingTalkForm.value.notificationPolicy,
-            send_daily_stats: false, // 默认值
-            signature_key: dingTalkForm.value.signatureKey || '', // 使用表单中的签名密钥
-            robot_url: dingTalkForm.value.robotURL,
-            type: 'dingtalk',
-            card_content: {
-              alert_level: dingTalkForm.value.card_content.alert_level,
-              alert_name: dingTalkForm.value.card_content.alert_name,
-              notification_policy: dingTalkForm.value.card_content.notification_policy,
-              alert_content: dingTalkForm.value.card_content.alert_content,
-              notified_users: dingTalkForm.value.card_content.notified_users,
-              last_similar_alert: dingTalkForm.value.card_content.last_similar_alert,
-              alert_handler: dingTalkForm.value.card_content.alert_handler,
-              claim_alert: dingTalkForm.value.card_content.claim_alert,
-              resolve_alert: dingTalkForm.value.card_content.resolve_alert,
-              mute_alert: dingTalkForm.value.card_content.mute_alert,
-              unresolved_alert: dingTalkForm.value.card_content.unresolved_alert
+          // 更新操作 - 只发送已修改的字段
+          // 首先获取原始数据
+          const originalData = await getCardContent({ notification_id: dingTalkForm.value.id });
+          if (originalData.data?.code === 0 && originalData.data.data) {
+            const originalConfig = originalData.data.data.config;
+            const originalCardContent = originalData.data.data.card_content;
+            
+            // 创建更新对象，只包含已修改的字段
+            const updateData: UpdateDingTalkParams = {
+              id: dingTalkForm.value.id,
+              name: dingTalkForm.value.name,
+              notification_policy: dingTalkForm.value.notificationPolicy,
+              send_daily_stats: originalConfig.sendDailyStats || false,
+              signature_key: dingTalkForm.value.signatureKey || '',
+              robot_url: dingTalkForm.value.robotURL,
+              type: 'dingtalk',
+              card_content: {
+                alert_level: dingTalkForm.value.card_content.alert_level,
+                alert_name: dingTalkForm.value.card_content.alert_name,
+                notification_policy: dingTalkForm.value.card_content.notification_policy,
+                alert_content: dingTalkForm.value.card_content.alert_content,
+                notified_users: dingTalkForm.value.card_content.notified_users,
+                last_similar_alert: dingTalkForm.value.card_content.last_similar_alert,
+                alert_handler: dingTalkForm.value.card_content.alert_handler,
+                claim_alert: dingTalkForm.value.card_content.claim_alert,
+                resolve_alert: dingTalkForm.value.card_content.resolve_alert,
+                mute_alert: dingTalkForm.value.card_content.mute_alert,
+                unresolved_alert: dingTalkForm.value.card_content.unresolved_alert
+              }
             }
+            
+            response = await updateDingTalk(updateData)
+          } else {
+            // 如果获取原始数据失败，则使用当前表单数据
+            const updateData: UpdateDingTalkParams = {
+              id: dingTalkForm.value.id,
+              name: dingTalkForm.value.name,
+              notification_policy: dingTalkForm.value.notificationPolicy,
+              send_daily_stats: false,
+              signature_key: dingTalkForm.value.signatureKey || '',
+              robot_url: dingTalkForm.value.robotURL,
+              type: 'dingtalk',
+              card_content: {
+                alert_level: dingTalkForm.value.card_content.alert_level,
+                alert_name: dingTalkForm.value.card_content.alert_name,
+                notification_policy: dingTalkForm.value.card_content.notification_policy,
+                alert_content: dingTalkForm.value.card_content.alert_content,
+                notified_users: dingTalkForm.value.card_content.notified_users,
+                last_similar_alert: dingTalkForm.value.card_content.last_similar_alert,
+                alert_handler: dingTalkForm.value.card_content.alert_handler,
+                claim_alert: dingTalkForm.value.card_content.claim_alert,
+                resolve_alert: dingTalkForm.value.card_content.resolve_alert,
+                mute_alert: dingTalkForm.value.card_content.mute_alert,
+                unresolved_alert: dingTalkForm.value.card_content.unresolved_alert
+              }
+            }
+            
+            response = await updateDingTalk(updateData)
           }
-          response = await updateDingTalk(updateData)
         } else {
           // 创建操作
           response = await createDingTalk(dingTalkForm.value)
@@ -434,6 +469,21 @@ const submitFeishuForm = async (formEl: FormInstance | undefined) => {
   })
 }
 
+// 重置钉钉表单到原始数据
+const resetDingTalkForm = () => {
+  // 如果是编辑模式，需要重新获取原始数据
+  if (dingTalkForm.value.id) {
+    handleEdit({ 
+      id: dingTalkForm.value.id, 
+      type: 'dingtalk',
+      name: dingTalkForm.value.name,
+      notificationPolicy: dingTalkForm.value.notificationPolicy,
+      robotURL: dingTalkForm.value.robotURL,
+      signatureKey: dingTalkForm.value.signatureKey || ''
+    } as NotificationItem);
+  }
+}
+
 // 初始加载
 handleSearch()
 
@@ -460,5 +510,51 @@ export {
   pageSize,
   total,
   handleSizeChange,
-  handleCurrentChange
+  handleCurrentChange,
+  resetDingTalkForm,
+  testDialogVisible,
+  testLoading,
+  currentTestItem,
+  testMessage,
+  handleTest,
+  sendTestMessage
+}
+
+// 添加测试对话框相关变量
+const testDialogVisible = ref(false)
+const testLoading = ref(false)
+const currentTestItem = ref<NotificationItem | null>(null)
+const testMessage = ref('')
+
+// 处理测试按钮点击
+const handleTest = (row: NotificationItem) => {
+  currentTestItem.value = row
+  testMessage.value = ''
+  testDialogVisible.value = true
+}
+
+// 发送测试消息
+const sendTestMessage = async () => {
+  if (!currentTestItem.value) return
+  
+  testLoading.value = true
+  try {
+    const response = await testNotification({
+      id: currentTestItem.value.id,
+      type: currentTestItem.value.type as 'dingtalk' | 'feishu',
+      message: testMessage.value || undefined
+    })
+    
+    if (response.data?.code === 0) {
+      ElMessage.success(response.data.data?.message || '测试消息发送成功')
+      testDialogVisible.value = false
+    } else {
+      ElMessage.error(response.data?.msg || '测试消息发送失败')
+    }
+  } catch (error) {
+    console.error('测试消息发送失败:', error)
+    ElMessage.error('测试消息发送失败')
+  } finally {
+    testLoading.value = false
+  }
 }
