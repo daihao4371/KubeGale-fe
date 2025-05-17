@@ -1,36 +1,69 @@
 <template>
   <div class="provider-container">
-    <el-card class="box-card">
+    <el-card class="box-card" shadow="hover">
       <template #header>
         <div class="card-header">
-          <span>云厂商管理</span>
+          <div class="header-left">
+            <el-icon class="header-icon"><Monitor /></el-icon>
+            <span class="header-title">云厂商管理</span>
+          </div>
           <div class="header-buttons">
-            <el-button type="primary" @click="openDialog">
-              <el-icon><Plus /></el-icon>添加云厂商
+            <el-button type="primary" @click="openDialog" :icon="Plus">
+              添加云厂商
             </el-button>
           </div>
         </div>
       </template>
       
       <!-- 搜索栏 -->
-      <el-form :inline="true" :model="searchInfo" class="search-form">
+      <el-form :inline="true" :model="searchInfo" class="search-form" size="default">
         <el-form-item label="厂商名称">
-          <el-input v-model="searchInfo.name" placeholder="请输入厂商名称" clearable />
+          <el-input
+            v-model="searchInfo.name"
+            placeholder="请输入厂商名称"
+            clearable
+            :prefix-icon="Search"
+          />
         </el-form-item>
         <el-form-item label="厂商类型">
-          <el-select v-model="searchInfo.type" placeholder="请选择厂商类型" clearable style="width: 160px">
-            <el-option label="阿里云" value="aliyun" />
-            <el-option label="腾讯云" value="tencent" />
-            <el-option label="华为云" value="huawei" />
-            <el-option label="AWS" value="aws" />
+          <el-select
+            v-model="searchInfo.type"
+            placeholder="请选择厂商类型"
+            clearable
+            style="width: 160px"
+          >
+            <el-option label="阿里云" value="aliyun">
+              <div class="platform-option">
+                <el-icon><Monitor /></el-icon>
+                <span>阿里云</span>
+              </div>
+            </el-option>
+            <el-option label="腾讯云" value="tencent">
+              <div class="platform-option">
+                <el-icon><Monitor /></el-icon>
+                <span>腾讯云</span>
+              </div>
+            </el-option>
+            <el-option label="华为云" value="huawei">
+              <div class="platform-option">
+                <el-icon><Monitor /></el-icon>
+                <span>华为云</span>
+              </div>
+            </el-option>
+            <el-option label="AWS" value="aws">
+              <div class="platform-option">
+                <el-icon><Monitor /></el-icon>
+                <span>AWS</span>
+              </div>
+            </el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">
-            <el-icon><Search /></el-icon>搜索
+          <el-button type="primary" @click="onSubmit" :icon="Search">
+            搜索
           </el-button>
-          <el-button @click="onReset">
-            <el-icon><RefreshRight /></el-icon>重置
+          <el-button @click="onReset" :icon="RefreshRight">
+            重置
           </el-button>
         </el-form-item>
       </el-form>
@@ -40,35 +73,88 @@
         :data="tableData"
         style="width: 100%"
         border
+        stripe
+        highlight-current-row
+        :header-cell-style="{
+          background: '#f5f7fa',
+          color: '#606266',
+          fontWeight: 600
+        }"
       >
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="name" label="厂商名称" min-width="120" />
-        <el-table-column prop="platform" label="厂商类型" width="120">
+        <el-table-column prop="id" label="ID" width="80" align="center" />
+        <el-table-column prop="name" label="厂商名称" min-width="200">
           <template #default="{ row }">
-            <el-tag>{{ getPlatformLabel(row.platform) }}</el-tag>
+            <div class="provider-name">
+              <el-icon class="provider-icon"><Monitor /></el-icon>
+              <span>{{ row.name }}</span>
+            </div>
           </template>
         </el-table-column>
-        <el-table-column prop="created_at" label="创建时间" width="180">
+        <el-table-column prop="platform" label="厂商类型" width="120" align="center">
           <template #default="{ row }">
-            {{ formatDate(row.created_at) }}
+            <el-tag
+              :type="getPlatformTagType(row.platform)"
+              effect="light"
+              class="platform-tag"
+            >
+              {{ getPlatformLabel(row.platform) }}
+            </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="updated_at" label="更新时间" width="180">
+        <el-table-column prop="created_at" label="创建时间" width="180" align="center">
           <template #default="{ row }">
-            {{ formatDate(row.updated_at) }}
+            <div class="time-cell">
+              <el-icon><Calendar /></el-icon>
+              <span>{{ formatDate(row.created_at) }}</span>
+            </div>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="250" fixed="right">
+        <el-table-column prop="updated_at" label="更新时间" width="180" align="center">
           <template #default="{ row }">
-            <el-button type="primary" link @click="handleUpdate(row)">
-              <el-icon><Edit /></el-icon>变更
-            </el-button>
-            <el-button type="info" link @click="handleUpdateRegion(row)">
-              <el-icon><Setting /></el-icon>Region同步
-            </el-button>
-            <el-button type="danger" link @click="handleDelete(row)">
-              <el-icon><Delete /></el-icon>删除
-            </el-button>
+            <div class="time-cell">
+              <el-icon><Timer /></el-icon>
+              <span>{{ formatDate(row.updated_at) }}</span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="320" fixed="right" align="center">
+          <template #default="{ row }">
+            <div class="operation-buttons">
+              <el-button
+                type="primary"
+                link
+                @click="handleUpdate(row)"
+                class="operation-button"
+              >
+                <el-icon><Edit /></el-icon>
+                <span>变更</span>
+              </el-button>
+              <el-button
+                type="info"
+                link
+                @click="handleUpdateRegion(row)"
+                class="operation-button"
+              >
+                <el-icon><Setting /></el-icon>
+                <span>Region同步</span>
+              </el-button>
+              <el-popconfirm
+                title="确定要删除该云厂商吗？"
+                @confirm="handleDelete(row)"
+                width="220"
+              >
+                <template #reference>
+                  <el-button
+                    type="danger"
+                    link
+                    class="operation-button"
+                  >
+                    <el-icon><Delete /></el-icon>
+                    <span>删除</span>
+                  </el-button>
+                </template>
+              </el-popconfirm>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -82,6 +168,7 @@
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
+          background
         />
       </div>
     </el-card>
@@ -147,7 +234,10 @@ import {
   Delete, 
   Search, 
   RefreshRight, 
-  Setting
+  Setting,
+  Monitor,
+  Calendar,
+  Timer
 } from '@element-plus/icons-vue'
 import { 
   cloudplatformlist, 
@@ -213,6 +303,17 @@ const getPlatformLabel = (platform: string) => {
     aws: 'AWS'
   }
   return platformMap[platform] || platform
+}
+
+// 获取平台标签类型
+const getPlatformTagType = (platform: string) => {
+  const typeMap: Record<string, string> = {
+    aliyun: 'success',
+    tencent: 'primary',
+    huawei: 'warning',
+    aws: 'danger'
+  }
+  return typeMap[platform] || 'info'
 }
 
 // 格式化日期
