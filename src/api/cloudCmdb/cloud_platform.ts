@@ -68,10 +68,11 @@ export const cloudplatformDelete = (data: { id: number }): Promise<ApiResponse<n
   })
 }
 
-export const cloudplatformDeleteByIds = (params: IdsParams): Promise<ApiResponse<null>> => {
+// 批量删除云厂商
+export const cloudplatformDeleteByIds = (data: { ids: number[] }): Promise<ApiResponse<null>> => {
   return request<ApiResponse<null>>({
-    url: '/cloudcmdb/cloud_platform/deleteByIds',
+    url: '/cloud_platform/deleteByIds',
     method: 'delete',
-    data: params
+    data
   })
 }

@@ -8,6 +8,14 @@
             <span class="header-title">云厂商管理</span>
           </div>
           <div class="header-buttons">
+            <el-button 
+              type="danger" 
+              :disabled="!selectedRows.length"
+              @click="handleBatchDelete"
+              :icon="Delete"
+            >
+              批量删除
+            </el-button>
             <el-button type="primary" @click="openDialog" :icon="Plus">
               添加云厂商
             </el-button>
@@ -75,12 +83,14 @@
         border
         stripe
         highlight-current-row
+        @selection-change="handleSelectionChange"
         :header-cell-style="{
           background: '#f5f7fa',
           color: '#606266',
           fontWeight: 600
         }"
       >
+        <el-table-column type="selection" width="55" align="center" />
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="name" label="厂商名称" min-width="200">
           <template #default="{ row }">
@@ -244,7 +254,8 @@ import {
   cloudplatformById, 
   cloudplatformCreate, 
   cloudplatformUpdate, 
-  cloudplatformDelete
+  cloudplatformDelete,
+  cloudplatformDeleteByIds
 } from '@/api/cloudCmdb/cloud_platform'
 import { syncRegion } from '@/api/cloudCmdb/cloud_region'
 import type { 
@@ -277,6 +288,9 @@ const form = ref<CloudProviderForm>({
   access_key_id: '',
   access_key_secret: ''
 })
+
+// 选中的行
+const selectedRows = ref<CloudProvider[]>([])
 
 // 表单验证规则
 const rules: FormRules = {
@@ -514,6 +528,36 @@ const submitForm = async () => {
       }
     }
   })
+}
+
+// 处理表格选择变化
+const handleSelectionChange = (rows: CloudProvider[]) => {
+  selectedRows.value = rows
+}
+
+// 批量删除
+const handleBatchDelete = async () => {
+  if (!selectedRows.value.length) {
+    ElMessage.warning('请选择要删除的云厂商')
+    return
+  }
+
+  try {
+    const ids = selectedRows.value.map(row => row.id)
+    const response = await cloudplatformDeleteByIds({ ids })
+    if (response.code === 0) {
+      ElMessage.success(response.msg || '批量删除成功')
+      if (tableData.value.length === selectedRows.value.length && page.value > 1) {
+        page.value--
+      }
+      getTableData()
+    } else {
+      ElMessage.error(response.msg || '批量删除失败')
+    }
+  } catch (error) {
+    console.error('批量删除云厂商失败:', error)
+    ElMessage.error('批量删除云厂商失败')
+  }
 }
 
 // 初始化
