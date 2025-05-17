@@ -27,11 +27,11 @@ export const cloudplatformlist = (params: ListParams): Promise<ApiResponse<Cloud
 }
 
 // 获取云厂商详情
-export const cloudplatformById = (params: IdParams): Promise<ApiResponse<CloudProviderDetailResponse>> => {
+export const cloudplatformById = (data: { id: number }): Promise<ApiResponse<CloudProviderDetailResponse>> => {
   return request<ApiResponse<CloudProviderDetailResponse>>({
-    url: '/cloudplatform/detail',
-    method: 'get',
-    params
+    url: '/cloud_platform/getById',
+    method: 'post',
+    data
   })
 }
 
@@ -45,9 +45,15 @@ export const cloudplatformCreate = (data: Omit<CloudProvider, 'id' | 'created_at
 }
 
 // 更新云厂商
-export const cloudplatformUpdate = (data: Omit<CloudProvider, 'created_at'>): Promise<ApiResponse<null>> => {
+export const cloudplatformUpdate = (data: {
+  id: number
+  name: string
+  type: string
+  accessKey: string
+  secretKey: string
+}): Promise<ApiResponse<null>> => {
   return request<ApiResponse<null>>({
-    url: '/cloudplatform/update',
+    url: '/cloud_platform/update',
     method: 'put',
     data
   })

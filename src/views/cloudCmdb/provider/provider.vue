@@ -492,9 +492,9 @@ const submitForm = async () => {
           const submitData = {
             id: form.value.id,
             name: form.value.name,
-            platform: form.value.platform,
-            access_key_id: form.value.access_key_id,
-            access_key_secret: form.value.access_key_secret
+            type: form.value.platform,
+            accessKey: form.value.access_key_id,
+            secretKey: form.value.access_key_secret
           }
           response = await cloudplatformUpdate(submitData)
         }
