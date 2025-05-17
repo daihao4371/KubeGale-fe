@@ -60,11 +60,11 @@ export const cloudplatformUpdate = (data: {
 }
 
 // 删除云厂商
-export const cloudplatformDelete = (params: IdParams): Promise<ApiResponse<null>> => {
+export const cloudplatformDelete = (data: { id: number }): Promise<ApiResponse<null>> => {
   return request<ApiResponse<null>>({
-    url: '/cloudplatform/delete',
+    url: '/cloud_platform/delete',
     method: 'delete',
-    params
+    data
   })
 }
 

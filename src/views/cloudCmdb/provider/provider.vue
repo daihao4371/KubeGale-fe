@@ -430,7 +430,7 @@ const handleDelete = async (row: CloudProvider) => {
   try {
     const response = await cloudplatformDelete({ id: row.id })
     if (response.code === 0) {
-      ElMessage.success('删除成功')
+      ElMessage.success(response.msg || '删除成功')
       if (tableData.value.length === 1 && page.value > 1) {
         page.value--
       }
