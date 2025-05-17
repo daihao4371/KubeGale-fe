@@ -1,5 +1,11 @@
 .provider-container {
   padding: 24px;
+  background-color: var(--el-bg-color-page);
+}
+
+.box-card {
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
 }
 
 .card-header {
@@ -8,6 +14,7 @@
   align-items: center;
   padding: 16px 24px;
   border-bottom: 1px solid var(--el-border-color-lighter);
+  background-color: var(--el-bg-color);
 }
 
 .header-left {
@@ -32,12 +39,62 @@
   gap: 12px;
 }
 
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--el-bg-color);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-title {
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
 .search-form {
   margin: 24px;
   padding: 24px;
-  background-color: var(--el-bg-color-page);
+  background-color: var(--el-bg-color);
   border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.search-form .el-form-item {
+  margin-bottom: 0;
 }
 
 .platform-option {
@@ -55,13 +112,25 @@
 .provider-name {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   padding: 4px 0;
+  color: var(--el-text-color-primary);
 }
 
 .provider-icon {
-  font-size: 18px;
-  color: var(--el-color-primary);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background-color: var(--el-bg-color-page);
+}
+
+.provider-icon img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .platform-tag {
@@ -74,6 +143,23 @@
   font-size: 14px;
   font-weight: 500;
   min-width: 80px;
+  background-color: transparent !important;
+}
+
+.platform-tag.aliyun {
+  color: #1890ff;
+}
+
+.platform-tag.aws {
+  color: #ff7a45;
+}
+
+.platform-tag.huawei {
+  color: #ff4d4f;
+}
+
+.platform-tag.tencent {
+  color: #52c41a;
 }
 
 .time-cell {
@@ -109,23 +195,63 @@
   font-size: 14px !important;
   border-radius: 4px !important;
   transition: all 0.3s ease !important;
+  color: var(--el-color-primary) !important;
 }
 
 .operation-button:hover {
   background-color: var(--el-color-primary-light-9) !important;
+  color: var(--el-color-primary-light-3) !important;
 }
 
 .operation-button .el-icon {
   margin-right: 4px !important;
   font-size: 16px !important;
+  color: inherit !important;
 }
 
-.pagination-container {
-  margin-top: 24px;
-  padding: 16px 24px;
-  display: flex;
-  justify-content: flex-end;
-  border-top: 1px solid var(--el-border-color-lighter);
+/* 删除按钮特殊样式 */
+.operation-button.el-button--danger {
+  color: var(--el-color-danger) !important;
+}
+
+.operation-button.el-button--danger:hover {
+  color: var(--el-color-danger-light-3) !important;
+  background-color: var(--el-color-danger-light-9) !important;
+}
+
+/* Region同步按钮特殊样式 */
+.operation-button.el-button--info {
+  color: var(--el-color-primary) !important;
+}
+
+.operation-button.el-button--info:hover {
+  color: var(--el-color-primary-light-3) !important;
+  background-color: var(--el-color-primary-light-9) !important;
+}
+
+/* 同步状态样式 */
+.sync-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.sync-status.success {
+  background-color: var(--el-color-success-light-9);
+  color: var(--el-color-success);
+}
+
+.sync-status.warning {
+  background-color: var(--el-color-warning-light-9);
+  color: var(--el-color-warning);
+}
+
+.sync-status.error {
+  background-color: var(--el-color-danger-light-9);
+  color: var(--el-color-danger);
 }
 
 /* 表格样式优化 */
@@ -133,22 +259,26 @@
   border-radius: 8px;
   overflow: hidden;
   margin: 0 24px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
 }
 
 :deep(.el-table th) {
   font-weight: 600;
-  background-color: var(--el-bg-color-page) !important;
-  padding: 16px 0;
+  background-color: var(--el-bg-color) !important;
+  padding: 16px;
   height: 56px;
+  color: var(--el-text-color-primary);
+  border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
 :deep(.el-table td) {
-  padding: 16px 0;
-  height: 64px;
+  padding: 16px;
+  height: 56px;
+  color: var(--el-text-color-regular);
 }
 
 :deep(.el-table .cell) {
-  padding: 0 16px;
+  padding: 0;
   line-height: 1.5;
   white-space: nowrap;
 }
@@ -158,7 +288,8 @@
 }
 
 :deep(.el-table__body tr:hover > td) {
-  background-color: var(--el-table-row-hover-bg-color) !important;
+  background-color: rgba(59, 132, 246, 0.1) !important;
+  cursor: pointer;
 }
 
 /* 表格列宽优化 */
@@ -254,4 +385,43 @@
 /* 对于链接按钮特别处理 */
 .el-button--link .el-icon {
   vertical-align: middle;
+}
+
+/* 表格选择列样式 */
+:deep(.el-table__selection) {
+  padding-left: 14px;
+}
+
+/* 表格边框样式 */
+:deep(.el-table--border) {
+  border: 1px solid var(--el-border-color-lighter);
+}
+
+:deep(.el-table--border .el-table__cell) {
+  border-right: 1px solid var(--el-border-color-lighter);
+}
+
+/* 表格头部样式 */
+:deep(.el-table__header) {
+  background-color: var(--el-bg-color);
+}
+
+/* 表格内容区域样式 */
+:deep(.el-table__body) {
+  background-color: var(--el-bg-color);
+}
+
+/* 表格行样式 */
+:deep(.el-table__row) {
+  transition: all 0.3s ease;
+}
+
+/* 表格分页样式优化 */
+.pagination-container {
+  margin-top: 24px;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--el-border-color-lighter);
+  background-color: var(--el-bg-color);
 }

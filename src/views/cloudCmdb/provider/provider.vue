@@ -1,5 +1,36 @@
 <template>
   <div class="provider-container">
+    <!-- 统计卡片 -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon" style="background-color: var(--el-color-primary-light-9); color: var(--el-color-primary);">
+          <el-icon><Monitor /></el-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-title">云厂商总数</div>
+          <div class="stat-value">{{ total }}</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background-color: var(--el-color-success-light-9); color: var(--el-color-success);">
+          <el-icon><Timer /></el-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-title">最近同步时间</div>
+          <div class="stat-value">{{ lastSyncTime || '暂无' }}</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background-color: var(--el-color-warning-light-9); color: var(--el-color-warning);">
+          <el-icon><Warning /></el-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-title">异常数量</div>
+          <div class="stat-value">{{ errorCount }}</div>
+        </div>
+      </div>
+    </div>
+
     <el-card class="box-card" shadow="hover">
       <template #header>
         <div class="card-header">
@@ -42,25 +73,25 @@
           >
             <el-option label="阿里云" value="aliyun">
               <div class="platform-option">
-                <el-icon><Monitor /></el-icon>
+                <el-icon class="platform-icon"><Monitor /></el-icon>
                 <span>阿里云</span>
               </div>
             </el-option>
             <el-option label="腾讯云" value="tencent">
               <div class="platform-option">
-                <el-icon><Monitor /></el-icon>
+                <el-icon class="platform-icon"><Monitor /></el-icon>
                 <span>腾讯云</span>
               </div>
             </el-option>
             <el-option label="华为云" value="huawei">
               <div class="platform-option">
-                <el-icon><Monitor /></el-icon>
+                <el-icon class="platform-icon"><Monitor /></el-icon>
                 <span>华为云</span>
               </div>
             </el-option>
             <el-option label="AWS" value="aws">
               <div class="platform-option">
-                <el-icon><Monitor /></el-icon>
+                <el-icon class="platform-icon"><Monitor /></el-icon>
                 <span>AWS</span>
               </div>
             </el-option>
@@ -95,7 +126,9 @@
         <el-table-column prop="name" label="厂商名称" min-width="200">
           <template #default="{ row }">
             <div class="provider-name">
-              <el-icon class="provider-icon"><Monitor /></el-icon>
+              <div class="provider-icon">
+                <el-icon><Monitor /></el-icon>
+              </div>
               <span>{{ row.name }}</span>
             </div>
           </template>
@@ -103,9 +136,8 @@
         <el-table-column prop="platform" label="厂商类型" width="120" align="center">
           <template #default="{ row }">
             <el-tag
-              :type="getPlatformTagType(row.platform)"
-              effect="light"
-              class="platform-tag"
+              :class="['platform-tag', row.platform]"
+              effect="dark"
             >
               {{ getPlatformLabel(row.platform) }}
             </el-tag>
@@ -130,40 +162,47 @@
         <el-table-column label="操作" width="320" fixed="right" align="center">
           <template #default="{ row }">
             <div class="operation-buttons">
-              <el-button
-                type="primary"
-                link
-                @click="handleUpdate(row)"
-                class="operation-button"
-              >
-                <el-icon><Edit /></el-icon>
-                <span>变更</span>
-              </el-button>
-              <el-button
-                type="info"
-                link
-                @click="handleUpdateRegion(row)"
-                class="operation-button"
-              >
-                <el-icon><Setting /></el-icon>
-                <span>Region同步</span>
-              </el-button>
-              <el-popconfirm
-                title="确定要删除该云厂商吗？"
-                @confirm="handleDelete(row)"
-                width="220"
-              >
-                <template #reference>
-                  <el-button
-                    type="danger"
-                    link
-                    class="operation-button"
-                  >
-                    <el-icon><Delete /></el-icon>
-                    <span>删除</span>
-                  </el-button>
-                </template>
-              </el-popconfirm>
+              <el-tooltip content="变更" placement="top">
+                <el-button
+                  type="primary"
+                  link
+                  @click="handleUpdate(row)"
+                  class="operation-button"
+                >
+                  <el-icon><Edit /></el-icon>
+                  <span>变更</span>
+                </el-button>
+              </el-tooltip>
+              <el-tooltip content="Region同步" placement="top">
+                <el-button
+                  type="info"
+                  link
+                  @click="handleUpdateRegion(row)"
+                  class="operation-button"
+                  :loading="row.syncing"
+                >
+                  <el-icon><Setting /></el-icon>
+                  <span>Region同步</span>
+                </el-button>
+              </el-tooltip>
+              <el-tooltip content="删除" placement="top">
+                <el-popconfirm
+                  title="确定要删除该云厂商吗？"
+                  @confirm="handleDelete(row)"
+                  width="220"
+                >
+                  <template #reference>
+                    <el-button
+                      type="danger"
+                      link
+                      class="operation-button"
+                    >
+                      <el-icon><Delete /></el-icon>
+                      <span>删除</span>
+                    </el-button>
+                  </template>
+                </el-popconfirm>
+              </el-tooltip>
             </div>
           </template>
         </el-table-column>
@@ -247,7 +286,8 @@ import {
   Setting,
   Monitor,
   Calendar,
-  Timer
+  Timer,
+  Warning
 } from '@element-plus/icons-vue'
 import { 
   cloudplatformlist, 
@@ -291,6 +331,8 @@ const form = ref<CloudProviderForm>({
 
 // 选中的行
 const selectedRows = ref<CloudProvider[]>([])
+const lastSyncTime = ref('')
+const errorCount = ref(0)
 
 // 表单验证规则
 const rules: FormRules = {
@@ -317,30 +359,6 @@ const getPlatformLabel = (platform: string) => {
     aws: 'AWS'
   }
   return platformMap[platform] || platform
-}
-
-// 获取平台标签类型
-const getPlatformTagType = (platform: string) => {
-  const typeMap: Record<string, string> = {
-    aliyun: 'success',
-    tencent: 'primary',
-    huawei: 'warning',
-    aws: 'danger'
-  }
-  return typeMap[platform] || 'info'
-}
-
-// 格式化日期
-const formatDate = (date: string) => {
-  if (!date) return ''
-  return new Date(date).toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  })
 }
 
 // 获取表格数据
@@ -558,6 +576,19 @@ const handleBatchDelete = async () => {
     console.error('批量删除云厂商失败:', error)
     ElMessage.error('批量删除云厂商失败')
   }
+}
+
+// 格式化日期
+const formatDate = (date: string) => {
+  if (!date) return ''
+  return new Date(date).toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  })
 }
 
 // 初始化
