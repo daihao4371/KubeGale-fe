@@ -23,7 +23,7 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
-    return response
+    return response.data
   },
   (error) => {
     console.error('响应错误:', error)
@@ -33,7 +33,7 @@ service.interceptors.response.use(
 )
 
 // 封装请求方法
-const request = <T = unknown>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> => {
+const request = <T = unknown>(config: AxiosRequestConfig): Promise<T> => {
   return service(config)
 }
 

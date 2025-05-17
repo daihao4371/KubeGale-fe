@@ -83,6 +83,31 @@ const router = createRouter({
             title: 'IM通知管理'
           }
         },
+        // 添加云资产管理路由
+        {
+          path: 'cloud-assets',
+          name: 'cloud-assets',
+          component: () => import('@/views/cloudCmdb/index.vue'),
+          meta: {
+            requiresAuth: true,
+            title: '云资产管理'
+          },
+          children: [
+            {
+              path: '',
+              redirect: '/homepage/cloud-assets/provider'
+            },
+            {
+              path: 'provider',
+              name: 'cloud-provider',
+              component: () => import('@/views/cloudCmdb/provider/index.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '云厂商管理'
+              }
+            }
+          ]
+        },
         {
           path: 'cmdb',
           name: 'cmdb',
