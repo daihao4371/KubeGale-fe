@@ -1,14 +1,11 @@
 import request from '@/utils/request'
 import type { ApiResponse } from '@/types/cloudCmdb'
 
-interface IdParams {
-  id: number
-}
-
-export const syncRegion = (params: IdParams) => {
-  return request<ApiResponse>({
-    url: '/cloudcmdb/cloud_region/sync',
+// 同步Region
+export const syncRegion = (data: { id: number }): Promise<ApiResponse<null>> => {
+  return request<ApiResponse<null>>({
+    url: '/cloud_region/syncRegion',
     method: 'post',
-    data: params
+    data
   })
 }

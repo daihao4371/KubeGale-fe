@@ -428,8 +428,8 @@ const handleUpdateRegion = async (row: CloudProvider) => {
   try {
     const response = await syncRegion({ id: row.id })
     if (response.code === 0) {
-      ElMessage.success('同步区域成功')
-      getTableData()
+      ElMessage.success(response.msg || '同步操作成功, 数据异步处理中, 请稍后!')
+      // 由于是异步处理，这里不需要立即刷新表格
     } else {
       ElMessage.error(response.msg || '同步区域失败')
     }
