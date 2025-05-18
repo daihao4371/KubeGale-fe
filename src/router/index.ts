@@ -105,6 +105,15 @@ const router = createRouter({
                 requiresAuth: true,
                 title: '云厂商管理'
               }
+            },
+            {
+              path: 'loadbalancer',
+              name: 'cloud-loadbalancer',
+              component: () => import('@/views/cloudCmdb/loadbalancer/index.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '负载均衡'
+              }
             }
           ]
         },

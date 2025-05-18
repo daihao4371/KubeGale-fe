@@ -18,7 +18,9 @@ import {
   Menu,
   HomeFilled,
   DataAnalysis,
-  ChatDotRound
+  ChatDotRound,
+  Cloudy,
+  Operation
 } from '@element-plus/icons-vue'
 
 interface MenuItem {
@@ -62,7 +64,8 @@ export default function useHomepage() {
       icon: 'DataAnalysis', 
       path: '/homepage/cloud-assets',
       children: [
-        { id: 'cloud-provider', title: '云厂商管理', icon: 'Connection', path: '/homepage/cloud-assets/provider' },
+        { id: 'cloud-provider', title: '云厂商管理', icon: 'Cloudy', path: '/homepage/cloud-assets/provider' },
+        { id: 'cloud-loadbalancer', title: '负载均衡', icon: 'Operation', path: '/homepage/cloud-assets/loadbalancer' },
       ]
     },
     { id: 'im', title: 'IM通知管理', icon: 'ChatDotRound', path: '/homepage/im' },
