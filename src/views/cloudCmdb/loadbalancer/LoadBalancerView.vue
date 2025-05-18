@@ -31,13 +31,36 @@
           </el-form-item>
         </el-form>
         <!-- 实例表格 -->
-        <el-table :data="tableData" v-loading="loading" class="table-container">
+        <el-table 
+          :data="tableData" 
+          v-loading="loading" 
+          class="table-container"
+          height="100%"
+          :max-height="'calc(100vh - 300px)'"
+        >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="id" label="实例ID / 名称" min-width="180" />
-          <el-table-column prop="status" label="状态" width="100" />
-          <el-table-column prop="region" label="可用区" width="120" />
-          <el-table-column prop="ip" label="IP地址" width="140" />
-          <el-table-column label="操作" width="120">
+          <el-table-column prop="name" label="实例名称" min-width="180" show-overflow-tooltip />
+          <el-table-column prop="instance_id" label="实例ID" min-width="280" show-overflow-tooltip />
+          <el-table-column prop="status" label="状态" width="100">
+            <template #default="{ row }">
+              <el-tag :type="row.status === '运行中' ? 'success' : 'danger'">
+                {{ row.status }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="region_name" label="区域" width="120" />
+          <el-table-column label="IP地址" width="200">
+            <template #default="{ row }">
+              <div v-if="row.private_addr">私网: {{ row.private_addr }}</div>
+              <div v-if="row.public_addr">公网: {{ row.public_addr }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="creation_time" label="创建时间" width="180">
+            <template #default="{ row }">
+              {{ new Date(row.creation_time).toLocaleString() }}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="120" fixed="right">
             <template #default>
               <el-button type="primary" link size="small">详情</el-button>
             </template>
@@ -61,8 +84,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import useLoadBalancer from './loadbalancer'
-import './loadbalancer.css'
+import './LoadBalancerView.css'
+import useLoadBalancer from './LoadBalancerView'
 
 const {
   treeData,

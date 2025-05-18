@@ -15,20 +15,58 @@ interface LoadBalancerForm {
   region: string
 }
 
-// 负载均衡列表响应类型
-interface LoadBalancerListResponse {
-  code: number
-  msg: string
-  data: {
-    list: Array<{
-      id: number
-      name: string
-      provider: string
-      region: string | null
-      created_at?: string
-    }>
-    total: number
+// 负载均衡列表请求参数
+export interface LoadBalancerListParams {
+  loadBalancer: {
+    name?: string
+    instanceId?: string
+    region?: string
   }
+  page: number
+  pageSize: number
+  keyword?: string
+  field?: string
+  orderKey?: 'id' | 'instance_id' | 'name' | 'status'
+  desc?: boolean
+}
+
+// 负载均衡列表项类型
+export interface LoadBalancerItem {
+  id: number
+  name: string
+  instance_id: string
+  private_addr: string
+  public_addr: string
+  bandwidth: string
+  region: string
+  region_name: string
+  status: string
+  creation_time: string
+  expired_time: string
+  cloud_platform_id: number
+  cloud_platform: {
+    id: number
+    name: string
+    access_key_id: string
+    access_key_secret: string
+    platform: string
+    created_at: string
+    updated_at: string
+  }
+  created_at: string
+  updated_at: string
+}
+
+// 负载均衡列表响应类型
+export interface LoadBalancerListResponse {
+  code: number
+  data: {
+    list: LoadBalancerItem[]
+    total: number
+    page: number
+    pageSize: number
+  }
+  msg: string
 }
 
 // 负载均衡树形结构响应类型
@@ -55,11 +93,11 @@ export interface SyncResponse {
 }
 
 // 获取负载均衡列表
-export const getLoadBalancerList = (params: LoadBalancerParams) => {
+export const getLoadBalancerList = (params: LoadBalancerListParams) => {
   return request<LoadBalancerListResponse>({
-    url: '/api/v1/cloud/loadbalancer/list',
-    method: 'get',
-    params
+    url: '/loadBalancer/list',
+    method: 'post',
+    data: params
   })
 }
 

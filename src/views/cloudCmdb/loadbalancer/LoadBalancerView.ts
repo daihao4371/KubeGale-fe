@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getLoadBalancerTree, syncLoadBalancer } from '@/api/cloudCmdb/cloud_load_balancer'
+import { getLoadBalancerTree, syncLoadBalancer, getLoadBalancerList } from '@/api/cloudCmdb/cloud_load_balancer'
+import type { LoadBalancerItem } from '@/api/cloudCmdb/cloud_load_balancer'
 
 // 类型定义
 export interface TreeNode {
@@ -16,7 +17,7 @@ export interface SearchInfo {
 export default function useLoadBalancer() {
   // 状态定义
   const treeData = ref<TreeNode[]>([])
-  const tableData = ref([])
+  const tableData = ref<LoadBalancerItem[]>([])
   const loading = ref(false)
   const treeLoading = ref(false)
   const total = ref(0)
@@ -53,19 +54,61 @@ export default function useLoadBalancer() {
     }
   }
 
+  // 获取列表数据
+  const fetchList = async () => {
+    if (!currentProviderId.value) return
+
+    try {
+      loading.value = true
+      const params = {
+        loadBalancer: {
+          name: searchInfo.value.keyword || '',
+          instanceId: searchInfo.value.keyword || '',
+          region: ''
+        },
+        page: page.value,
+        pageSize: pageSize.value,
+        keyword: '',
+        field: '',
+        orderKey: 'id' as const,
+        desc: false
+      }
+
+      const res = await getLoadBalancerList(params)
+      if (res.code === 0) {
+        tableData.value = res.data.list
+        total.value = res.data.total
+        // 更新分页信息
+        page.value = res.data.page
+        pageSize.value = res.data.pageSize
+      } else {
+        ElMessage.error(res.msg || '获取列表失败')
+      }
+    } catch (error) {
+      console.error('获取列表失败:', error)
+      ElMessage.error('获取列表失败')
+    } finally {
+      loading.value = false
+    }
+  }
+
   // 处理树节点点击
   const handleTreeNodeClick = (node: TreeNode) => {
     currentProvider.value = node.label
     currentProviderId.value = node.id
+    fetchList()
   }
 
   // 搜索相关方法
   const onSearch = () => {
-    // TODO: 实现搜索逻辑
+    page.value = 1 // 重置到第一页
+    fetchList()
   }
 
   const onReset = () => {
     searchInfo.value.keyword = ''
+    page.value = 1
+    fetchList()
   }
 
   // 同步相关方法
@@ -92,12 +135,15 @@ export default function useLoadBalancer() {
   }
 
   // 分页相关方法
-  const handleSizeChange = (val: number) => {
+  const handleSizeChange = async (val: number) => {
     pageSize.value = val
+    page.value = 1 // 切换每页条数时重置到第一页
+    await fetchList()
   }
 
-  const handleCurrentChange = (val: number) => {
+  const handleCurrentChange = async (val: number) => {
     page.value = val
+    await fetchList()
   }
 
   return {
@@ -119,6 +165,7 @@ export default function useLoadBalancer() {
     onReset,
     onSync,
     handleSizeChange,
-    handleCurrentChange
+    handleCurrentChange,
+    fetchList
   }
 }

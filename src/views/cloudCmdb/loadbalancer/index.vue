@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import LoadBalancerManager from './loadbalancer.vue'
+import LoadBalancerManager from './LoadBalancerView.vue'
 
 // 定义组件名称为多词名称
 defineOptions({
