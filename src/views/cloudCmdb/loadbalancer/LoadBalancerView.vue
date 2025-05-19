@@ -18,7 +18,7 @@
     </div>
     <!-- 右侧表格内容 -->
     <div class="main-content">
-      <el-card>
+      <el-card class="main-card">
         <!-- 搜索栏 -->
         <el-form :inline="true" :model="searchInfo" class="search-form">
           <el-form-item label="识别搜索">
@@ -30,56 +30,84 @@
             <el-button type="primary" @click="onSync">同步</el-button>
           </el-form-item>
         </el-form>
-        <!-- 实例表格 -->
-        <el-table 
-          :data="tableData" 
-          v-loading="loading" 
-          class="table-container"
-          height="100%"
-          :max-height="'calc(100vh - 300px)'"
-        >
-          <el-table-column type="selection" width="55" />
-          <el-table-column prop="name" label="实例名称" min-width="180" show-overflow-tooltip />
-          <el-table-column prop="instance_id" label="实例ID" min-width="280" show-overflow-tooltip />
-          <el-table-column prop="status" label="状态" width="100">
-            <template #default="{ row }">
-              <el-tag :type="row.status === '运行中' ? 'success' : 'danger'">
-                {{ row.status }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="region_name" label="区域" width="120" />
-          <el-table-column label="IP地址" width="200">
-            <template #default="{ row }">
-              <div v-if="row.private_addr">私网: {{ row.private_addr }}</div>
-              <div v-if="row.public_addr">公网: {{ row.public_addr }}</div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="creation_time" label="创建时间" width="180">
-            <template #default="{ row }">
-              {{ new Date(row.creation_time).toLocaleString() }}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="120" fixed="right">
-            <template #default>
-              <el-button type="primary" link size="small">详情</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <!-- 分页 -->
-        <el-pagination
-          v-model:current-page="page"
-          v-model:page-size="pageSize"
-          :total="total"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          class="pagination-container"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+        <!-- 表格内容 -->
+        <div class="table-wrapper">
+          <el-table
+            :data="tableData"
+            v-loading="loading"
+            class="table-container"
+            :max-height="500"
+            style="width: 100%;"
+            border
+          >
+            <el-table-column type="selection" width="55" />
+            <el-table-column prop="name" label="实例名称" min-width="180" show-overflow-tooltip />
+            <el-table-column prop="instance_id" label="实例ID" min-width="280" show-overflow-tooltip />
+            <el-table-column prop="status" label="状态" width="100">
+              <template #default="{ row }">
+                <el-tag :type="row.status === '运行中' ? 'success' : 'danger'">
+                  {{ row.status }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="region_name" label="区域" width="120" />
+            <el-table-column label="IP地址" width="200">
+              <template #default="{ row }">
+                <div v-if="row.private_addr">私网: {{ row.private_addr }}</div>
+                <div v-if="row.public_addr">公网: {{ row.public_addr }}</div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="creation_time" label="创建时间" width="180">
+              <template #default="{ row }">
+                {{ new Date(row.creation_time).toLocaleString() }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="120" fixed="right">
+              <template #default="{ row }">
+                <el-button type="primary" link size="small" @click="handleDetail(row)">详情</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <!-- 分页条 -->
+        <div class="pagination-container">
+          <el-pagination
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
       </el-card>
     </div>
   </div>
+
+  <!-- 详情对话框 -->
+  <el-dialog
+    v-model="detailDialogVisible"
+    title="负载均衡器详情"
+    width="800px"
+    destroy-on-close
+  >
+    <el-descriptions :column="2" border>
+      <el-descriptions-item label="实例名称" :span="2">{{ currentDetail?.name }}</el-descriptions-item>
+      <el-descriptions-item label="实例ID" :span="2">{{ currentDetail?.instance_id }}</el-descriptions-item>
+      <el-descriptions-item label="状态">
+        <el-tag :type="currentDetail?.status === '运行中' ? 'success' : 'danger'">
+          {{ currentDetail?.status }}
+        </el-tag>
+      </el-descriptions-item>
+      <el-descriptions-item label="区域">{{ currentDetail?.region_name }}</el-descriptions-item>
+      <el-descriptions-item label="私网IP">{{ currentDetail?.private_addr }}</el-descriptions-item>
+      <el-descriptions-item label="公网IP">{{ currentDetail?.public_addr }}</el-descriptions-item>
+      <el-descriptions-item label="创建时间" :span="2">
+        {{ currentDetail?.creation_time ? new Date(currentDetail.creation_time).toLocaleString() : '-' }}
+      </el-descriptions-item>
+    </el-descriptions>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -89,83 +117,27 @@ import useLoadBalancer from './LoadBalancerView'
 
 const {
   treeData,
-  tableData,
   loading,
   treeLoading,
-  total,
-  page,
-  pageSize,
   searchInfo,
+  pageSize,
+  currentPage,
+  total,
+  tableData,
+  detailDialogVisible,
+  currentDetail,
   fetchTreeData,
   handleTreeNodeClick,
   onSearch,
   onReset,
   onSync,
+  handleCurrentChange,
   handleSizeChange,
-  handleCurrentChange
+  handleDetail
 } = useLoadBalancer()
 
 // 初始化
 onMounted(() => {
   fetchTreeData()
 })
-</script>
-
-<style scoped>
-.loadbalancer-layout {
-  display: flex;
-  height: 100%;
-  gap: 20px;
-  padding: 20px;
-}
-
-.sidebar {
-  width: 280px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar-title {
-  font-weight: bold;
-  margin-bottom: 16px;
-  font-size: 16px;
-  color: var(--el-text-color-primary);
-}
-
-.el-card {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  box-shadow: var(--el-box-shadow-light);
-}
-
-.el-tree {
-  flex: 1;
-  overflow: auto;
-  padding: 8px;
-}
-
-:deep(.el-tree-node__content) {
-  height: 40px;
-  border-radius: 4px;
-}
-
-:deep(.el-tree-node__content:hover) {
-  background-color: var(--el-color-primary-light-9);
-}
-
-:deep(.el-tree-node.is-current > .el-tree-node__content) {
-  background-color: var(--el-color-primary-light-8);
-}
-
-.main-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.search-form {
-  margin-bottom: 16px;
-}
-</style> 
+</script> 
