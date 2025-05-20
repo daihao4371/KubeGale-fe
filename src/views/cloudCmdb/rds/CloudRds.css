@@ -1,0 +1,46 @@
+.rds-manager-container {
+  height: 100%;
+  padding: 20px;
+}
+
+.rds-layout {
+  display: flex;
+  height: 100%;
+  gap: 20px;
+}
+
+.platform-tree {
+  width: 240px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.content-area {
+  flex: 1;
+  overflow: auto;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.search-form {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+}
+
+.pagination-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}

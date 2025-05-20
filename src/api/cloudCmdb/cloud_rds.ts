@@ -29,12 +29,12 @@ export const createRds = (data: Omit<RdsInstance, 'id' | 'created_at' | 'updated
   })
 }
 
-// 更新RDS实例
-export const updateRds = (data: Partial<RdsInstance> & { id: number }): Promise<ApiResponse<null>> => {
-  return request<ApiResponse<null>>({
-    url: '/cloud_rds/update',
-    method: 'put',
-    data
+// 获取单个RDS实例信息
+export const getRdsInstance = (params: { name?: string; instanceId?: string }): Promise<ApiResponse<RdsInstance>> => {
+  return request<ApiResponse<RdsInstance>>({
+    url: '/rds/get',
+    method: 'post',
+    data: params
   })
 }
 
@@ -62,22 +62,6 @@ export interface Region {
   name: string
   region_id: string
   region_name: string
-}
-
-// 新增：获取区域列表
-export const getRegions = (): Promise<ApiResponse<{ regions: Region[] }>> => {
-  return request<ApiResponse<{ regions: Region[] }>>({
-    url: '/cloud_rds/regions',
-    method: 'get'
-  })
-}
-
-// 获取安全组列表
-export const getSecurityGroups = (): Promise<ApiResponse<{ groups: { id: string; name: string }[] }>> => {
-  return request<ApiResponse<{ groups: { id: string; name: string }[] }>>({
-    url: '/cloud_rds/security_groups',
-    method: 'get'
-  })
 }
 
 // 云平台树形结构响应接口

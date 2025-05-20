@@ -26,22 +26,7 @@
               <el-input v-model="searchForm.name" placeholder="请输入实例名称" clearable />
             </el-form-item>
             <el-form-item label="实例ID">
-              <el-input v-model="searchForm.instance_id" placeholder="请输入实例ID" clearable />
-            </el-form-item>
-            <el-form-item label="区域">
-              <RegionTreeSelect
-                v-model="searchForm.region"
-                placeholder="请选择区域"
-                ref="regionSelectRef"
-              />
-            </el-form-item>
-            <el-form-item label="状态">
-              <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 160px">
-                <el-option label="运行中" value="running" />
-                <el-option label="已停止" value="stopped" />
-                <el-option label="创建中" value="creating" />
-                <el-option label="已删除" value="deleted" />
-              </el-select>
+              <el-input v-model="searchForm.instanceId" placeholder="请输入实例ID" clearable />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleSearch">
@@ -91,7 +76,8 @@
               </template>
             </el-table-column>
           </el-table>
-
+          
+          <!-- 分页组件 -->
           <div class="pagination-container">
             <el-pagination
               v-model:current-page="currentPage"
@@ -153,224 +139,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { onMounted } from 'vue'
 import { 
   View,
   Search, 
   Refresh, 
   RefreshRight
 } from '@element-plus/icons-vue'
-import { 
-  getRdsList,
-  syncRds,
-} from '@/api/cloudCmdb/cloud_rds'
-import type { RdsInstance } from '@/types/cloudCmdb'
 import CloudPlatformTree from './components/CloudPlatformTree.vue'
-import RegionTreeSelect from './components/RegionTreeSelect.vue'
-import type { PlatformRegionTreeItem, RegionNode } from '@/api/cloudCmdb/cloud_rds'
+import './CloudRds.css'
+import {
+  loading,
+  currentPage,
+  total,
+  pageSize,
+  tableData,
+  detailVisible,
+  currentInstance,
+  searchForm,
+  formatDateTime,
+  getStatusType,
+  loadData,
+  handleSearch,
+  handleResetSearch,
+  handleSync,
+  handlePlatformSelect,
+  handleView,
+  handleSizeChange,
+  handleCurrentChange
+} from './CloudRds'
 
 defineOptions({
   name: 'RdsManagerView'
 })
-
-// 状态定义
-const loading = ref(false)
-const currentPage = ref(1)
-const total = ref(0)
-const pageSize = ref(10)
-const tableData = ref<RdsInstance[]>([])
-const regionSelectRef = ref()
-const selectedPlatformId = ref<number | null>(null)
-const detailVisible = ref(false)
-const currentInstance = ref<RdsInstance | null>(null)
-
-// 搜索表单
-const searchForm = reactive({
-  name: '',
-  instance_id: '',
-  region: '',
-  status: '',
-  cloud_platform_id: 0
-})
-
-// 日期格式化函数
-const formatDateTime = (dateStr: string) => {
-  if (!dateStr) return '-'
-  const date = new Date(dateStr)
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  })
-}
-
-// 获取状态类型
-const getStatusType = (status: string) => {
-  const types: Record<string, string> = {
-    '可用': 'success',
-    '不可用': 'danger',
-    '创建中': 'info',
-    '已删除': 'info'
-  }
-  return types[status] || 'info'
-}
-
-// 处理页码变化
-const handleCurrentChange = (page: number) => {
-  currentPage.value = page
-  loadData()
-}
-
-// 处理每页条数变化
-const handleSizeChange = (size: number) => {
-  pageSize.value = size
-  currentPage.value = 1
-  loadData()
-}
-
-// 加载数据
-const loadData = async () => {
-  loading.value = true
-  try {
-    const res = await getRdsList({
-      page: currentPage.value,
-      pageSize: pageSize.value,
-      ...searchForm
-    })
-    if (res.code === 0) {
-      tableData.value = res.data.list
-      total.value = res.data.total
-    } else {
-      ElMessage.error(res.msg || '加载数据失败')
-    }
-  } catch (error) {
-    console.error('加载数据失败:', error)
-    ElMessage.error('加载数据失败')
-  } finally {
-    loading.value = false
-  }
-}
-
-// 处理搜索
-const handleSearch = () => {
-  currentPage.value = 1
-  loadData()
-}
-
-// 重置搜索
-const handleResetSearch = () => {
-  Object.assign(searchForm, {
-    name: '',
-    instance_id: '',
-    region: '',
-    status: '',
-    cloud_platform_id: 0
-  })
-  handleSearch()
-}
-
-// 处理同步
-const handleSync = async () => {
-  if (!selectedPlatformId.value) {
-    ElMessage.warning('请先选择云平台')
-    return
-  }
-  try {
-    loading.value = true
-    const res = await syncRds({ id: selectedPlatformId.value })
-    if (res.code === 0) {
-      ElMessage.success(res.msg || '同步成功')
-      loadData()
-    } else {
-      ElMessage.error(res.msg || '同步失败')
-    }
-  } catch (error) {
-    console.error('同步失败:', error)
-    ElMessage.error('同步失败')
-  } finally {
-    loading.value = false
-  }
-}
-
-// 处理云平台选择
-const handlePlatformSelect = ({ platform, region }: { platform: PlatformRegionTreeItem; region: RegionNode | null }) => {
-  if (platform && !region) {
-    // 选中平台节点
-    selectedPlatformId.value = platform.id
-    searchForm.cloud_platform_id = platform.id
-    searchForm.region = ''
-    loadData()
-  } else if (platform && region) {
-    // 选中区域节点
-    selectedPlatformId.value = null
-    searchForm.cloud_platform_id = platform.id
-    searchForm.region = region.region_id
-    loadData()
-  }
-}
-
-// 处理详情
-const handleView = (row: RdsInstance) => {
-  currentInstance.value = row
-  detailVisible.value = true
-}
 
 // 页面加载时获取数据
 onMounted(() => {
   loadData()
 })
 </script>
-
-<style scoped>
-.rds-manager-container {
-  height: 100%;
-  padding: 20px;
-}
-
-.rds-layout {
-  display: flex;
-  height: 100%;
-  gap: 20px;
-}
-
-.platform-tree {
-  width: 240px;
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
-
-.content-area {
-  flex: 1;
-  overflow: auto;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.search-form {
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: #f8f8f8;
-  border-radius: 4px;
-}
-
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-</style>
