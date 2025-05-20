@@ -131,7 +131,8 @@ KubeGale-fe/
 - ![img.png](image/负载均衡.png)
 - 云数据库
 - ![img.png](image/云数据库.png)
-
+- 云服务器
+- ![img.png](image/云服务器.png)
 
 
 
