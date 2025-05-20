@@ -94,22 +94,14 @@
 <script setup lang="ts">
 import useHomepage from './homepage.ts'
 import { 
-  Setting, 
-  Document, 
-  Ship, 
-  Monitor, 
-  Tools, 
-  Box, 
-  Connection,
   SwitchButton,
   ArrowDown,
-  ArrowRight,
-  User,
-  UserFilled,
-  Menu,
-  HomeFilled,
-  DataAnalysis
+  ArrowRight
 } from '@element-plus/icons-vue'
+
+defineOptions({
+  name: 'HomePageView'
+})
 
 const {
   menuItems,

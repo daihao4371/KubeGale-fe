@@ -2,6 +2,26 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { logout } from '@/api/login/login'
+import { 
+  Setting, 
+  Document, 
+  Ship, 
+  Monitor, 
+  Tools, 
+  Box, 
+  Connection,
+  SwitchButton,
+  ArrowDown,
+  ArrowRight,
+  User,
+  UserFilled,
+  Menu,
+  HomeFilled,
+  DataAnalysis,
+  ChatDotRound,
+  Cloudy,
+  Operation
+} from '@element-plus/icons-vue'
 
 interface MenuItem {
   id: string
@@ -38,6 +58,18 @@ export default function useHomepage() {
         { id: 'system-menu', title: '操作记录', icon: 'Document', path: '/system/menuManager' },
       ]
     },
+    { 
+      id: 'cloud-assets', 
+      title: '云资产管理', 
+      icon: 'DataAnalysis', 
+      path: '/homepage/cloud-assets',
+      children: [
+        { id: 'cloud-provider', title: '云厂商管理', icon: 'Cloudy', path: '/homepage/cloud-assets/provider' },
+        { id: 'cloud-loadbalancer', title: '负载均衡', icon: 'Operation', path: '/homepage/cloud-assets/loadbalancer' },
+        { id: 'cloud-rds', title: '云数据库', icon: 'DataAnalysis', path: '/homepage/cloud-assets/rds' },
+      ]
+    },
+    { id: 'im', title: 'IM通知管理', icon: 'ChatDotRound', path: '/homepage/im' },
     { id: 'cmdb', title: 'CMDB资产管理', icon: 'DataAnalysis', path: '/homepage/cmdb' },
     { id: 'kubernetes', title: 'k8s管理', icon: 'Ship', path: '/homepage/kubernetes' },
     { id: 'prometheus', title: 'Prometheus监控管理', icon: 'Monitor', path: '/homepage/prometheus' },
@@ -46,7 +78,7 @@ export default function useHomepage() {
     { id: 'cicd', title: 'CICD', icon: 'Connection', path: '/homepage/cicd' }
   ])
 
-  const expandedMenus = ref<string[]>(['system']) // 默认展开系统管理菜单
+  const expandedMenus = ref<string[]>(['system', 'cloud-assets']) // 默认展开系统管理和云资产管理菜单
   
   // 初始化时导航到仪表盘
   router.push('/dashboard')

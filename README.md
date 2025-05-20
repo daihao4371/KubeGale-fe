@@ -123,6 +123,14 @@ KubeGale-fe/
 ![img.png](image/api管理.png)
 - 操作记录
 ![img.png](image/操作记录.png)
+- IM通知
+![img.png](image/im.png)
+- 云厂商管理
+- ![img.png](image/云厂商管理.png)
+- 负载均衡
+- ![img.png](image/负载均衡.png)
+
+
 
 
 ## 后端地址

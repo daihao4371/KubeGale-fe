@@ -1,0 +1,164 @@
+.loadbalancer-layout {
+    display: flex;
+    height: 100vh;
+    gap: 20px;
+    padding: 20px;
+    min-width: 0;
+  }
+  
+  .sidebar {
+    width: 280px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  
+  .sidebar-title {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    font-weight: bold;
+    font-size: 16px;
+    color: var(--el-text-color-primary);
+  }
+  
+  .el-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.04);
+    background: #fff;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0;
+    min-width: 0;
+  }
+  
+  .el-tree {
+    flex: 1;
+    overflow: auto;
+    padding: 8px;
+    min-width: 0;
+  }
+  
+  :deep(.el-tree-node__content) {
+    height: 40px;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: background 0.2s;
+  }
+  
+  :deep(.el-tree-node__content:hover) {
+    background: #f5f7fa;
+  }
+  
+  :deep(.el-tree-node.is-current > .el-tree-node__content) {
+    background: var(--el-color-primary-light-8);
+    color: var(--el-color-primary);
+  }
+  
+  .main-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .main-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    min-width: 0;
+    height: 100%;
+  }
+  
+  .search-form {
+    background: #f7f8fa;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .search-form .el-input {
+    width: 220px;
+  }
+
+  .search-form .el-button {
+    min-width: 80px;
+  }
+
+  /* 表格相关样式 */
+  .table-wrapper {
+    flex: 1;
+    overflow: auto;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    height: 100%;
+  }
+
+  .table-container {
+    background: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+    height: 100%;
+    min-width: 0;
+  }
+
+  /* 表格内容区域样式 */
+  :deep(.el-table__body-wrapper) {
+    overflow-y: auto;
+    height: 100% !important;
+  }
+
+  :deep(.el-table__header-wrapper) {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  :deep(.el-table th) {
+    background: #f5f7fa;
+    color: #333;
+    font-weight: 600;
+  }
+
+  :deep(.el-table__row:hover) {
+    background: #f0f7ff;
+  }
+
+  :deep(.el-table .el-tag) {
+    border-radius: 4px;
+    font-size: 13px;
+    padding: 0 8px;
+  }
+
+  /* 分页条美化 */
+  .pagination-container {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+    background: #fff;
+    padding: 12px 0 0 0;
+    border-radius: 0 0 6px 6px;
+  }
+
+  /* 详情弹窗美化 */
+  :deep(.el-dialog__body) {
+    background: #f7f8fa;
+  }
+
+  :deep(.el-descriptions__label) {
+    color: #888;
+    font-weight: 500;
+  }
+
+  :deep(.el-descriptions__content) {
+    color: #222;
+  }
