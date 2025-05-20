@@ -4,16 +4,7 @@
     <div class="sidebar">
       <el-card>
         <div class="sidebar-title">资源分布</div>
-        <el-tree
-          :data="treeData"
-          node-key="id"
-          :default-expand-all="true"
-          :highlight-current="true"
-          @node-click="handleTreeNodeClick"
-          :props="{ label: 'label' }"
-          v-loading="treeLoading"
-          class="el-tree"
-        />
+        <CloudPlatformTree @select="handlePlatformSelect" />
       </el-card>
     </div>
     <!-- 右侧表格内容 -->
@@ -114,11 +105,10 @@
 import { onMounted } from 'vue'
 import './LoadBalancerView.css'
 import useLoadBalancer from './LoadBalancerView'
+import CloudPlatformTree from '../rds/components/CloudPlatformTree.vue'
 
 const {
-  treeData,
   loading,
-  treeLoading,
   searchInfo,
   pageSize,
   currentPage,
@@ -126,8 +116,8 @@ const {
   tableData,
   detailDialogVisible,
   currentDetail,
-  fetchTreeData,
-  handleTreeNodeClick,
+  init,
+  handlePlatformSelect,
   onSearch,
   onReset,
   onSync,
@@ -138,6 +128,6 @@ const {
 
 // 初始化
 onMounted(() => {
-  fetchTreeData()
+  init()
 })
 </script> 

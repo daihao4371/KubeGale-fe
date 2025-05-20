@@ -1,25 +1,18 @@
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getLoadBalancerTree, syncLoadBalancer, getLoadBalancerList } from '@/api/cloudCmdb/cloud_load_balancer'
+import { syncLoadBalancer, getLoadBalancerList } from '@/api/cloudCmdb/cloud_load_balancer'
 import type { LoadBalancerItem } from '@/api/cloudCmdb/cloud_load_balancer'
+import type { PlatformRegionTreeItem, RegionNode } from '@/api/cloudCmdb/cloud_rds'
 
 // 类型定义
-export interface TreeNode {
-  id: number
-  label: string
-  children: TreeNode[]
-}
-
 export interface SearchInfo {
   keyword: string
 }
 
 export default function useLoadBalancer() {
   // 状态定义
-  const treeData = ref<TreeNode[]>([])
   const tableData = ref<LoadBalancerItem[]>([])
   const loading = ref(false)
-  const treeLoading = ref(false)
   const currentProviderId = ref(0)
   const searchInfo = ref<SearchInfo>({ keyword: '' })
   const pageSize = ref(10)
@@ -28,33 +21,8 @@ export default function useLoadBalancer() {
   const detailDialogVisible = ref(false)
   const currentDetail = ref<LoadBalancerItem | null>(null)
 
-  // 获取树形数据
-  const fetchTreeData = async () => {
-    treeLoading.value = true
-    try {
-      const res = await getLoadBalancerTree()
-      if (res.code === 0) {
-        treeData.value = res.data.list.map(item => ({
-          id: item.id,
-          label: item.name,
-          children: []
-        }))
-        if (treeData.value.length > 0) {
-          handleTreeNodeClick(treeData.value[0])
-        }
-      } else {
-        ElMessage.error(res.msg || '获取云厂商树失败')
-      }
-    } catch (error) {
-      ElMessage.error('获取云厂商树失败')
-    } finally {
-      treeLoading.value = false
-    }
-  }
-
   // 获取列表数据
   const fetchList = async () => {
-    if (!currentProviderId.value) return
     loading.value = true
     try {
       const params = {
@@ -84,9 +52,14 @@ export default function useLoadBalancer() {
     }
   }
 
-  // 树节点点击
-  const handleTreeNodeClick = (node: TreeNode) => {
-    currentProviderId.value = node.id
+  // 初始化
+  const init = () => {
+    fetchList()
+  }
+
+  // 处理平台选择
+  const handlePlatformSelect = (payload: { platform: PlatformRegionTreeItem, region: RegionNode | null }) => {
+    currentProviderId.value = payload.platform.id
     currentPage.value = 1
     fetchList()
   }
@@ -143,10 +116,8 @@ export default function useLoadBalancer() {
   }
 
   return {
-    treeData,
     tableData,
     loading,
-    treeLoading,
     currentProviderId,
     searchInfo,
     pageSize,
@@ -154,8 +125,8 @@ export default function useLoadBalancer() {
     total,
     detailDialogVisible,
     currentDetail,
-    fetchTreeData,
-    handleTreeNodeClick,
+    init,
+    handlePlatformSelect,
     onSearch,
     onReset,
     onSync,
