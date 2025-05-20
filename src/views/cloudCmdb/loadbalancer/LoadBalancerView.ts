@@ -23,7 +23,6 @@ export default function useLoadBalancer() {
 
   // 获取列表数据
   const fetchList = async () => {
-    if (!currentProviderId.value) return
     loading.value = true
     try {
       const params = {
@@ -51,6 +50,11 @@ export default function useLoadBalancer() {
     } finally {
       loading.value = false
     }
+  }
+
+  // 初始化
+  const init = () => {
+    fetchList()
   }
 
   // 处理平台选择
@@ -121,6 +125,7 @@ export default function useLoadBalancer() {
     total,
     detailDialogVisible,
     currentDetail,
+    init,
     handlePlatformSelect,
     onSearch,
     onReset,

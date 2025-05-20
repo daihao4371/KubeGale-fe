@@ -116,6 +116,7 @@ const {
   tableData,
   detailDialogVisible,
   currentDetail,
+  init,
   handlePlatformSelect,
   onSearch,
   onReset,
@@ -127,6 +128,6 @@ const {
 
 // 初始化
 onMounted(() => {
-  // 不再需要初始化树形数据
+  init()
 })
 </script> 
