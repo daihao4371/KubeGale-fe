@@ -1,0 +1,68 @@
+.virtual-machine-container {
+  display: flex;
+  height: 100%;
+}
+
+.platform-tree {
+  width: 300px;
+  border-right: 1px solid #e0e0e0;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.virtual-machine-list {
+  padding: 24px;
+  background: #fff;
+}
+
+.box-card {
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.table-container {
+  overflow: auto;
+  margin-bottom: 0;
+  position: relative;
+}
+
+.table-container :deep(.el-table) {
+  height: 100%;
+}
+
+.table-container :deep(.el-table__body-wrapper) {
+  overflow-y: auto;
+  height: calc(100% - 40px); /* 减去表头高度 */
+}
+
+.table-container :deep(.el-table__header-wrapper) {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.vm-name {
+  color: #888;
+  font-size: 12px;
+}
+
+.pagination-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
+  z-index: 2;
+  position: static;
+  padding: 0;
+}
