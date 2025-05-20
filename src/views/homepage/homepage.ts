@@ -65,6 +65,7 @@ export default function useHomepage() {
       path: '/homepage/cloud-assets',
       children: [
         { id: 'cloud-provider', title: '云厂商管理', icon: 'Cloudy', path: '/homepage/cloud-assets/provider' },
+        { id: 'cloud-virtual-machine', title: '云服务器', icon: 'Monitor', path: '/homepage/cloud-assets/virtualMachine' },
         { id: 'cloud-loadbalancer', title: '负载均衡', icon: 'Operation', path: '/homepage/cloud-assets/loadbalancer' },
         { id: 'cloud-rds', title: '云数据库', icon: 'DataAnalysis', path: '/homepage/cloud-assets/rds' },
       ]

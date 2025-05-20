@@ -107,6 +107,15 @@ const router = createRouter({
               }
             },
             {
+              path: 'virtualMachine',
+              name: 'cloud-virtual-machine',
+              component: () => import('@/views/cloudCmdb/virtualMachine/inde.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '云服务器'
+              }
+            },
+            {
               path: 'loadbalancer',
               name: 'cloud-loadbalancer',
               component: () => import('@/views/cloudCmdb/loadbalancer/index.vue'),
