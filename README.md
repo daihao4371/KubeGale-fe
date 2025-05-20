@@ -129,6 +129,8 @@ KubeGale-fe/
 - ![img.png](image/云厂商管理.png)
 - 负载均衡
 - ![img.png](image/负载均衡.png)
+- 云数据库
+- ![img.png](image/云数据库.png)
 
 
 
