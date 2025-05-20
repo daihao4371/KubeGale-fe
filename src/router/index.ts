@@ -114,6 +114,15 @@ const router = createRouter({
                 requiresAuth: true,
                 title: '负载均衡'
               }
+            },
+            {
+              path: 'rds',
+              name: 'cloud-rds',
+              component: () => import('@/views/cloudCmdb/rds/index.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '云数据库'
+              }
             }
           ]
         },
