@@ -70,8 +70,17 @@ export default function useHomepage() {
         { id: 'cloud-rds', title: '云数据库', icon: 'DataAnalysis', path: '/homepage/cloud-assets/rds' },
       ]
     },
+    { 
+      id: 'cmdb', 
+      title: 'CMDB资产管理', 
+      icon: 'DataAnalysis', 
+      path: '/homepage/cmdb',
+      children: [
+        { id: 'cmdb-project', title: '项目管理', icon: 'Document', path: '/homepage/cmdb/project' }
+      ]
+    },
     { id: 'im', title: 'IM通知管理', icon: 'ChatDotRound', path: '/homepage/im' },
-    { id: 'cmdb', title: 'CMDB资产管理', icon: 'DataAnalysis', path: '/homepage/cmdb' },
+
     { id: 'kubernetes', title: 'k8s管理', icon: 'Ship', path: '/homepage/kubernetes' },
     { id: 'prometheus', title: 'Prometheus监控管理', icon: 'Monitor', path: '/homepage/prometheus' },
     { id: 'config', title: '配置中心', icon: 'Tools', path: '/homepage/config' },

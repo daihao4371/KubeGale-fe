@@ -1,0 +1,58 @@
+.project-container {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.search-bar {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: #f7f8fa;
+  border-radius: 6px;
+}
+
+.action-bar {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.action-right {
+  display: flex;
+  gap: 10px;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+:deep(.el-table) {
+  margin-top: 20px;
+}
+
+:deep(.el-table th) {
+  background: #f5f7fa;
+  color: #333;
+  font-weight: 600;
+}
+
+:deep(.el-table__row:hover) {
+  background: #f0f7ff;
+}
+
+:deep(.el-dialog__body) {
+  padding: 20px 40px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+:deep(.el-button .el-icon) {
+  margin-right: 4px;
+}
