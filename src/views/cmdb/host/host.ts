@@ -1,7 +1,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance } from 'element-plus'
-import type { Host } from './types'
+import type { Host } from '@/types/cmdb'
 import {
   getHostList,
   createHost,
@@ -10,6 +10,7 @@ import {
   batchDeleteHosts,
   getHostDetail
 } from '@/api/cmdb/host'
+import { getProjectList } from '@/api/cmdb/project'
 
 export default function useHost() {
   // 状态管理
@@ -21,30 +22,25 @@ export default function useHost() {
   const total = ref(0)
   const dialogVisible = ref(false)
   const dialogType = ref<'add' | 'edit'>('add')
-  const detailVisible = ref(false)
-  const detailData = ref<Host>({} as Host)
   const formRef = ref<FormInstance>()
 
   // 搜索表单
   const searchForm = reactive({
     name: '',
-    serverHost: '',
-    status: ''
+    ip: ''
   })
 
   // 表单数据
   const formData = reactive({
-    id: 0,
+    ID: 0,
     name: '',
     serverHost: '',
     port: 22,
     username: 'root',
     password: '',
     privateKey: '',
-    authType: 'password',
     project: undefined as number | undefined,
-    note: '',
-    os: ''
+    note: ''
   })
 
   // 表单验证规则
@@ -52,26 +48,52 @@ export default function useHost() {
     name: [{ required: true, message: '请输入主机名称', trigger: 'blur' }],
     serverHost: [{ required: true, message: '请输入IP地址', trigger: 'blur' }],
     port: [{ required: true, message: '请输入端口', trigger: 'blur' }],
+    username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+    password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
     project: [{ required: true, message: '请选择所属项目', trigger: 'change' }]
   }
 
-  // 项目选项（示例数据）
-  const projectOptions = ref([
-    { id: 1, name: '项目A' },
-    { id: 2, name: '项目B' }
-  ])
+  // 项目选项
+  const projectOptions = ref<{ id: number; name: string }[]>([])
+
+  // 获取项目列表
+  const fetchProjectList = async () => {
+    try {
+      const res = await getProjectList({
+        page: 1,
+        pageSize: 1000
+      })
+      if (res.code === 0) {
+        projectOptions.value = res.data.list.map(item => ({
+          id: item.ID,
+          name: item.name
+        }))
+      }
+    } catch (error) {
+      console.error('获取项目列表失败:', error)
+      ElMessage.error('获取项目列表失败')
+    }
+  }
 
   // 获取主机列表
   const fetchList = async () => {
     loading.value = true
     try {
+      // 确保先获取项目列表
+      if (projectOptions.value.length === 0) {
+        await fetchProjectList()
+      }
       const res = await getHostList({
         page: currentPage.value,
         pageSize: pageSize.value,
         ...searchForm
       })
       if (res.code === 0) {
-        tableData.value = res.data.list
+        // 将项目ID映射为项目名称
+        tableData.value = res.data.list.map(host => ({
+          ...host,
+          projectName: projectOptions.value.find(p => p.id === Number(host.project))?.name || '-'
+        }))
         total.value = res.data.total
       }
     } catch (error) {
@@ -104,17 +126,15 @@ export default function useHost() {
   // 新建主机
   const handleAdd = () => {
     dialogType.value = 'add'
-    formData.id = 0
+    formData.ID = 0
     formData.name = ''
     formData.serverHost = ''
     formData.port = 22
     formData.username = 'root'
     formData.password = ''
     formData.privateKey = ''
-    formData.authType = 'password'
     formData.project = undefined
     formData.note = ''
-    formData.os = ''
     dialogVisible.value = true
   }
 
@@ -125,33 +145,13 @@ export default function useHost() {
     dialogVisible.value = true
   }
 
-  // 查看详情
-  const handleDetail = async (row: Host) => {
-    try {
-      const res = await getHostDetail(row.id)
-      if (res.code === 0) {
-        detailData.value = res.data
-        detailVisible.value = true
-      }
-    } catch (error) {
-      console.error('获取主机详情失败:', error)
-      ElMessage.error('获取主机详情失败')
-    }
-  }
-
-  // SSH认证
-  const handleSSH = () => {
-    // TODO: 实现SSH认证功能
-    ElMessage.info('SSH认证功能开发中')
-  }
-
   // 删除主机
   const handleDelete = (row: Host) => {
     ElMessageBox.confirm('确认删除该主机吗？', '提示', {
       type: 'warning'
     }).then(async () => {
       try {
-        const res = await deleteHost({ id: row.id })
+        const res = await deleteHost({ ID: row.ID })
         if (res.code === 0) {
           ElMessage.success('删除成功')
           fetchList()
@@ -174,7 +174,7 @@ export default function useHost() {
     }).then(async () => {
       try {
         const res = await batchDeleteHosts({
-          ids: selectedHosts.value.map(item => item.id)
+          ids: selectedHosts.value.map(item => item.ID)
         })
         if (res.code === 0) {
           ElMessage.success('批量删除成功')
@@ -185,17 +185,6 @@ export default function useHost() {
         ElMessage.error('批量删除主机失败')
       }
     })
-  }
-
-  // 导入成功
-  const handleImportSuccess = () => {
-    ElMessage.success('导入成功')
-    fetchList()
-  }
-
-  // 导入失败
-  const handleImportError = () => {
-    ElMessage.error('导入失败')
   }
 
   // 提交表单
@@ -234,28 +223,16 @@ export default function useHost() {
     fetchList()
   }
 
-  // 状态相关
-  const getStatusType = (status?: string) => {
-    const map: Record<string, string> = {
-      online: 'success',
-      offline: 'danger',
-      maintenance: 'warning'
-    }
-    return map[status || ''] || 'info'
-  }
-
-  const getStatusText = (status?: string) => {
-    const map: Record<string, string> = {
-      online: '在线',
-      offline: '离线',
-      maintenance: '维护中'
-    }
-    return map[status || ''] || '未知'
+  // 打开终端
+  const handleTerminal = (row: Host) => {
+    // TODO: 实现终端连接逻辑
+    console.log('打开终端:', row)
   }
 
   // 初始化
   onMounted(() => {
     fetchList()
+    fetchProjectList()
   })
 
   return {
@@ -267,8 +244,6 @@ export default function useHost() {
     total,
     dialogVisible,
     dialogType,
-    detailVisible,
-    detailData,
     formRef,
     searchForm,
     formData,
@@ -279,16 +254,11 @@ export default function useHost() {
     handleSelectionChange,
     handleAdd,
     handleEdit,
-    handleDetail,
-    handleSSH,
     handleDelete,
     handleBatchDelete,
-    handleImportSuccess,
-    handleImportError,
     handleSubmit,
     handleSizeChange,
     handleCurrentChange,
-    getStatusType,
-    getStatusText
+    handleTerminal
   }
 }

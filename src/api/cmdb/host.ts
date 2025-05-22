@@ -16,16 +16,14 @@ interface ListResponse<T> {
 
 // 获取主机列表
 export const getHostList = (params: {
+  project?: number
   page: number
   pageSize: number
-  name?: string
-  serverHost?: string
-  status?: string
 }) => {
   return request<ApiResponse<ListResponse<Host>>>({
-    url: '/cmdb/hosts',
-    method: 'get',
-    params
+    url: '/cmdb/hostsList',
+    method: 'post',
+    data: params
   })
 }
 
@@ -35,16 +33,9 @@ export const createHost = (data: {
   serverHost: string
   port: number
   username: string
-  password?: string
-  privateKey?: string
+  password: string
   project: number
   note?: string
-  os?: string
-  osVersion?: string
-  osArch?: string
-  status?: string
-  publicIP?: string
-  privateIP?: string
 }) => {
   return request<ApiResponse>({
     url: '/cmdb/hosts',
@@ -55,21 +46,14 @@ export const createHost = (data: {
 
 // 更新主机
 export const updateHost = (data: {
-  id: number
+  ID: number
   name?: string
   serverHost?: string
   port?: number
   username?: string
   password?: string
-  privateKey?: string
   project?: number
   note?: string
-  os?: string
-  osVersion?: string
-  osArch?: string
-  status?: string
-  publicIP?: string
-  privateIP?: string
 }) => {
   return request<ApiResponse>({
     url: '/cmdb/hosts',
@@ -79,7 +63,7 @@ export const updateHost = (data: {
 }
 
 // 删除主机
-export const deleteHost = (data: { id: number }) => {
+export const deleteHost = (data: { ID: number }) => {
   return request<ApiResponse>({
     url: '/cmdb/hosts',
     method: 'delete',
