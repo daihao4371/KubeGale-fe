@@ -63,7 +63,7 @@ export const updateHost = (data: {
 }
 
 // 删除主机
-export const deleteHost = (data: { ID: number }) => {
+export const deleteHost = (data: { id: number }) => {
   return request<ApiResponse>({
     url: '/cmdb/hosts',
     method: 'delete',

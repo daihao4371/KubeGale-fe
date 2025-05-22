@@ -151,9 +151,9 @@ export default function useHost() {
       type: 'warning'
     }).then(async () => {
       try {
-        const res = await deleteHost({ ID: row.ID })
+        const res = await deleteHost({ id: row.ID })
         if (res.code === 0) {
-          ElMessage.success('删除成功')
+          ElMessage.success(res.msg || '删除成功')
           fetchList()
         }
       } catch (error) {
@@ -177,7 +177,7 @@ export default function useHost() {
           ids: selectedHosts.value.map(item => item.ID)
         })
         if (res.code === 0) {
-          ElMessage.success('批量删除成功')
+          ElMessage.success(res.msg || '批量删除成功')
           fetchList()
         }
       } catch (error) {
