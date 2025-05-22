@@ -20,7 +20,18 @@ import {
   DataAnalysis,
   ChatDotRound,
   Cloudy,
-  Operation
+  Operation,
+  Folder,
+  Files,
+  Grid,
+  List,
+  Histogram,
+  Bell,
+  Platform,
+  Odometer,
+  SetUp,
+  Goods,
+  Timer
 } from '@element-plus/icons-vue'
 
 interface MenuItem {
@@ -44,7 +55,7 @@ export default function useHomepage() {
   const maxRecentPages = 10
 
   const menuItems: MenuItem[] = reactive([
-    { id: 'dashboard', title: '仪表盘', icon: 'HomeFilled', path: '/dashboard' },
+    { id: 'dashboard', title: '仪表盘', icon: 'Odometer', path: '/dashboard' },
 
     { 
       id: 'system', 
@@ -55,16 +66,16 @@ export default function useHomepage() {
         { id: 'system-user', title: '用户管理', icon: 'User', path: '/system/userManager' },
         { id: 'system-role', title: '角色管理', icon: 'UserFilled', path: '/system/roleManager' },
         { id: 'system-api', title: 'API管理', icon: 'Connection', path: '/system/apiManager' },
-        { id: 'system-menu', title: '操作记录', icon: 'Document', path: '/system/menuManager' },
+        { id: 'system-menu', title: '操作记录', icon: 'Timer', path: '/system/menuManager' },
       ]
     },
     { 
       id: 'cloud-assets', 
       title: '云资产管理', 
-      icon: 'DataAnalysis', 
+      icon: 'Cloudy', 
       path: '/homepage/cloud-assets',
       children: [
-        { id: 'cloud-provider', title: '云厂商管理', icon: 'Cloudy', path: '/homepage/cloud-assets/provider' },
+        { id: 'cloud-provider', title: '云厂商管理', icon: 'Platform', path: '/homepage/cloud-assets/provider' },
         { id: 'cloud-virtual-machine', title: '云服务器', icon: 'Monitor', path: '/homepage/cloud-assets/virtualMachine' },
         { id: 'cloud-loadbalancer', title: '负载均衡', icon: 'Operation', path: '/homepage/cloud-assets/loadbalancer' },
         { id: 'cloud-rds', title: '云数据库', icon: 'DataAnalysis', path: '/homepage/cloud-assets/rds' },
@@ -73,19 +84,19 @@ export default function useHomepage() {
     { 
       id: 'cmdb', 
       title: 'CMDB资产管理', 
-      icon: 'DataAnalysis', 
+      icon: 'Grid', 
       path: '/homepage/cmdb',
       children: [
-        { id: 'cmdb-project', title: '项目管理', icon: 'Document', path: '/homepage/cmdb/project' }
+        { id: 'cmdb-project', title: '项目管理', icon: 'List', path: '/homepage/cmdb/project' }
       ]
     },
-    { id: 'im', title: 'IM通知管理', icon: 'ChatDotRound', path: '/homepage/im' },
+    { id: 'im', title: 'IM通知管理', icon: 'Bell', path: '/homepage/im' },
 
     { id: 'kubernetes', title: 'k8s管理', icon: 'Ship', path: '/homepage/kubernetes' },
-    { id: 'prometheus', title: 'Prometheus监控管理', icon: 'Monitor', path: '/homepage/prometheus' },
-    { id: 'config', title: '配置中心', icon: 'Tools', path: '/homepage/config' },
-    { id: 'docker', title: 'docker管理', icon: 'Box', path: '/homepage/docker' },
-    { id: 'cicd', title: 'CICD', icon: 'Connection', path: '/homepage/cicd' }
+    { id: 'prometheus', title: 'Prometheus监控管理', icon: 'Histogram', path: '/homepage/prometheus' },
+    { id: 'config', title: '配置中心', icon: 'SetUp', path: '/homepage/config' },
+    { id: 'docker', title: 'docker管理', icon: 'Goods', path: '/homepage/docker' },
+    { id: 'cicd', title: 'CICD', icon: 'Timer', path: '/homepage/cicd' }
   ])
 
   const expandedMenus = ref<string[]>(['system', 'cloud-assets']) // 默认展开系统管理和云资产管理菜单
