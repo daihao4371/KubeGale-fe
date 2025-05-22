@@ -37,7 +37,7 @@
       @selection-change="selectedRows = $event"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column prop="name" label="项目名称" min-width="180" show-overflow-tooltip />
+      <el-table-column prop="name" label="项目名称" min-width="100" show-overflow-tooltip />
       <el-table-column prop="manager" label="项目负责人" width="120" />
       <el-table-column prop="description" label="项目描述" min-width="200" show-overflow-tooltip />
       <el-table-column prop="CreatedAt" label="创建时间" width="180">
@@ -50,8 +50,11 @@
           {{ new Date(row.UpdatedAt).toLocaleString() }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="150" fixed="right">
+      <el-table-column label="操作" width="240" fixed="right">
         <template #default="{ row }">
+          <el-button type="primary" link @click="handleDetail(row)">
+            <el-icon><View /></el-icon>详情
+          </el-button>
           <el-button type="primary" link @click="handleEdit(row)">
             <el-icon><Edit /></el-icon>编辑
           </el-button>
@@ -74,6 +77,22 @@
         @current-change="handleCurrentChange"
       />
     </div>
+
+    <!-- 详情对话框 -->
+    <el-dialog
+      v-model="detailVisible"
+      title="项目详情"
+      width="600px"
+      destroy-on-close
+    >
+      <el-descriptions :column="1" border>
+        <el-descriptions-item label="项目名称">{{ detailData.name }}</el-descriptions-item>
+        <el-descriptions-item label="项目负责人">{{ detailData.manager }}</el-descriptions-item>
+        <el-descriptions-item label="项目描述">{{ detailData.description }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ new Date(detailData.CreatedAt).toLocaleString() }}</el-descriptions-item>
+        <el-descriptions-item label="更新时间">{{ new Date(detailData.UpdatedAt).toLocaleString() }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
 
     <!-- 新建/编辑对话框 -->
     <el-dialog
@@ -115,7 +134,7 @@
 
 <script setup lang="ts">
 import useProject from './project'
-import { Plus, Delete, Edit } from '@element-plus/icons-vue'
+import { Plus, Delete, Edit, View } from '@element-plus/icons-vue'
 
 defineOptions({
   name: 'ProjectView'
@@ -133,6 +152,8 @@ const {
   formData,
   rules,
   selectedRows,
+  detailVisible,
+  detailData,
   handleSearch,
   handleReset,
   handleAdd,
@@ -141,7 +162,8 @@ const {
   handleBatchDelete,
   handleSubmit,
   handleCurrentChange,
-  handleSizeChange
+  handleSizeChange,
+  handleDetail
 } = useProject()
 </script>
 

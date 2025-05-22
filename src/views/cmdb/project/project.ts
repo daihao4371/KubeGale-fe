@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { createProject, getProjectList, updateProject, deleteProject, batchDeleteProjects } from '@/api/cmdb/project'
+import { createProject, getProjectList, updateProject, deleteProject, batchDeleteProjects, getProjectDetail } from '@/api/cmdb/project'
 
 // 项目类型定义
 export interface Project {
@@ -36,6 +36,8 @@ export default function useProject() {
     manager: '',
     description: ''
   })
+  const detailVisible = ref(false)
+  const detailData = ref<Project>({} as Project)
 
   // 表单校验规则
   const rules = {
@@ -209,6 +211,21 @@ export default function useProject() {
     fetchList()
   }
 
+  // 查看详情
+  const handleDetail = async (row: Project) => {
+    try {
+      const res = await getProjectDetail(row.ID)
+      if (res.code === 0) {
+        detailData.value = res.data
+        detailVisible.value = true
+      } else {
+        ElMessage.error(res.msg || '获取详情失败')
+      }
+    } catch (error) {
+      ElMessage.error('获取详情失败')
+    }
+  }
+
   // 初始化加载数据
   fetchList()
 
@@ -224,6 +241,8 @@ export default function useProject() {
     formData,
     rules,
     selectedRows,
+    detailVisible,
+    detailData,
     handleSearch,
     handleReset,
     handleAdd,
@@ -232,6 +251,7 @@ export default function useProject() {
     handleBatchDelete,
     handleSubmit,
     handleCurrentChange,
-    handleSizeChange
+    handleSizeChange,
+    handleDetail
   }
 }

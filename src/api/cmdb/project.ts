@@ -73,3 +73,12 @@ export const batchDeleteProjects = (data: { ids: number[] }) => {
   })
 }
 
+// 获取项目详情
+export const getProjectDetail = (id: number) => {
+  return request<ApiResponse<Project>>({
+    url: `/cmdb/projectsById`,
+    method: 'get',
+    params: { id }
+  })
+}
+
