@@ -87,7 +87,8 @@ export default function useHomepage() {
       icon: 'Grid', 
       path: '/homepage/cmdb',
       children: [
-        { id: 'cmdb-project', title: '项目管理', icon: 'List', path: '/homepage/cmdb/project' }
+        { id: 'cmdb-project', title: '项目管理', icon: 'List', path: '/homepage/cmdb/project' },
+        { id: 'cmdb-host', title: '主机管理', icon: 'Monitor', path: '/homepage/cmdb/host' }
       ]
     },
     { id: 'im', title: 'IM通知管理', icon: 'Bell', path: '/homepage/im' },

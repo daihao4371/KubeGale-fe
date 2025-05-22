@@ -156,6 +156,15 @@ const router = createRouter({
                 requiresAuth: true,
                 title: '项目管理'
               }
+            },
+            {
+              path: 'host',
+              name: 'cmdb-host',
+              component: () => import('../views/cmdb/host/index.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '主机管理'
+              }
             }
           ]
         },

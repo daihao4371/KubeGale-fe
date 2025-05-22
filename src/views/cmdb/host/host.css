@@ -1,0 +1,53 @@
+.host-container {
+  padding: 20px;
+}
+
+.search-bar {
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: var(--el-bg-color);
+  border-radius: 4px;
+}
+
+.action-bar {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.action-right {
+  display: flex;
+  gap: 10px;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+:deep(.el-table) {
+  margin-top: 20px;
+}
+
+:deep(.el-dialog__body) {
+  padding: 20px;
+}
+
+:deep(.el-descriptions__label) {
+  width: 120px;
+  font-weight: bold;
+}
+
+:deep(.el-descriptions__content) {
+  word-break: break-all;
+}
+
+:deep(.el-button-group) {
+  display: flex;
+  gap: 8px;
+}
+
+:deep(.el-tag) {
+  text-transform: capitalize;
+}
