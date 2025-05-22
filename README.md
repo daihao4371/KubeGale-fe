@@ -133,7 +133,8 @@ KubeGale-fe/
 - ![img.png](image/云数据库.png)
 - 云服务器
 - ![img.png](image/云服务器.png)
-
+- CMDB资产管理
+- ![img.png](image/项目管理.png)
 
 
 ## 后端地址
