@@ -7,7 +7,7 @@
           <el-input v-model="searchForm.name" placeholder="请输入项目名称" clearable />
         </el-form-item>
         <el-form-item label="项目描述">
-          <el-input v-model="searchForm.note" placeholder="请输入项目描述" clearable />
+          <el-input v-model="searchForm.description" placeholder="请输入项目描述" clearable />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -38,16 +38,16 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column prop="name" label="项目名称" min-width="180" show-overflow-tooltip />
-      <el-table-column prop="principal" label="项目负责人" width="120" />
-      <el-table-column prop="note" label="项目描述" min-width="200" show-overflow-tooltip />
-      <el-table-column prop="created_at" label="创建时间" width="180">
+      <el-table-column prop="manager" label="项目负责人" width="120" />
+      <el-table-column prop="description" label="项目描述" min-width="200" show-overflow-tooltip />
+      <el-table-column prop="CreatedAt" label="创建时间" width="180">
         <template #default="{ row }">
-          {{ new Date(row.created_at).toLocaleString() }}
+          {{ new Date(row.CreatedAt).toLocaleString() }}
         </template>
       </el-table-column>
-      <el-table-column prop="updated_at" label="更新时间" width="180">
+      <el-table-column prop="UpdatedAt" label="更新时间" width="180">
         <template #default="{ row }">
-          {{ new Date(row.updated_at).toLocaleString() }}
+          {{ new Date(row.UpdatedAt).toLocaleString() }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="150" fixed="right">
@@ -91,12 +91,12 @@
         <el-form-item label="项目名称" prop="name">
           <el-input v-model="formData.name" placeholder="请输入项目名称" />
         </el-form-item>
-        <el-form-item label="项目负责人" prop="principal">
-          <el-input v-model="formData.principal" placeholder="请输入项目负责人" />
+        <el-form-item label="项目负责人" prop="manager">
+          <el-input v-model="formData.manager" placeholder="请输入项目负责人" />
         </el-form-item>
-        <el-form-item label="项目描述" prop="note">
+        <el-form-item label="项目描述" prop="description">
           <el-input
-            v-model="formData.note"
+            v-model="formData.description"
             type="textarea"
             :rows="3"
             placeholder="请输入项目描述"

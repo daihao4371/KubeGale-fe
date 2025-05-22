@@ -1,14 +1,19 @@
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { createProject, getProjectList, updateProject, deleteProject, batchDeleteProjects } from '@/api/cmdb/project'
 
 // 项目类型定义
 export interface Project {
-  id: number
+  ID: number
   name: string
-  principal: string
-  note: string
-  created_at: string
-  updated_at: string
+  description: string
+  manager: string
+  CreatedAt: string
+  UpdatedAt: string
+  CreatedBy: number
+  UpdatedBy: number
+  DeletedBy: number
+  DeletedAt: string | null
 }
 
 export default function useProject() {
@@ -17,7 +22,7 @@ export default function useProject() {
   const loading = ref(false)
   const searchForm = ref({
     name: '',
-    note: ''
+    description: ''
   })
   const pageSize = ref(10)
   const currentPage = ref(1)
@@ -28,8 +33,8 @@ export default function useProject() {
   const selectedRows = ref<Project[]>([])
   const formData = ref<Partial<Project>>({
     name: '',
-    principal: '',
-    note: ''
+    manager: '',
+    description: ''
   })
 
   // 表单校验规则
@@ -38,22 +43,45 @@ export default function useProject() {
       { required: true, message: '请输入项目名称', trigger: 'blur' },
       { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
     ],
-    principal: [
+    manager: [
       { required: true, message: '请输入项目负责人', trigger: 'blur' }
     ]
+  }
+
+  // 获取项目列表
+  const fetchList = async () => {
+    loading.value = true
+    try {
+      const res = await getProjectList({
+        page: currentPage.value,
+        pageSize: pageSize.value,
+        name: searchForm.value.name,
+        description: searchForm.value.description
+      })
+      if (res.code === 0) {
+        tableData.value = res.data.list
+        total.value = res.data.total
+      } else {
+        ElMessage.error(res.msg || '获取项目列表失败')
+      }
+    } catch (error) {
+      ElMessage.error('获取项目列表失败')
+    } finally {
+      loading.value = false
+    }
   }
 
   // 搜索
   const handleSearch = () => {
     currentPage.value = 1
-    // TODO: 调用搜索接口
+    fetchList()
   }
 
   // 重置搜索
   const handleReset = () => {
     searchForm.value = {
       name: '',
-      note: ''
+      description: ''
     }
     handleSearch()
   }
@@ -64,8 +92,8 @@ export default function useProject() {
     dialogTitle.value = '新建项目'
     formData.value = {
       name: '',
-      principal: '',
-      note: ''
+      manager: '',
+      description: ''
     }
     dialogVisible.value = true
   }
@@ -88,9 +116,18 @@ export default function useProject() {
         cancelButtonText: '取消',
         type: 'warning'
       }
-    ).then(() => {
-      // TODO: 调用删除接口
-      ElMessage.success('删除成功')
+    ).then(async () => {
+      try {
+        const res = await deleteProject({ id: row.ID })
+        if (res.code === 0) {
+          ElMessage.success('删除成功')
+          fetchList()
+        } else {
+          ElMessage.error(res.msg || '删除失败')
+        }
+      } catch (error) {
+        ElMessage.error('删除失败')
+      }
     }).catch(() => {})
   }
 
@@ -108,30 +145,72 @@ export default function useProject() {
         cancelButtonText: '取消',
         type: 'warning'
       }
-    ).then(() => {
-      // TODO: 调用批量删除接口
-      ElMessage.success('删除成功')
+    ).then(async () => {
+      try {
+        const ids = selectedRows.value.map(row => row.ID)
+        const res = await batchDeleteProjects({ ids })
+        if (res.code === 0) {
+          ElMessage.success('删除成功')
+          fetchList()
+        } else {
+          ElMessage.error(res.msg || '删除失败')
+        }
+      } catch (error) {
+        ElMessage.error('删除失败')
+      }
     }).catch(() => {})
   }
 
   // 提交表单
-  const handleSubmit = () => {
-    // TODO: 调用创建/更新接口
-    dialogVisible.value = false
-    ElMessage.success(dialogType.value === 'add' ? '创建成功' : '更新成功')
+  const handleSubmit = async () => {
+    try {
+      if (dialogType.value === 'add') {
+        const res = await createProject({
+          name: formData.value.name!,
+          manager: formData.value.manager!,
+          description: formData.value.description || ''
+        })
+        if (res.code === 0) {
+          ElMessage.success('创建成功')
+          dialogVisible.value = false
+          fetchList()
+        } else {
+          ElMessage.error(res.msg || '创建失败')
+        }
+      } else {
+        const res = await updateProject({
+          id: formData.value.ID!,
+          name: formData.value.name!,
+          manager: formData.value.manager!,
+          description: formData.value.description || ''
+        })
+        if (res.code === 0) {
+          ElMessage.success('更新成功')
+          dialogVisible.value = false
+          fetchList()
+        } else {
+          ElMessage.error(res.msg || '更新失败')
+        }
+      }
+    } catch (error) {
+      ElMessage.error(dialogType.value === 'add' ? '创建失败' : '更新失败')
+    }
   }
 
   // 分页
   const handleCurrentChange = (page: number) => {
     currentPage.value = page
-    // TODO: 重新加载数据
+    fetchList()
   }
 
   const handleSizeChange = (size: number) => {
     pageSize.value = size
     currentPage.value = 1
-    // TODO: 重新加载数据
+    fetchList()
   }
+
+  // 初始化加载数据
+  fetchList()
 
   return {
     tableData,
