@@ -1,12 +1,13 @@
 <template>
   <div class="cmdb-container">
-    <h1>CMDB资产管理</h1>
-    <p>CMDB资产管理功能正在开发中...</p>
+    <router-view></router-view>
   </div>
 </template>
 
 <script setup lang="ts">
-// CMDB页面逻辑
+defineOptions({
+  name: 'CmdbIndexView'
+})
 </script>
 
 <style scoped>

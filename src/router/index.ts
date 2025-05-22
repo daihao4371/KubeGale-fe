@@ -142,7 +142,22 @@ const router = createRouter({
           meta: {
             requiresAuth: true,
             title: 'CMDB资产管理'
-          }
+          },
+          children: [
+            {
+              path: '',
+              redirect: '/homepage/cmdb/project'
+            },
+            {
+              path: 'project',
+              name: 'cmdb-project',
+              component: () => import('../views/cmdb/project/index.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '项目管理'
+              }
+            }
+          ]
         },
         {
           path: 'kubernetes',
