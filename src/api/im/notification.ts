@@ -96,3 +96,57 @@ export const getCardContent = (params: { notification_id: number }) => {
   })
 }
 
+// ---- DingTalk Specific Types and Functions ----
+
+// Matches Go struct: im.DingTalkConfig (simplified for request/response focus)
+// gorm.Model implies ID, CreatedAt, UpdatedAt, DeletedAt
+export interface DingTalkConfig {
+  ID: number; // This is the ID of the DingTalkConfig record itself
+  notification_id: number; // Foreign key to the general NotificationItem
+  webhook_url: string;
+  secret?: string; // Optional
+  CreatedAt: string;
+  UpdatedAt: string;
+}
+
+// Matches Go struct: request.CreateDingTalkRequest
+export interface CreateDingTalkRequest {
+  name: string;
+  webhook_url: string;
+  secret?: string; // Optional
+  notify_events: string[];
+  send_daily_stats: boolean;
+  notification_type: 'dingtalk'; // Fixed value
+}
+
+// Matches Go struct: request.UpdateDingTalkRequest
+// Assuming 'id' here refers to the general NotificationItem ID for simplicity,
+// and backend handles finding/updating the associated DingTalkConfig.
+// CardContent is kept from FeiShu for now, may need DingTalk specific version.
+export interface UpdateDingTalkRequest {
+  id: number; // General NotificationItem ID
+  name?: string;
+  webhook_url?: string;
+  secret?: string;
+  notification_policy?: string; // Comma-separated string from notify_events
+  send_daily_stats?: boolean;
+  card_content?: FeiShuCardContent; // Re-evaluate if DingTalk has different card content structure
+}
+
+// Create DingTalk Notification
+export const createDingTalkNotification = (data: CreateDingTalkRequest) => {
+  return request<ApiResponse<CreateUpdateResponse>>({ // Assuming CreateUpdateResponse is generic
+    url: '/notification/createDingTalk',
+    method: 'post',
+    data
+  });
+}
+
+// Update DingTalk Notification
+export const updateDingTalkNotification = (data: UpdateDingTalkRequest) => {
+  return request<ApiResponse<CreateUpdateResponse>>({ // Assuming CreateUpdateResponse is generic
+    url: '/notification/updateDingTalk', // As per backend router
+    method: 'put', // Typically PUT for updates
+    data
+  });
+}

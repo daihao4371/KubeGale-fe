@@ -127,7 +127,11 @@
           <template #default="{ row }">
             <div class="provider-name">
               <div class="provider-icon">
-                <el-icon><Monitor /></el-icon>
+                <img v-if="row.platform === 'aliyun'" src="@/assets/images/aliyun.png" alt="aliyun" />
+                <img v-else-if="row.platform === 'aws'" src="@/assets/images/aws.png" alt="aws" />
+                <img v-else-if="row.platform === 'tencent'" src="@/assets/images/tencent.png" alt="tencent" />
+                <img v-else-if="row.platform === 'huawei'" src="@/assets/images/huawei.png" alt="huawei" />
+                <el-icon v-else><Monitor /></el-icon>
               </div>
               <span>{{ row.name }}</span>
             </div>
@@ -137,7 +141,7 @@
           <template #default="{ row }">
             <el-tag
               :class="['platform-tag', row.platform]"
-              effect="dark"
+              effect="light"
             >
               {{ getPlatformLabel(row.platform) }}
             </el-tag>

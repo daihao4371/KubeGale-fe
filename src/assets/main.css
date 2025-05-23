@@ -1,35 +1,23 @@
 @import './base.css';
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
-}
+/* Default #app styles removed as they conflict with App.vue full-page layout */
 
 a,
-.green {
+.green { /* .green class is often used with <a> tags, so updated together */
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+  color: #409EFF; /* Element Plus primary blue */
+  transition: color 0.3s ease, background-color 0.3s ease, text-decoration-color 0.3s ease;
+  padding: 3px; /* Retained padding for clickable area */
+  text-decoration-color: transparent; /* Start with transparent underline */
 }
 
 @media (hover: hover) {
   a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+    color: #79bbff; /* Lighter Element Plus blue for hover text */
+    background-color: rgba(64, 158, 255, 0.05); /* Very subtle background for hover */
+    text-decoration: underline;
+    text-decoration-color: #79bbff; /* Underline color matches text */
   }
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-}
+/* Removed @media (min-width: 1024px) block for body and #app styles */

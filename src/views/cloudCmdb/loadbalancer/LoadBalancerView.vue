@@ -10,6 +10,16 @@
     <!-- 右侧表格内容 -->
     <div class="main-content">
       <el-card class="main-card">
+        <template #header>
+          <div class="card-header">
+            <span class="header-title">负载均衡器管理</span>
+            <div class="header-buttons">
+              <el-button type="primary" @click="onSync" :disabled="!searchInfo.platformId">
+                <el-icon><Refresh /></el-icon>同步数据
+              </el-button>
+            </div>
+          </div>
+        </template>
         <!-- 搜索栏 -->
         <el-form :inline="true" :model="searchInfo" class="search-form">
           <el-form-item label="识别搜索">
@@ -18,7 +28,7 @@
           <el-form-item>
             <el-button type="primary" @click="onSearch">查询</el-button>
             <el-button @click="onReset">重置</el-button>
-            <el-button type="primary" @click="onSync">同步</el-button>
+            <!-- Sync button moved to header -->
           </el-form-item>
         </el-form>
         <!-- 表格内容 -->
@@ -103,9 +113,10 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import './LoadBalancerView.css'
+import './LoadBalancerView.css' // Ensure CSS is imported
 import useLoadBalancer from './LoadBalancerView'
 import CloudPlatformTree from '../rds/components/CloudPlatformTree.vue'
+import { Refresh } from '@element-plus/icons-vue' // Import Refresh icon for sync button
 
 const {
   loading,

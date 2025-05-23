@@ -1,58 +1,130 @@
-.project-container {
-  padding: 20px;
+/* New Page Container */
+.project-page-container {
+  padding: 0; /* Assuming Homepage.vue content area provides outer padding */
+  height: 100%;
+  width: 100%;
+  display: flex; /* Ensure box-card can take full height */
+  flex-direction: column;
+}
+
+/* Standard Main Card Styling */
+.box-card {
+  padding: 24px; /* This will be the main content padding */
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-}
-
-.search-bar {
-  margin-bottom: 20px;
-  padding: 20px;
-  background: #f7f8fa;
-  border-radius: 6px;
-}
-
-.action-bar {
-  margin-bottom: 20px;
+  height: 100%;
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden; /* For border-radius clipping */
 }
 
-.action-right {
+.box-card > :deep(.el-card__header) {
+  padding: 0; /* Reset, custom .card-header handles padding */
+}
+
+.box-card > :deep(.el-card__body) {
+  padding: 0; /* Reset, content inside body will have its own structure */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Allow card content to scroll */
+}
+
+/* Styles for content within <template #header> */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--el-border-color-light, #e4e7ed);
+  /* margin-bottom will be handled by search-bar's margin-top or direct spacing */
+}
+
+.card-header .header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--el-text-color-primary, #303133);
+}
+
+.card-header .header-buttons {
   display: flex;
   gap: 10px;
 }
 
-.pagination {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
+/* Search Bar Styling */
+.search-bar {
+  margin-top: 20px; /* Space from card header */
+  margin-bottom: 20px;
+  padding: 16px; /* Adjusted padding */
+  background: #f7f8fa; /* Keep existing background */
+  border-radius: 6px;
+}
+.search-bar .el-form-item {
+  margin-bottom: 0; /* For inline forms */
 }
 
+
+/* Action bar styles removed as buttons moved to header */
+
+/* Table Styling */
 :deep(.el-table) {
-  margin-top: 20px;
+  margin-top: 0; /* Remove top margin, search-bar provides bottom margin */
+  border-radius: 4px;
+  border: 1px solid var(--el-border-color-lighter, #ebeef5);
+  flex: 1; /* Allows table to take available space */
+  width: 100%;
+  display: flex; 
+  flex-direction: column;
+}
+:deep(.el-table__header-wrapper),
+:deep(.el-table__body-wrapper) {
+  width: 100%;
+}
+:deep(.el-table__body-wrapper) {
+  flex-grow: 1;
+  overflow-y: auto;
 }
 
-:deep(.el-table th) {
-  background: #f5f7fa;
-  color: #333;
-  font-weight: 600;
+
+:deep(.el-table th.el-table__cell) { /* More specific selector */
+  background-color: #f5f7fa !important; /* Standard header background */
+  color: var(--el-text-color-regular, #606266);
+  font-weight: 500;
+  padding: 12px 10px; /* Standard header padding */
 }
+:deep(.el-table td.el-table__cell) { /* Cell padding */
+  padding: 10px 10px; 
+  color: var(--el-text-color-primary, #303133);
+}
+
 
 :deep(.el-table__row:hover) {
-  background: #f0f7ff;
+  background: #f0f7ff; /* Keep existing hover */
 }
 
+/* Pagination Styling */
+.pagination {
+  margin-top: 24px; /* Consistent margin */
+  padding: 10px 0; /* Add some vertical padding */
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0; /* Prevent pagination from shrinking */
+}
+
+
+/* Dialog and other specific styles - review and keep if necessary */
 :deep(.el-dialog__body) {
-  padding: 20px 40px;
+  padding: 20px 40px; /* Keep existing */
 }
 
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 10px; /* Keep existing */
 }
 
 :deep(.el-button .el-icon) {
-  margin-right: 4px;
+  margin-right: 4px; /* Keep existing */
 }

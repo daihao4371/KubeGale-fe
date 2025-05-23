@@ -29,15 +29,17 @@
             </el-icon>
           </div>
           
+          
           <!-- 子菜单 -->
-          <div 
-            v-if="item.children && item.children.length && expandedMenus.includes(item.id)" 
-            class="submenu"
-          >
+          <div v-if="item.children && item.children.length"> <!-- Parent div to ensure children exist -->
             <div
-              v-for="child in item.children"
-              :key="child.id"
-              class="submenu-item"
+              class="submenu"
+              :class="{ 'submenu-expanded': expandedMenus.includes(item.id) }"
+            >
+              <div
+                v-for="child in item.children"
+                :key="child.id"
+                class="submenu-item"
               :class="{ active: activeMenu === child.id }"
               @click="selectMenu(child.id)"
             >

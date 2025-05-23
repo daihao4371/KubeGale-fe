@@ -1,164 +1,195 @@
+/* Main layout for load balancer page */
 .loadbalancer-layout {
-    display: flex;
-    height: 100vh;
-    gap: 20px;
-    padding: 20px;
-    min-width: 0;
-  }
-  
-  .sidebar {
-    width: 280px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-  
-  .sidebar-title {
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 8px;
-    margin-bottom: 16px;
-    font-weight: bold;
-    font-size: 16px;
-    color: var(--el-text-color-primary);
-  }
-  
-  .el-card {
-    border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.04);
-    background: #fff;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 0;
-    min-width: 0;
-  }
-  
-  .el-tree {
-    flex: 1;
-    overflow: auto;
-    padding: 8px;
-    min-width: 0;
-  }
-  
-  :deep(.el-tree-node__content) {
-    height: 40px;
-    border-radius: 6px;
-    font-size: 15px;
-    transition: background 0.2s;
-  }
-  
-  :deep(.el-tree-node__content:hover) {
-    background: #f5f7fa;
-  }
-  
-  :deep(.el-tree-node.is-current > .el-tree-node__content) {
-    background: var(--el-color-primary-light-8);
-    color: var(--el-color-primary);
-  }
-  
-  .main-content {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  
-  .main-card {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    min-width: 0;
-    height: 100%;
-  }
-  
-  .search-form {
-    background: #f7f8fa;
-    border-radius: 6px;
-    padding: 12px 16px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
+  display: flex;
+  height: 100%;
+  width: 100%; /* Ensure full width */
+  padding: 24px; /* Standard page padding */
+  gap: 20px; /* Spacing between sidebar and main content */
+  box-sizing: border-box;
+}
 
-  .search-form .el-input {
-    width: 220px;
-  }
+/* Sidebar styling for the platform tree */
+.sidebar {
+  width: 280px; /* Standard sidebar width */
+  height: 100%;
+  flex-shrink: 0; /* Prevent sidebar from shrinking */
+  display: flex; /* To allow el-card to take full height */
+  flex-direction: column;
+}
 
-  .search-form .el-button {
-    min-width: 80px;
-  }
+.sidebar .el-card { /* Target el-card within sidebar */
+  background-color: var(--el-bg-color-page, #f0f2f5); /* Match page background or use white */
+  border-radius: 8px; /* Standard radius */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); /* Standard shadow */
+  padding: 16px; /* Internal padding for the card */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar .el-card > :deep(.el-card__body) {
+  padding: 0; /* Reset, content handles its own padding */
+  flex-grow: 1;
+  overflow-y: auto;
+}
 
-  /* 表格相关样式 */
-  .table-wrapper {
-    flex: 1;
-    overflow: auto;
-    padding: 0;
-    margin: 0;
-    min-width: 0;
-    height: 100%;
-  }
 
-  .table-container {
-    background: #fff;
-    border-radius: 6px;
-    overflow: hidden;
-    height: 100%;
-    min-width: 0;
-  }
+.sidebar-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
 
-  /* 表格内容区域样式 */
-  :deep(.el-table__body-wrapper) {
-    overflow-y: auto;
-    height: 100% !important;
-  }
+/* Main content area styling */
+.main-content {
+  flex: 1; /* Take remaining space */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0; /* Prevent flex overflow issues */
+}
 
-  :deep(.el-table__header-wrapper) {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
+.main-card { /* This is the el-card in main-content */
+  padding: 24px; /* Standard content padding */
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden; /* For border-radius clipping */
+}
 
-  :deep(.el-table th) {
-    background: #f5f7fa;
-    color: #333;
-    font-weight: 600;
-  }
+.main-card > :deep(.el-card__header) {
+  padding: 0; /* Reset, custom .card-header handles padding */
+}
 
-  :deep(.el-table__row:hover) {
-    background: #f0f7ff;
-  }
+.main-card > :deep(.el-card__body) {
+  padding: 0; /* Reset, content inside body will have its own padding or structure */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden; /* Let table-wrapper handle scroll */
+}
 
-  :deep(.el-table .el-tag) {
-    border-radius: 4px;
-    font-size: 13px;
-    padding: 0 8px;
-  }
+/* Standard Card Header styling */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--el-border-color-light, #e4e7ed);
+  /* margin-bottom is handled by search-form or table-wrapper */
+}
 
-  /* 分页条美化 */
-  .pagination-container {
-    margin-top: 12px;
-    display: flex;
-    justify-content: flex-end;
-    background: #fff;
-    padding: 12px 0 0 0;
-    border-radius: 0 0 6px 6px;
-  }
+.card-header .header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--el-text-color-primary, #303133);
+}
+.card-header .header-buttons {
+  display: flex;
+  gap: 10px;
+}
 
-  /* 详情弹窗美化 */
-  :deep(.el-dialog__body) {
-    background: #f7f8fa;
-  }
+/* Standard Search Form Styling */
+.search-form {
+  margin-top: 20px; /* Space from header */
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: var(--el-fill-color-lighter, #f5f7fa);
+  border-radius: 6px;
+}
+.search-form .el-form-item {
+  margin-bottom: 0; /* For inline forms */
+}
 
-  :deep(.el-descriptions__label) {
-    color: #888;
-    font-weight: 500;
-  }
+/* Table Wrapper to manage table flex and scroll */
+.table-wrapper {
+  flex: 1; /* Allow table wrapper to grow */
+  overflow: hidden; /* Let el-table handle its own scroll */
+  display: flex;
+  flex-direction: column;
+}
 
-  :deep(.el-descriptions__content) {
-    color: #222;
-  }
+/* Standard Table Styling */
+.table-wrapper :deep(.el-table) {
+  border-radius: 4px;
+  border: 1px solid var(--el-border-color-lighter, #ebeef5);
+  flex: 1; /* Allows table to take available space */
+  width: 100%;
+  display: flex; 
+  flex-direction: column;
+}
+
+.table-wrapper :deep(.el-table__header-wrapper),
+.table-wrapper :deep(.el-table__body-wrapper) {
+  width: 100%;
+}
+.table-wrapper :deep(.el-table__body-wrapper) {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.table-wrapper :deep(.el-table th.el-table__cell) {
+  background-color: var(--el-fill-color-lighter, #f5f7fa) !important;
+  color: var(--el-text-color-regular, #606266);
+  font-weight: 500;
+  padding: 12px 10px;
+}
+
+.table-wrapper :deep(.el-table td.el-table__cell) {
+  padding: 10px 10px;
+  color: var(--el-text-color-primary, #303133);
+}
+
+/* Pagination Styling */
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding: 10px 0;
+  flex-shrink: 0; /* Prevent pagination from shrinking */
+}
+
+/* Detail Dialog - Retain existing styles if they are specific and good */
+:deep(.el-dialog__body) {
+  background: #f7f8fa; /* Existing style */
+}
+
+:deep(.el-descriptions__label) {
+  color: #888; /* Existing style */
+  font-weight: 500;
+}
+
+:deep(.el-descriptions__content) {
+  color: #222; /* Existing style */
+}
+
+/* Tree specific styles from original CSS - keep if they are good */
+.el-tree {
+  flex: 1;
+  overflow: auto;
+  padding: 8px; /* Keep padding for tree items */
+  min-width: 0;
+  background-color: transparent; /* Make tree background transparent if card has bg */
+}
+
+:deep(.el-tree-node__content) {
+  height: 40px;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: background 0.2s;
+}
+
+:deep(.el-tree-node__content:hover) {
+  background: var(--el-fill-color-light, #f5f7fa); /* Use Element Plus variable */
+}
+
+:deep(.el-tree-node.is-current > .el-tree-node__content) {
+  background: var(--el-color-primary-light-8);
+  color: var(--el-color-primary);
+}

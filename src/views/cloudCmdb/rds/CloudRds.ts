@@ -13,14 +13,16 @@ export const currentPage = ref(1)
 export const total = ref(0)
 export const pageSize = ref(10)
 export const tableData = ref<RdsInstance[]>([])
-export const selectedPlatformId = ref<number | null>(null)
+// selectedPlatformId will be replaced by searchForm.platformId
 export const detailVisible = ref(false)
 export const currentInstance = ref<RdsInstance | null>(null)
 
 // 搜索表单
 export const searchForm = reactive({
   name: '',
-  instanceId: ''
+  instanceId: '',
+  platformId: null as number | null, // Added
+  region: null as string | null,     // Added
 })
 
 // 日期格式化函数
@@ -53,11 +55,13 @@ export const getStatusType = (status: string) => {
 export const loadData = async () => {
   loading.value = true
   try {
-    const params = {
+    const params: any = { // Using 'any' temporarily for params, will match RdsListParams
       page: currentPage.value,
       pageSize: pageSize.value,
       name: searchForm.name || undefined,
-      instance_id: searchForm.instanceId || undefined
+      instance_id: searchForm.instanceId || undefined,
+      region: searchForm.region || undefined, // Added region for filtering
+      // platform_id: searchForm.platformId || undefined, // API currently does not support platform_id for list
     }
 
     const res = await getRdsList(params)
@@ -90,7 +94,9 @@ export const handleSearch = () => {
 export const handleResetSearch = () => {
   Object.assign(searchForm, {
     name: '',
-    instanceId: ''
+    instanceId: '',
+    platformId: null, // Clear platformId
+    region: null,     // Clear region
   })
   currentPage.value = 1
   loadData()
@@ -98,13 +104,13 @@ export const handleResetSearch = () => {
 
 // 处理同步
 export const handleSync = async () => {
-  if (!selectedPlatformId.value) {
+  if (!searchForm.platformId) { // Use searchForm.platformId
     ElMessage.warning('请先选择云平台')
     return
   }
   try {
-    loading.value = true
-    const res = await syncRds({ id: selectedPlatformId.value })
+    loading.value = true // Consider renaming to syncing or using a separate syncing ref
+    const res = await syncRds({ id: searchForm.platformId }) // Use searchForm.platformId
     if (res.code === 0) {
       ElMessage.success(res.msg || '同步成功')
       loadData()
@@ -121,15 +127,21 @@ export const handleSync = async () => {
 
 // 处理云平台选择
 export const handlePlatformSelect = ({ platform, region }: { platform: PlatformRegionTreeItem; region: RegionNode | null }) => {
-  if (platform && !region) {
-    // 选中平台节点
-    selectedPlatformId.value = platform.id
-    loadData()
-  } else if (platform && region) {
+  if (region) {
     // 选中区域节点
-    selectedPlatformId.value = null
-    loadData()
+    searchForm.platformId = platform.id; // Assuming platform context is needed even when region is selected
+    searchForm.region = region.region_id; // Use region_id as per RdsListParams and typical API design
+  } else if (platform) {
+    // 选中平台节点 (no specific region)
+    searchForm.platformId = platform.id;
+    searchForm.region = null; // Clear any previous region selection
+  } else {
+    // No selection or cleared selection
+    searchForm.platformId = null;
+    searchForm.region = null;
   }
+  currentPage.value = 1; // Reset to first page on filter change
+  loadData();
 }
 
 // 处理详情

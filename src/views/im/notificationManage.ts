@@ -1,22 +1,39 @@
-import { ref } from 'vue'
+import { ref, reactive } from 'vue' // Ensure reactive is imported
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
-import { getNotificationList, deleteNotification, createFeiShu, getNotificationById, getCardContent, testNotification, updateFeiShu } from '@/api/im/notification'
+import { 
+  getNotificationList, 
+  deleteNotification, 
+  createFeiShu, 
+  getNotificationById, 
+  getCardContent, 
+  testNotification, 
+  updateFeiShu,
+  createDingTalkNotification, // Added
+  updateDingTalkNotification, // Added
+  type CreateDingTalkRequest, // Added
+  type UpdateDingTalkRequest   // Added
+} from '@/api/im/notification'
 import type { NotificationItem, CreateFeiShuParams, FeiShuCardContent, UpdateNotificationParams, NotificationConfig, NotificationCardContent } from '@/types/im'
 
-const searchName = ref('')
+// Changed searchName to a reactive object for el-form model binding
+const searchCriteria = reactive({ name: '' })
 const tableData = ref<NotificationItem[]>([])
 const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
-const feishuDialogVisible = ref(false)
+const notificationDialogVisible = ref(false) // Renamed from feishuDialogVisible
 const formLoading = ref(false)
+const dialogTitle = ref('') // Added for dynamic dialog title
 
-const feishuForm = ref<CreateFeiShuParams>({
+// Renamed feishuForm to notificationForm and added id, type flexibility, and optional secret
+const notificationForm = ref<CreateFeiShuParams & { id?: number; type: 'feishu' | 'dingtalk' | string; secret?: string }>({
+  id: undefined,
   name: '',
-  type: 'feishu',
+  type: 'feishu', // Default type, will be set by handleAddNotification
   enabled: true,
+  secret: '', // Added for DingTalk
   webhook_url: '',
   description: '',
   tags: [],
@@ -31,6 +48,7 @@ const handleSearch = async () => {
     const response = await getNotificationList({
       page: currentPage.value,
       pageSize: pageSize.value,
+      name: searchCriteria.name || undefined, // Use searchCriteria.name
       orderKey: 'created_at',
       desc: true
     })
@@ -59,7 +77,7 @@ const handleCurrentChange = (val: number) => {
 }
 
 const handleReset = () => {
-  searchName.value = ''
+  searchCriteria.name = '' // Use searchCriteria.name
   currentPage.value = 1
   handleSearch()
 }
@@ -71,80 +89,94 @@ const handleEdit = async (row: NotificationItem) => {
       const config = res.data.data.config;
       const cardContent = res.data.data.card_content;
       if (config && cardContent) {
-        feishuForm.value = {
+        // Ensure all fields from CreateFeiShuParams are covered, plus id and type
+        notificationForm.value = {
           id: config.id,
           name: config.name,
-          type: 'feishu',
-          enabled: true,
+          type: config.type as 'feishu' | 'dingtalk' | string, 
+          enabled: config.enabled !== undefined ? config.enabled : true, 
           webhook_url: config.robot_url,
-          description: '',
-          tags: [],
-          notify_events: config.notification_policy.split(','),
-          receivers: ['all'],
+          secret: config.secret || '', // Populate secret for DingTalk
+          description: '', // Assuming description is not part of config, adjust if it is
+          tags: [], // Assuming tags are not part of config, adjust if it is
+          notify_events: config.notification_policy ? config.notification_policy.split(',') : [],
+          receivers: ['all'], // Default or load from config if available
           send_daily_stats: config.send_daily_stats,
-          card_content: {
-            alert_level: cardContent.alert_level,
-            alert_name: cardContent.alert_name,
-            notification_policy: cardContent.notification_policy,
-            alert_content: cardContent.alert_content,
-            notified_users: cardContent.notified_users,
-            alert_handler: cardContent.alert_handler,
-            claim_alert: cardContent.claim_alert,
-            resolve_alert: cardContent.resolve_alert,
-            mute_alert: cardContent.mute_alert,
-            unresolved_alert: cardContent.unresolved_alert
-          }
+          card_content: cardContent ? { // Ensure cardContent is not null
+            alert_level: cardContent.alert_level || 'Critical',
+            alert_name: cardContent.alert_name || '',
+            notification_policy: cardContent.notification_policy || 'critical,warning',
+            alert_content: cardContent.alert_content || '',
+            notified_users: cardContent.notified_users || '@all',
+            alert_handler: cardContent.alert_handler || '',
+            claim_alert: cardContent.claim_alert || false,
+            resolve_alert: cardContent.resolve_alert || false,
+            mute_alert: cardContent.mute_alert || false,
+            unresolved_alert: cardContent.unresolved_alert !== undefined ? cardContent.unresolved_alert : true,
+            alert_time: cardContent.alert_time || new Date().toISOString() // provide default if null
+          } : undefined // card_content can be undefined if not present
         }
       } else {
-        fallbackToFeishuRowData(row);
+        fallbackToNotificationFormData(row); // Updated fallback function name
       }
     } else {
-      fallbackToFeishuRowData(row);
+      fallbackToNotificationFormData(row); // Updated fallback function name
     }
-    feishuDialogVisible.value = true;
+    dialogTitle.value = `编辑 ${getNotificationTypeLabel(row.type)} - ${row.name}`;
+    notificationDialogVisible.value = true;
   } catch (error) {
     console.error('获取通知详情失败:', error)
     ElMessage.error('获取通知详情失败')
   }
 }
 
-const fallbackToFeishuRowData = (row: NotificationItem) => {
-  feishuForm.value = {
+const getNotificationTypeLabel = (type: string) => {
+  if (type === 'feishu') return '飞书机器人';
+  if (type === 'dingtalk') return '钉钉机器人';
+  return '通知';
+};
+
+
+const fallbackToNotificationFormData = (row: NotificationItem) => { 
+  notificationForm.value = {
     id: row.id,
     name: row.name,
-    type: 'feishu',
-    enabled: true,
-    webhook_url: row.robot_url,
-    description: '',
-    tags: [],
-    notify_events: row.notification_policy.split(','),
-    receivers: ['all'],
+    type: row.type as 'feishu' | 'dingtalk' | string,
+    enabled: row.enabled !== undefined ? row.enabled : true,
+    webhook_url: row.robot_url, // robot_url is the common field for webhook
+    secret: row.secret || '', // Assuming secret might be directly on row for DingTalk after fetch
+    description: '', // Assuming not directly on row, or map from NotificationConfig if available
+    tags: [], // Assuming not directly on row
+    notify_events: row.notification_policy ? row.notification_policy.split(',') : [],
+    receivers: ['all'], // Default or map if available
     send_daily_stats: row.send_daily_stats || false,
-    card_content: {
+    card_content: { // Default card content, should be adapted if API provides it
       alert_level: 'Critical',
-      alert_name: '',
+      alert_name: 'Default Alert Name',
       notification_policy: 'critical,warning',
-      alert_content: '',
+      alert_content: 'Default alert content.',
       notified_users: '@all',
       alert_handler: '',
       claim_alert: false,
       resolve_alert: false,
       mute_alert: false,
-      unresolved_alert: true
+      unresolved_alert: true,
+      alert_time: new Date().toISOString(),
     }
-  }
+  };
 }
 
 const handleDelete = async (row: NotificationItem) => {
   try {
-    await ElMessageBox.confirm('确认删除该通知吗？', '警告', {
+    await ElMessageBox.confirm(`确认删除通知配置 "${row.name}" 吗？`, '警告', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',
     })
+    // The deleteNotification API expects `type` to distinguish, ensure backend handles this
     const response = await deleteNotification({ 
       id: row.id,
-      type: 'feishu'
+      type: row.type // Pass the actual type of the notification
     })
     if (response.data?.code === 0) {
       ElMessage.success('删除成功')
@@ -177,66 +209,92 @@ const feishuFormRules: FormRules = {
   ]
 }
 
-const handleAddFeishu = () => {
-  feishuForm.value = {
+// Renamed handleAddFeishu to handleAddNotification
+const handleAddNotification = (type: 'feishu' | 'dingtalk') => {
+  notificationForm.value = { // Reset form, set type
+    id: undefined,
     name: '',
-    type: 'feishu',
+    type: type,
     enabled: true,
     webhook_url: '',
+    secret: '', // Initialize secret for DingTalk
     description: '',
     tags: [],
-    notify_events: ['deployment', 'error', 'warning'],
-    receivers: ['all'],
-    send_daily_stats: true
-  }
-  feishuDialogVisible.value = true
+    notify_events: ['deployment', 'error', 'warning'], // Default events
+    receivers: ['all'], // Default receivers
+    send_daily_stats: true,
+    card_content: { // Default card content, adjust if types have different structures
+      alert_level: 'Critical', alert_name: 'Default Alert', notification_policy: 'critical,warning',
+      alert_content: 'This is a default alert content.', notified_users: '@all', alert_handler: '',
+      claim_alert: false, resolve_alert: false, mute_alert: false, unresolved_alert: true,
+      alert_time: new Date().toISOString()
+    }
+  };
+  dialogTitle.value = type === 'feishu' ? '添加飞书机器人' : '添加钉钉机器人';
+  notificationDialogVisible.value = true;
 }
 
-const submitFeishuForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
+// Renamed submitFeishuForm to submitNotificationForm
+const submitNotificationForm = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return;
   await formEl.validate(async (valid) => {
     if (valid) {
-      formLoading.value = true
+      formLoading.value = true;
       try {
-        let response
-        if (feishuForm.value.id) {
-          // 更新操作
-          const updateParams: UpdateNotificationParams = {
-            id: feishuForm.value.id,
-            name: feishuForm.value.name,
-            notification_policy: feishuForm.value.notify_events?.join(',') || 'critical,warning',
-            robot_url: feishuForm.value.webhook_url,
-            send_daily_stats: feishuForm.value.send_daily_stats || false,
-            card_content: {
-              alert_level: feishuForm.value.card_content?.alert_level || 'Critical',
-              alert_name: feishuForm.value.card_content?.alert_name || '',
-              notification_policy: feishuForm.value.card_content?.notification_policy || 'critical,warning',
-              alert_content: feishuForm.value.card_content?.alert_content || '',
-              notified_users: feishuForm.value.card_content?.notified_users || '@all',
-              alert_handler: feishuForm.value.card_content?.alert_handler || '',
-              claim_alert: feishuForm.value.card_content?.claim_alert || false,
-              resolve_alert: feishuForm.value.card_content?.resolve_alert || false,
-              mute_alert: feishuForm.value.card_content?.mute_alert || false,
-              unresolved_alert: feishuForm.value.card_content?.unresolved_alert || true,
-              alert_time: new Date().toISOString()
-            }
+        let response;
+        const formValue = notificationForm.value;
+
+        if (formValue.type === 'feishu') {
+          const feishuPayload: CreateFeiShuParams | UpdateNotificationParams = {
+            ...formValue, // Spreading to include all common fields
+            id: formValue.id, // For update
+            robot_url: formValue.webhook_url, // API specific field name
+            notification_policy: formValue.notify_events?.join(','),
+            // card_content is already in formValue if needed
+          };
+          if (formValue.id) {
+            response = await updateFeiShu(feishuPayload as UpdateNotificationParams);
+          } else {
+            response = await createFeiShu(feishuPayload as CreateFeiShuParams);
           }
-          response = await updateFeiShu(updateParams)
-        } else {
-          // 创建操作
-          response = await createFeiShu(feishuForm.value)
+        } else if (formValue.type === 'dingtalk') {
+          if (formValue.id) {
+            // Update DingTalk
+            const updatePayload: UpdateDingTalkRequest = {
+              id: formValue.id, // This is the general NotificationItem ID
+              name: formValue.name,
+              webhook_url: formValue.webhook_url,
+              secret: formValue.secret,
+              notification_policy: formValue.notify_events?.join(','),
+              send_daily_stats: formValue.send_daily_stats,
+              // card_content: formValue.card_content, // Assuming card_content structure is compatible
+            };
+            response = await updateDingTalkNotification(updatePayload);
+          } else {
+            // Create DingTalk
+            const createPayload: CreateDingTalkRequest = {
+              name: formValue.name,
+              webhook_url: formValue.webhook_url,
+              secret: formValue.secret,
+              notify_events: formValue.notify_events || [],
+              send_daily_stats: formValue.send_daily_stats,
+              notification_type: 'dingtalk',
+            };
+            response = await createDingTalkNotification(createPayload);
+          }
         }
-        if (response.data?.code === 0) {
-          ElMessage.success(feishuForm.value.id ? '更新成功' : '添加成功')
-          feishuDialogVisible.value = false
-          handleSearch()
-          formEl.resetFields()
+
+        if (response?.data?.code === 0) {
+          ElMessage.success(formValue.id ? '更新成功' : '添加成功');
+          notificationDialogVisible.value = false;
+          handleSearch();
+          formEl.resetFields(); 
         } else {
-          ElMessage.error(response.data?.msg || (feishuForm.value.id ? '更新失败' : '添加失败'))
+          ElMessage.error(response?.data?.msg || (formValue.id ? '更新失败' : '添加失败'));
         }
       } catch (error) {
-        console.error(feishuForm.value.id ? '更新失败:' : '添加失败:', error)
-        ElMessage.error(feishuForm.value.id ? '更新失败' : '添加失败')
+        console.error(notificationForm.value.id ? '更新失败:' : '添加失败:', error);
+        ElMessage.error(notificationForm.value.id ? '更新失败' : '添加失败');
       } finally {
         formLoading.value = false
       }
@@ -334,17 +392,18 @@ const handleGetCardContent = async (row: NotificationItem) => {
 }
 
 export {
-  searchName,
+  searchCriteria, // Updated from searchName
   handleSearch,
   handleReset,
   tableData,
   handleEdit,
   handleDelete,
-  handleAddFeishu,
-  feishuDialogVisible,
-  feishuForm,
-  feishuFormRules,
-  submitFeishuForm,
+  handleAddNotification, // Renamed from handleAddFeishu
+  notificationDialogVisible, // Renamed from feishuDialogVisible
+  notificationForm, // Renamed from feishuForm
+  feishuFormRules, // Consider renaming to notificationFormRules if rules differ by type
+  submitNotificationForm, // Renamed from submitFeishuForm
+  dialogTitle, // Export new ref
   loading,
   currentPage,
   pageSize,

@@ -1,41 +1,101 @@
 .api-manager-container {
-  padding: 20px;
+  padding: 0; /* Padding handled by .box-card */
+  height: 100%;
+  width: 100%;
+}
+
+/* Main content card style (assuming .box-card is used in apiManager.vue) */
+.box-card {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.box-card > :deep(.el-card__body) {
+  padding: 0; /* Reset if .box-card itself has padding:24px */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e4e7ed;
+  margin-bottom: 20px; /* Space below header */
+}
+
+/* Assuming a title span like other pages, e.g., <span class="header-title">API管理</span> */
+.card-header .header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
 }
 
 .header-buttons {
   display: flex;
-  gap: 10px;
+  gap: 10px; /* Consistent button spacing */
 }
 
 .search-form {
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: #f8f8f8;
-  border-radius: 4px;
+  margin-bottom: 20px; /* Standard bottom margin */
+  padding: 16px; /* Standard padding */
+  background-color: #f5f7fa; /* Standard background */
+  border-radius: 6px; /* Standard radius */
+}
+
+.search-form .el-form-item {
+  margin-bottom: 0; /* For inline forms */
+}
+
+/* Table Styling */
+:deep(.el-table) {
+  margin-top: 0; /* Remove top margin if search form provides bottom margin */
+  border-radius: 4px; /* Optional: subtle radius for table */
+  border: 1px solid #ebeef5; /* Add a light border around the table */
+  flex: 1; /* Allows table to take available space in flex column */
+  width: 100%;
+}
+
+:deep(.el-table th.el-table__cell) {
+  background-color: #f5f7fa !important; /* Important to override Element Plus default */
+  color: #606266;
+  font-weight: 500;
+  padding: 12px 10px; /* Consistent header padding */
+}
+
+:deep(.el-table td.el-table__cell) {
+  padding: 12px 10px; /* Consistent cell padding */
+  color: #303133;
 }
 
 .pagination-container {
-  margin-top: 20px;
+  margin-top: 24px; /* Consistent margin */
+  padding: 10px 0; /* Add some padding for spacing */
   display: flex;
   justify-content: flex-end;
 }
 
 .empty-data {
-  margin: 40px 0;
+  margin: 40px 0; /* Retained specific style */
+  text-align: center;
+  color: #909399;
 }
 
 /* 为按钮图标添加右侧间距 */
-.el-button .el-icon {
+.el-button .el-icon:not(:last-child) { /* Ensure only icons followed by text get margin */
   margin-right: 4px;
 }
 
 /* 对于链接按钮特别处理 */
 .el-button--link .el-icon {
-  vertical-align: middle;
+  vertical-align: middle; /* Retained */
 }

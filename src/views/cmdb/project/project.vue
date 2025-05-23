@@ -1,35 +1,38 @@
 <template>
-  <div class="project-container">
-    <!-- 搜索栏 -->
-    <div class="search-bar">
-      <el-form :inline="true" :model="searchForm">
-        <el-form-item label="项目名称">
-          <el-input v-model="searchForm.name" placeholder="请输入项目名称" clearable />
-        </el-form-item>
-        <el-form-item label="项目描述">
-          <el-input v-model="searchForm.description" placeholder="请输入项目描述" clearable />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+  <div class="project-page-container">
+    <el-card class="box-card">
+      <template #header>
+        <div class="card-header">
+          <span class="header-title">项目管理</span>
+          <div class="header-buttons">
+            <el-button type="primary" @click="handleAdd">
+              <el-icon><Plus /></el-icon>新建项目
+            </el-button>
+            <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleBatchDelete">
+              <el-icon><Delete /></el-icon>批量删除
+            </el-button>
+          </div>
+        </div>
+      </template>
 
-    <!-- 操作按钮 -->
-    <div class="action-bar">
-      <div class="action-right">
-        <el-button type="primary" @click="handleAdd">
-          <el-icon><Plus /></el-icon>新建项目
-        </el-button>
-        <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleBatchDelete">
-          <el-icon><Delete /></el-icon>批量删除
-        </el-button>
+      <!-- 搜索栏 -->
+      <div class="search-bar">
+        <el-form :inline="true" :model="searchForm">
+          <el-form-item label="项目名称">
+            <el-input v-model="searchForm.name" placeholder="请输入项目名称" clearable />
+          </el-form-item>
+          <el-form-item label="项目描述">
+            <el-input v-model="searchForm.description" placeholder="请输入项目描述" clearable />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleSearch">搜索</el-button>
+            <el-button @click="handleReset">重置</el-button>
+          </el-form-item>
+        </el-form>
       </div>
-    </div>
 
-    <!-- 表格 -->
-    <el-table
+      <!-- 表格 -->
+      <el-table
       v-loading="loading"
       :data="tableData"
       border
@@ -129,7 +132,8 @@
         </span>
       </template>
     </el-dialog>
-  </div>
+    </el-card> <!-- End of box-card -->
+  </div> <!-- End of project-page-container -->
 </template>
 
 <script setup lang="ts">

@@ -1,0 +1,57 @@
+/* Basic styling for BatchTasksView.css */
+.batch-tasks-page-container {
+  padding: 0; /* Standard if parent provides padding */
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.box-card {
+  padding: 24px; /* Standard card padding */
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Deep styles for card header and body to manage padding */
+.box-card > :deep(.el-card__header) {
+  padding: 0 0 16px 0; /* No horizontal padding, only bottom for line */
+  border-bottom: 1px solid var(--el-border-color-light, #e4e7ed);
+  margin-bottom: 0; /* Tabs will be directly below */
+}
+.box-card > :deep(.el-card__body) {
+  padding: 20px 0 0 0; /* Top padding for tabs, no horizontal/bottom */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.batch-tasks-tabs {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+.batch-tasks-tabs > :deep(.el-tabs__content) {
+  flex-grow: 1;
+  overflow-y: auto; /* Or handle scrolling within child components */
+}
+.batch-tasks-tabs > :deep(.el-tabs__header) {
+   margin-bottom: 20px; /* Space between tab headers and content */
+}

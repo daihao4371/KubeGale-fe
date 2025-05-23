@@ -1,46 +1,50 @@
 <template>
   <div class="host-container">
-    <!-- 搜索栏 -->
-    <div class="search-bar">
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="主机名称">
-          <el-input v-model="searchForm.name" placeholder="请输入主机名称" clearable />
-        </el-form-item>
-        <el-form-item label="IP地址">
-          <el-input v-model="searchForm.ip" placeholder="请输入IP地址" clearable />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">
-            <el-icon><Search /></el-icon>
-            搜索
-          </el-button>
-          <el-button @click="handleReset">
-            <el-icon><Refresh /></el-icon>
-            重置
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-
-    <!-- 操作栏 -->
-    <div class="action-bar">
-      <div class="action-right">
-        <el-button type="primary" @click="handleAdd">
-          <el-icon><Plus /></el-icon>
-          新建主机
-        </el-button>
-        <el-button type="primary" @click="importVisible = true">
-          <el-icon><Upload /></el-icon>
-          批量导入
-        </el-button>
-        <el-button type="danger" :disabled="!selectedHosts.length" @click="handleBatchDelete">
-          <el-icon><Delete /></el-icon>
-          批量删除
-        </el-button>
+    <el-card class="host-main-card" shadow="never">
+      <!-- 搜索栏 -->
+      <div class="search-bar">
+        <el-form :inline="true" :model="searchForm" class="search-form">
+          <el-form-item label="主机名称">
+            <el-input v-model="searchForm.name" placeholder="请输入主机名称" clearable />
+          </el-form-item>
+          <el-form-item label="IP地址">
+            <el-input v-model="searchForm.ip" placeholder="请输入IP地址" clearable />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleSearch">
+              <el-icon><Search /></el-icon>
+              搜索
+            </el-button>
+            <el-button @click="handleReset">
+              <el-icon><Refresh /></el-icon>
+              重置
+            </el-button>
+          </el-form-item>
+        </el-form>
       </div>
-    </div>
 
-    <!-- 主机列表 -->
+      <!-- 操作栏 -->
+      <div class="action-bar">
+        <div class="action-left">
+          <!-- Placeholder for potential left-aligned actions -->
+        </div>
+        <div class="action-right">
+          <el-button type="primary" @click="handleAdd">
+            <el-icon><Plus /></el-icon>
+            新建主机
+          </el-button>
+          <el-button type="primary" @click="importVisible = true">
+            <el-icon><Upload /></el-icon>
+            批量导入
+          </el-button>
+          <el-button type="danger" :disabled="!selectedHosts.length" @click="handleBatchDelete">
+            <el-icon><Delete /></el-icon>
+            批量删除
+          </el-button>
+        </div>
+      </div>
+
+      <!-- 主机列表 -->
     <el-table
       v-loading="loading"
       :data="tableData"
@@ -57,11 +61,13 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="配置" min-width="120">
+      <el-table-column label="配置" min-width="180">
         <template #default="{ row }">
-          <div>CPU: {{ row.cpuCount }}核</div>
-          <div>内存: {{ row.memory }}</div>
-          <div>磁盘: {{ row.diskTotal }}</div>
+          <div class="config-cell">
+            <span>CPU: {{ row.cpuCount }}核</span>
+            <span>内存: {{ row.memory }}</span>
+            <span>磁盘: {{ row.diskTotal }}</span>
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="IP地址" min-width="160">
@@ -265,24 +271,9 @@
       </template>
     </el-dialog>
 
-    <!-- 终端对话框 -->
-    <el-dialog
-      v-model="terminalVisible"
-      :title="`终端 - ${currentHost?.name || ''}`"
-      width="800px"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      :show-close="false"
-      class="terminal-dialog"
-    >
-      <div v-loading="terminalLoading" class="terminal-container">
-        <div id="terminal" class="terminal"></div>
-      </div>
-      <template #footer>
-        <el-button @click="terminalVisible = false">关闭</el-button>
-      </template>
-    </el-dialog>
-  </div>
+    <!-- 主机表单对话框, 详情对话框, 导入对话框 remain here -->
+    </el-card> <!-- End of host-main-card -->
+  </div> <!-- End of host-container -->
 </template>
 
 <script setup lang="ts">
@@ -297,13 +288,10 @@ import {
   Upload
 } from '@element-plus/icons-vue'
 import useHost from './host'
-import { onMounted, onUnmounted } from 'vue'
-import { Terminal } from 'xterm'
-import { FitAddon } from 'xterm-addon-fit'
+// Removed onMounted, onUnmounted, Terminal, FitAddon, xterm.css as they were for the local dialog
 import { ElMessage } from 'element-plus'
-import 'xterm/css/xterm.css'
-import type { Host } from '@/types/cmdb'
-import { authenticateHost } from '@/api/cmdb/host'
+import type { Host } from '@/types/cmdb' // Keep Host type if used elsewhere
+import { authenticateHost } from '@/api/cmdb/host' // Keep if handleTerminal uses it
 
 defineOptions({
   name: 'HostView',
@@ -343,19 +331,15 @@ const {
   importRules,
   handleFileChange,
   downloadTemplate,
-  handleImport,
-  terminalVisible,
-  terminalLoading,
-  currentHost
+  handleImport
+  // Removed terminalVisible, terminalLoading, currentHost from destructuring
 } = useHost()
 
-// 终端相关
-let terminal: Terminal | null = null
-let fitAddon: FitAddon | null = null
-
-// 打开终端
+// 终端相关 - handleTerminal is now the only part related to terminal functionality
+// It opens a new page, so local xterm instance is not needed.
 const handleTerminal = async (row: Host) => {
-  terminalLoading.value = true
+  // terminalLoading.value = true; // This variable is removed, consider if loading state is still needed visually
+  ElMessage.info('正在准备终端连接...'); // Provide immediate feedback
   try {
     // 1. 先进行 SSH 认证
     const res = await authenticateHost({
@@ -363,70 +347,32 @@ const handleTerminal = async (row: Host) => {
       serverHost: row.serverHost,
       port: row.port,
       username: row.username,
-      password: row.password,
+      password: row.password, // Assuming password might be empty if key-based
       project: row.project,
       note: row.note
     })
 
-    if (res.code === 0) {
+    if (res.code === 0 && res.data.wsUrl) {
       // 2. 认证成功后，使用后端返回的 wsUrl 打开终端页面
       const terminalUrl = `/terminal?wsUrl=${encodeURIComponent(res.data.wsUrl)}&name=${encodeURIComponent(row.name)}&host=${encodeURIComponent(row.serverHost)}`
-      window.open(terminalUrl, '_blank')
+      window.open(terminalUrl, '_blank', 'noopener,noreferrer'); // Added security attributes
       ElMessage.success('SSH认证成功，正在打开终端...')
     } else {
-      ElMessage.error(res.msg || 'SSH认证失败')
+      ElMessage.error(res.msg || 'SSH认证失败或未返回wsUrl')
     }
   } catch (error) {
-    console.error('SSH认证失败:', error)
-    ElMessage.error('SSH认证失败，请检查连接信息')
+    console.error('SSH认证或打开终端失败:', error)
+    ElMessage.error('SSH认证失败，请检查连接信息或联系管理员')
   } finally {
-    terminalLoading.value = false
+    // terminalLoading.value = false; // This variable is removed
   }
 }
 
-onMounted(() => {
-  // 初始化终端
-  terminal = new Terminal({
-    cursorBlink: true,
-    fontSize: 14,
-    fontFamily: 'Menlo, Monaco, "Courier New", monospace',
-    theme: {
-      background: '#1e1e1e'
-    }
-  })
-  fitAddon = new FitAddon()
-  terminal.loadAddon(fitAddon)
-  
-  const terminalElement = document.getElementById('terminal')
-  if (terminalElement) {
-    terminal.open(terminalElement)
-    fitAddon.fit()
-  }
-})
-
-onUnmounted(() => {
-  if (terminal) {
-    terminal.dispose()
-  }
-})
+// Removed onMounted and onUnmounted hooks related to local xterm instance
 </script>
 
 <style scoped>
 @import './host.css';
 
-.terminal-dialog :deep(.el-dialog__body) {
-  padding: 0;
-}
-
-.terminal-container {
-  width: 100%;
-  height: 500px;
-  background-color: #1e1e1e;
-  padding: 10px;
-}
-
-.terminal {
-  width: 100%;
-  height: 100%;
-}
+/* Terminal dialog specific styles removed as dialog is removed */
 </style>

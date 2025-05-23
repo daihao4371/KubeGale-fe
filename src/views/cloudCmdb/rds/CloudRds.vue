@@ -13,7 +13,7 @@
             <div class="card-header">
               <span>云数据库管理</span>
               <div class="header-buttons">
-                <el-button type="success" @click="handleSync">
+                <el-button type="success" @click="handleSync" :disabled="!searchForm.platformId">
                   <el-icon><Refresh /></el-icon>同步数据
                 </el-button>
               </div>

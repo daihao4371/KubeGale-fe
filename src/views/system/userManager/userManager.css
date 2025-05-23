@@ -1,77 +1,113 @@
+/* General container for the page, matching layout from homepage.vue's .content */
 .user-manager-container {
-  padding: 0;
+  padding: 0; /* No padding on the outermost container if .box-card handles it */
   height: 100%;
   width: 100%;
 }
 
+/* Main card acting as the page content area */
 .box-card {
-  margin-bottom: 0;
-  border-radius: 0;
+  background: #fff;
+  padding: 24px; /* Consistent with homepage.css .content padding */
+  border-radius: 8px; /* Consistent border-radius */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); /* Consistent shadow */
   height: 100%;
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-bottom: 0; /* Removed specific margin-bottom */
 }
 
+/* Styling for the header section within the main card */
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 16px; /* Padding for the header content */
+  border-bottom: 1px solid #e4e7ed; /* Subtle border for separation */
+  margin-bottom: 20px; /* Space below header before stats cards */
 }
 
 .header-left {
   display: flex;
   flex-direction: column;
+  align-items: flex-start; /* Align text to the left */
 }
 
 .header-title {
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 20px; /* Slightly larger title */
+  font-weight: 600; /* Bolder title */
   color: #303133;
+  margin-bottom: 4px; /* Space between title and subtitle */
 }
 
 .header-subtitle {
-  font-size: 12px;
+  font-size: 14px; /* Standard subtitle size */
   color: #909399;
-  margin-top: 4px;
 }
 
-/* 统计卡片样式 */
-.stats-cards {
+.header-right {
   display: flex;
+  gap: 12px; /* Consistent gap between buttons */
+}
+
+/* Statistics Cards Section */
+.stats-cards {
+  display: grid; /* Using grid for responsiveness */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive columns */
   gap: 20px;
-  margin-bottom: 20px;
-  padding: 0 20px;
+  margin-bottom: 24px; /* Increased margin */
+  /* padding: 0 20px; Removed padding, let box-card handle overall padding */
 }
 
 .stats-card {
-  flex: 1;
-  min-width: 200px;
+  flex: 1; /* Retained flex for potential future direct flex usage */
+  border: 1px solid #e4e7ed; /* Lighter border */
+  border-radius: 6px; /* Softer radius */
+  background-color: #fbfcfe; /* Very light background */
+  transition: box-shadow 0.3s ease;
 }
 
-.stats-card-header {
+.stats-card:hover {
+   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.stats-card .el-card__header { /* Targeting Element Plus's internal class for header */
+  padding: 12px 16px; /* Adjust padding for stats card header */
+  border-bottom: 1px solid #f0f2f5; /* Lighter border */
+}
+
+.stats-card-header { /* Your custom class for header content */
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px; /* Space between icon and text */
+  font-size: 15px; /* Standardized font size */
+  font-weight: 500;
   color: #606266;
 }
 
 .stats-card-header .el-icon {
-  font-size: 18px;
+  font-size: 20px; /* Standardized icon size */
+  color: #409EFF; /* Use theme color for icons */
+}
+
+.stats-card .el-card__body { /* Targeting Element Plus's internal class for body */
+  padding: 16px; /* Adjust padding for stats card body */
 }
 
 .stats-card-content {
   display: flex;
-  align-items: baseline;
+  flex-direction: column; /* Stack number and label vertically */
+  align-items: center; /* Center content */
   justify-content: center;
-  padding: 10px 0;
+  text-align: center;
 }
 
 .stats-number {
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 28px; /* Larger number */
+  font-weight: 600; /* Bolder number */
   color: #303133;
-  margin-right: 4px;
+  margin-bottom: 4px; /* Space between number and label */
 }
 
 .stats-label {
@@ -79,125 +115,130 @@
   color: #909399;
 }
 
-/* 搜索表单样式 */
+/* Search Form Styling */
 .search-form {
-  margin-bottom: 20px;
-  padding: 20px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
+  margin-bottom: 24px; /* Consistent margin */
+  padding: 20px; /* Keep padding for visual grouping */
+  background-color: #f5f7fa; /* Light background to differentiate */
+  border-radius: 6px; /* Consistent radius */
 }
 
 .search-form .el-form-item {
-  margin-bottom: 0;
-  margin-right: 20px;
+  margin-bottom: 0; /* Keep as is for inline forms */
+  margin-right: 18px; /* Adjust spacing */
 }
 
 .search-form .el-input {
-  width: 200px;
+  width: 220px; /* Slightly wider inputs */
 }
 
 .search-form .el-button {
-  margin-left: 10px;
+  margin-left: 10px; /* Keep as is */
 }
 
-.pagination-container {
-  margin-top: 20px;
+/* Table Styling */
+.el-table {
+  border-radius: 4px; /* Optional: subtle radius for table */
+  border: 1px solid #ebeef5; /* Add a light border around the table */
+  margin-top: 0; /* Remove top margin if search form provides bottom margin */
+  flex: 1; /* Keep for layout */
+  width: 100%; /* Keep for layout */
+}
+
+/* Add padding to table cells */
+:deep(.el-table td.el-table__cell), 
+:deep(.el-table th.el-table__cell) {
+  padding: 12px 10px; /* Adjust padding as needed (vertical, horizontal) */
+}
+
+:deep(.el-table th.el-table__cell) { /* Specifically for header cells */
+  font-weight: 500;
+  color: #606266; /* Ensure header text color */
+  background-color: #f5f7fa !important; /* Ensure header background color */
+}
+
+.operation-buttons {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start; /* Keep left align for operations */
+  align-items: center;
+  gap: 8px; /* Use gap for spacing */
 }
 
+.operation-buttons .el-button {
+  margin-right: 0; /* Remove margin if gap is used */
+  padding: 5px 8px; /* Slightly adjust padding */
+  font-size: 13px; /* Standardize font size */
+}
+
+/* Pagination Container Styling */
+.pagination-container {
+  margin-top: 24px; /* Consistent margin */
+  padding: 10px 0; /* Add some padding */
+  display: flex;
+  justify-content: flex-end; /* Right alignment is common */
+}
+
+/* General Element UI Tweaks (if any, most are handled by Element Plus) */
 .el-button {
-  margin-right: 8px;
+  /* margin-right: 8px; Removed, use gap in specific containers if needed */
   display: inline-flex;
   align-items: center;
 }
 
-.el-button:last-child {
-  margin-right: 0;
-}
-
-.el-table {
-  border-radius: 0;
-  margin-top: 10px;
-  flex: 1;
-  width: 100%;
-}
-
 :deep(.el-card__body) {
   height: 100%;
-  padding: 15px;
+  padding: 20px; /* Default padding for el-card body if not overridden by specific card styles */
   display: flex;
   flex-direction: column;
   overflow: auto;
   width: 100%;
 }
 
-:deep(.el-table__inner-wrapper) {
-  width: 100%;
+/* Ensure the main .box-card's body padding is applied correctly */
+.box-card > :deep(.el-card__body) {
+  padding: 0; /* Reset if .box-card itself has padding:24px */
+                /* This might need adjustment based on how el-card structures its header and body */
+                /* If .box-card has padding: 24px, then its direct .el-card__body might need padding:0 */
+                /* The goal is that the content *within* the box-card starts after 24px from border */
 }
 
-:deep(.el-table__header-wrapper) {
-  width: 100%;
-}
 
+/* Deep selectors for Element Plus components if needed */
+:deep(.el-table__inner-wrapper),
+:deep(.el-table__header-wrapper),
 :deep(.el-table__body-wrapper) {
   width: 100%;
 }
 
-:deep(.el-table th) {
-  font-weight: 500;
-}
-
 :deep(.el-pagination) {
-  margin-top: 20px;
+  margin-top: 0; /* Remove margin if .pagination-container handles it */
   justify-content: flex-end;
 }
 
-.operation-buttons {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-wrap: nowrap;
-}
-
-.operation-buttons .el-button {
-  margin-right: 5px;
-  padding: 6px 10px;
-  font-size: 12px;
-}
-
-.operation-buttons .el-button:last-child {
-  margin-right: 0;
-}
-
-.header-right {
-  display: flex;
-  gap: 10px;
-}
-
-/* 对话框样式 */
+/* Dialog Styling - Element Plus defaults are generally good */
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
+  padding-top: 10px; /* Add some space above footer buttons */
 }
 
 :deep(.el-dialog__body) {
-  padding: 20px;
+  padding: 25px 30px; /* More spacious padding for dialog content */
 }
 
 :deep(.el-form-item__label) {
-  font-weight: 500;
+  font-weight: 500; /* Ensure form labels are consistently styled */
 }
 
-:deep(.el-select) {
-  width: 100%;
+:deep(.el-select),
+:deep(.el-cascader) { /* Apply to cascader as well */
+  width: 100%; /* Ensure select/cascader takes full width in forms */
 }
 
-/* 密码输入框样式 */
 :deep(.el-input__inner[type="password"]) {
-  letter-spacing: 1px;
+  letter-spacing: 1px; /* Keep for password fields */
 }
 
 :deep(.el-input__suffix) {
-  cursor: pointer;
+  cursor: pointer; /* Keep for clearable/password visibility icons */
 }

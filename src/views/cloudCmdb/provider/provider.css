@@ -1,12 +1,40 @@
 .provider-container {
-  padding: 24px;
-  background-color: var(--el-bg-color-page);
+  padding: 0; /* Page padding handled by parent or main layout; this container is for full-height component */
+  background-color: var(--el-bg-color-page); /* Keep page background */
+  height: 100%;
+  width: 100%;
+  display: flex; /* Enable flex for child .box-card to take full height */
+  flex-direction: column;
+}
+
+.stats-container { /* Retain existing stats container style */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 24px 24px 0 24px; /* Add margin to match page padding for items outside box-card */
 }
 
 .box-card {
-  border-radius: 8px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  border-radius: 8px; /* Already good */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02); /* Existing shadow is acceptable */
+  background: var(--el-bg-color); /* Standard card background */
+  margin: 24px; /* Standard page padding around the main card */
+  padding: 0; /* Reset padding, header/body will handle it */
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Allow card to take remaining height */
+  overflow: hidden; /* Prevent content from breaking card radius */
 }
+
+.box-card > :deep(.el-card__header) {
+  padding: 0; /* Reset, custom .card-header handles padding */
+}
+.box-card > :deep(.el-card__body) {
+  padding: 24px; /* Standard content padding */
+  flex-grow: 1;
+  overflow-y: auto; /* Allow content within card body to scroll */
+}
+
 
 .card-header {
   display: flex;
@@ -43,20 +71,20 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
-  margin-bottom: 24px;
+  /* margin-bottom: 24px; This was for the overall stats container, moved its margin */
 }
 
 .stat-card {
   background: var(--el-bg-color);
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03); /* Keep existing stat card shadow */
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.stat-icon {
+.stat-icon { /* Keep existing stat icon styles */
   width: 48px;
   height: 48px;
   border-radius: 8px;
@@ -83,21 +111,21 @@
 }
 
 .search-form {
-  margin: 24px;
+  margin: 0 24px 24px 24px; /* Search form also needs margin to align with page padding */
   padding: 24px;
   background-color: var(--el-bg-color);
   border-radius: 8px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03); /* Keep existing search form shadow */
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
 }
 
 .search-form .el-form-item {
-  margin-bottom: 0;
+  margin-bottom: 0; /* Correct for inline forms */
 }
 
-.platform-option {
+.platform-option { /* Keep existing platform option styles */
   display: flex;
   align-items: center;
   gap: 12px;
@@ -258,46 +286,47 @@
 :deep(.el-table) {
   border-radius: 8px;
   overflow: hidden;
-  margin: 0 24px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  margin: 0; /* Table itself does not need margin if its container (.box-card el-card__body) has padding */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03); /* Keep existing table shadow */
+  border: 1px solid var(--el-border-color-lighter); /* Add border for table */
 }
 
-:deep(.el-table th) {
+:deep(.el-table th.el-table__cell) { /* Use th.el-table__cell for specificity */
   font-weight: 600;
   background-color: var(--el-bg-color) !important;
-  padding: 16px;
-  height: 56px;
+  padding: 12px 10px; /* Standardized header padding */
+  height: auto; /* Remove fixed height, let content dictate */
   color: var(--el-text-color-primary);
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
-:deep(.el-table td) {
-  padding: 16px;
-  height: 56px;
+:deep(.el-table td.el-table__cell) { /* Use td.el-table__cell for specificity */
+  padding: 10px 10px; /* Standardized cell padding */
+  height: auto; /* Remove fixed height */
   color: var(--el-text-color-regular);
 }
 
 :deep(.el-table .cell) {
-  padding: 0;
-  line-height: 1.5;
-  white-space: nowrap;
+  padding: 0; /* Keep as is, cell padding is on td/th */
+  line-height: 1.5; /* Keep */
+  white-space: nowrap; /* Keep */
 }
 
-:deep(.el-table--striped .el-table__body tr.el-table__row--striped td) {
+:deep(.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell) { /* Added .el-table__cell */
   background-color: var(--el-bg-color-page);
 }
 
-:deep(.el-table__body tr:hover > td) {
-  background-color: rgba(59, 132, 246, 0.1) !important;
+:deep(.el-table__body tr:hover > td.el-table__cell) { /* Added .el-table__cell */
+  background-color: rgba(59, 132, 246, 0.05) !important; /* Slightly less prominent hover */
   cursor: pointer;
 }
 
-/* 表格列宽优化 */
-:deep(.el-table .el-table__cell) {
-  padding: 0;
-}
+/* 表格列宽优化 - ensure this doesn't conflict with td/th padding */
+/* :deep(.el-table .el-table__cell) {
+  padding: 0; Removed as td/th padding is now set
+} */
 
-:deep(.el-table .el-table__cell.is-center .cell) {
+:deep(.el-table .el-table__cell.is-center .cell) { /* Keep for centered content in cells */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -419,9 +448,9 @@
 /* 表格分页样式优化 */
 .pagination-container {
   margin-top: 24px;
-  padding: 16px 24px;
+  padding: 16px 0; /* Pagination container padding adjusted, no background needed */
   display: flex;
   justify-content: flex-end;
-  border-top: 1px solid var(--el-border-color-lighter);
-  background-color: var(--el-bg-color);
+  border-top: 1px solid var(--el-border-color-lighter); /* Keep top border */
+  /* background-color: var(--el-bg-color); Removed background, should be transparent over card body */
 }

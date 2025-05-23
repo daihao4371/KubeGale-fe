@@ -31,7 +31,9 @@ import {
   Odometer,
   SetUp,
   Goods,
-  Timer
+  Timer,
+  Cpu, // Added for Batch Execute
+  DocumentCopy, // Added for Batch Logs
 } from '@element-plus/icons-vue'
 
 interface MenuItem {
@@ -88,7 +90,9 @@ export default function useHomepage() {
       path: '/homepage/cmdb',
       children: [
         { id: 'cmdb-project', title: '项目管理', icon: 'List', path: '/homepage/cmdb/project' },
-        { id: 'cmdb-host', title: '主机管理', icon: 'Monitor', path: '/homepage/cmdb/host' }
+        { id: 'cmdb-host', title: '主机管理', icon: 'Monitor', path: '/homepage/cmdb/host' },
+        // Removed old individual batch operation menu items
+        { id: 'cmdb-batch-tasks', title: '批量任务', icon: 'Files', path: '/homepage/cmdb/batch-tasks' }
       ]
     },
     { id: 'im', title: 'IM通知管理', icon: 'Bell', path: '/homepage/im' },

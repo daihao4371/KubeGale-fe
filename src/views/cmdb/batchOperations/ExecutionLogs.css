@@ -1,0 +1,140 @@
+/* Main Page Container */
+.execution-logs-page-container {
+  padding: 0; /* Assuming parent layout provides overall page padding */
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Standard Main Card Styling */
+.box-card {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden; /* For border-radius clipping */
+}
+
+.box-card > :deep(.el-card__header) {
+  padding: 0; /* Reset, custom .card-header handles padding */
+}
+
+.box-card > :deep(.el-card__body) {
+  padding: 0; /* Reset, content sections will manage their own padding/margins */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Allow card content to scroll */
+}
+
+/* Card Header Styling */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--el-border-color-light, #e4e7ed);
+  margin-bottom: 20px; /* Space before filter form */
+}
+
+.card-header .header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--el-text-color-primary, #303133);
+}
+
+/* Filter Form Styling */
+.filter-form {
+  padding: 16px;
+  background-color: var(--el-fill-color-lighter, #f5f7fa);
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+.filter-form .el-form-item {
+  margin-bottom: 0; /* For inline forms */
+}
+
+/* Table Styling */
+.logs-table {
+  flex-grow: 1; /* Allow table to take available space */
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid var(--el-border-color-lighter, #ebeef5);
+  overflow: hidden; /* Ensures border-radius is respected by table */
+}
+
+:deep(.el-table th.el-table__cell) {
+  background-color: var(--el-fill-color-lighter, #f5f7fa) !important;
+  color: var(--el-text-color-regular, #606266);
+  font-weight: 500;
+  padding: 12px 10px;
+}
+
+:deep(.el-table td.el-table__cell) {
+  padding: 10px 10px;
+  color: var(--el-text-color-primary, #303133);
+  vertical-align: top; /* Align content to top for cells with pre */
+}
+
+.command-snippet {
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  margin: 0;
+  max-height: 60px; /* Show a few lines */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* Pagination Styling */
+.pagination-container {
+  margin-top: 24px;
+  padding: 10px 0;
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0; /* Prevent pagination from shrinking */
+}
+
+/* Detail Dialog Styling */
+.detail-dialog :deep(.el-dialog__body) {
+  padding: 20px;
+  background-color: var(--el-bg-color-page, #f0f2f5); /* Light background for dialog body */
+}
+
+.detail-dialog .log-descriptions {
+  margin-bottom: 20px;
+}
+
+.detail-dialog .detail-table-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.detail-dialog .log-output,
+.detail-dialog .command-detail {
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  background-color: #2c3e50; /* Dark background for logs */
+  color: #ecf0f1; /* Light text */
+  padding: 8px;
+  border-radius: 4px;
+  max-height: 250px; /* Limit height and allow scroll */
+  overflow-y: auto;
+  margin: 0; /* Reset margin for pre within table cell */
+}
+
+.detail-dialog .error-output {
+  color: #e74c3c; /* Red for errors */
+}

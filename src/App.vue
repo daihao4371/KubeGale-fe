@@ -8,9 +8,8 @@ import { RouterView } from 'vue-router'
 
 <style>
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+  /* font-family is now primarily managed by src/assets/base.css */
+  /* margin and padding are also handled by base.css or component-specific styles */
 }
 
 #app {

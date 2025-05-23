@@ -174,6 +174,16 @@ const router = createRouter({
                 requiresAuth: true,
                 title: '主机管理'
               }
+            },
+            // Removed old individual routes for batch-execute and batch-logs
+            {
+              path: 'batch-tasks', // Will resolve to /homepage/cmdb/batch-tasks
+              name: 'cmdb-batch-tasks',
+              component: () => import('@/views/cmdb/batchOperations/BatchTasksView.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '批量任务' // Page title
+              }
             }
           ]
         },

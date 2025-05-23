@@ -1,53 +1,125 @@
+/* Main container for the host page, similar to userManager.vue */
 .host-container {
-  padding: 20px;
+  padding: 0; /* Let host-main-card handle padding */
+  height: 100%;
+  width: 100%;
 }
 
+/* Main card for the page content */
+.host-main-card {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Search bar styling */
 .search-bar {
-  margin-bottom: 20px;
-  padding: 20px;
-  background-color: var(--el-bg-color);
+  padding: 16px;
+  background-color: #f5f7fa;
   border-radius: 4px;
+  margin-bottom: 20px;
 }
 
+.search-bar .el-form-item {
+  margin-bottom: 0; /* For inline forms */
+}
+
+/* Action bar styling */
 .action-bar {
   margin-bottom: 20px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between; /* Allows for items on left and right */
+  align-items: center;
 }
 
 .action-right {
   display: flex;
-  gap: 10px;
+  gap: 10px; /* Space between buttons in the right group */
 }
 
-.pagination {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
+.action-left {
+  /* For potential future left-aligned actions */
 }
 
+/* Table styling */
 :deep(.el-table) {
-  margin-top: 20px;
+  margin-top: 0; /* Remove default margin if action-bar provides it */
+  border-radius: 4px; /* Optional: subtle radius for table */
+  border: 1px solid #ebeef5; /* Add a light border around the table */
+  flex: 1; /* Allows table to take available space in flex column */
+  width: 100%;
 }
 
+:deep(.el-table th.el-table__cell) {
+  background-color: #f5f7fa !important; /* Important to override Element Plus default */
+  color: #606266;
+  font-weight: 500;
+  padding: 12px 10px; /* Consistent header padding */
+}
+
+:deep(.el-table td.el-table__cell) {
+  padding: 10px 10px; /* Consistent cell padding */
+  color: #303133;
+}
+
+/* Configuration column refinement */
+.config-cell span {
+  display: inline-block;
+  margin-right: 10px; /* Spacing between config items */
+  font-size: 13px;
+  color: #606266;
+  line-height: 1.4; /* For better readability if items wrap */
+}
+
+.config-cell span:last-child {
+  margin-right: 0;
+}
+
+/* Pagination styling */
+.pagination {
+  margin-top: 24px; /* Consistent margin */
+  padding: 10px 0;
+  display: flex;
+  justify-content: flex-end; /* Right-align pagination */
+}
+
+/* General Element Plus component deep styles, if needed */
 :deep(.el-dialog__body) {
-  padding: 20px;
+  padding: 25px 30px; /* Consistent dialog padding */
 }
 
 :deep(.el-descriptions__label) {
-  width: 120px;
-  font-weight: bold;
+  width: 120px; /* Standard label width for description items */
+  font-weight: 500; /* Bolder labels */
+  color: #606266;
 }
 
 :deep(.el-descriptions__content) {
-  word-break: break-all;
+  word-break: break-all; /* Prevent long strings from breaking layout */
+  color: #303133;
 }
 
-:deep(.el-button-group) {
+:deep(.el-button-group) { /* Applied to operation buttons in table */
   display: flex;
-  gap: 8px;
+  gap: 8px; /* Consistent spacing for button groups */
 }
 
 :deep(.el-tag) {
-  text-transform: capitalize;
+  text-transform: capitalize; /* Keep if this is a desired style */
+  border-radius: 4px; /* Softer tag edges */
+}
+
+/* Ensure the main .host-main-card's body padding is applied correctly by el-card */
+.host-main-card > :deep(.el-card__body) {
+  padding: 0; /* Reset if .host-main-card itself has padding:24px */
+                /* Content within the card body will then respect this outer padding */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto; /* Allow scrolling for card body if content exceeds height */
 }

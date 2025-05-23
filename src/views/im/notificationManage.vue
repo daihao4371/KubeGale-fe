@@ -5,25 +5,41 @@
         <div class="card-header">
           <span>通知管理</span>
           <div class="header-buttons">
-            <el-button type="primary" :icon="Plus" @click="handleAddFeishu">添加飞书机器人</el-button>
+            <el-dropdown @command="(command: 'feishu' | 'dingtalk') => handleAddNotification(command)">
+              <el-button type="primary">
+                <el-icon><Plus /></el-icon>添加通知<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="feishu">飞书机器人</el-dropdown-item>
+                  <el-dropdown-item command="dingtalk">钉钉机器人</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </div>
         </div>
       </template>
 
       <!-- 搜索栏 -->
-      <div class="search-form">
-        <el-input
-          v-model="searchName"
-          placeholder="请输入通知名称搜索"
-          class="search-input"
-          :prefix-icon="Search"
-          clearable
-          @clear="handleReset"
-          style="width: 300px; margin-right: 10px;"
-        />
-        <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
-        <el-button :icon="RefreshRight" @click="handleReset">重置</el-button>
-      </div>
+      <el-form :inline="true" :model="searchCriteria" class="search-form">
+        <el-form-item label="通知名称">
+          <el-input
+            v-model="searchCriteria.name"
+            placeholder="请输入通知名称搜索"
+            class="search-input" 
+            :prefix-icon="Search"
+            clearable
+            @clear="handleReset" 
+            style="width: 250px;" 
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button :icon="RefreshRight" @click="handleReset">重置</el-button>
+        </el-form-item>
+      </el-form>
 
       <el-table
         v-loading="loading"
@@ -70,28 +86,37 @@
       </div>
     </el-card>
 
-    <!-- 飞书机器人对话框 -->
+    <!-- 添加/编辑通知对话框 -->
     <el-dialog
-      v-model="feishuDialogVisible"
-      title="添加飞书机器人"
+      v-model="notificationDialogVisible"
+      :title="dialogTitle" 
       width="600px"
       :close-on-click-modal="false"
     >
       <el-form
-        ref="feishuFormRef"
-        :model="feishuForm"
-        :rules="feishuFormRules"
+        ref="notificationFormRef" 
+        :model="notificationForm" 
+        :rules="feishuFormRules" 
         label-width="120px"
       >
+        <el-form-item label="通知类型">
+          <el-tag>{{ notificationForm.type === 'feishu' ? '飞书机器人' : (notificationForm.type === 'dingtalk' ? '钉钉机器人' : '未知') }}</el-tag>
+        </el-form-item>
+        <el-form-item label="通知类型">
+          <el-tag>{{ notificationForm.type === 'feishu' ? '飞书机器人' : (notificationForm.type === 'dingtalk' ? '钉钉机器人' : '未知') }}</el-tag>
+        </el-form-item>
         <el-form-item label="名称" prop="name">
-          <el-input v-model="feishuForm.name" placeholder="请输入机器人名称" />
+          <el-input v-model="notificationForm.name" placeholder="请输入机器人名称" />
         </el-form-item>
         <el-form-item label="Webhook地址" prop="webhook_url">
-          <el-input v-model="feishuForm.webhook_url" placeholder="请输入飞书机器人的Webhook地址" />
+          <el-input v-model="notificationForm.webhook_url" placeholder="请输入机器人的Webhook地址" />
+        </el-form-item>
+        <el-form-item label="密钥 (Secret)" prop="secret" v-if="notificationForm.type === 'dingtalk'">
+          <el-input v-model="notificationForm.secret" placeholder="请输入钉钉机器人加签密钥 (可选)" />
         </el-form-item>
         <el-form-item label="描述" prop="description">
           <el-input
-            v-model="feishuForm.description"
+            v-model="notificationForm.description"
             type="textarea"
             :rows="3"
             placeholder="请输入描述信息"
@@ -99,7 +124,7 @@
         </el-form-item>
         <el-form-item label="标签" prop="tags">
           <el-select
-            v-model="feishuForm.tags"
+            v-model="notificationForm.tags"
             multiple
             filterable
             allow-create
@@ -108,12 +133,13 @@
           >
             <el-option label="测试" value="测试" />
             <el-option label="飞书" value="飞书" />
+            <el-option label="钉钉" value="钉钉" />
             <el-option label="通知" value="通知" />
           </el-select>
         </el-form-item>
         <el-form-item label="通知事件" prop="notify_events">
           <el-select
-            v-model="feishuForm.notify_events"
+            v-model="notificationForm.notify_events"
             multiple
             placeholder="请选择通知事件"
           >
@@ -124,7 +150,7 @@
         </el-form-item>
         <el-form-item label="接收者" prop="receivers">
           <el-select
-            v-model="feishuForm.receivers"
+            v-model="notificationForm.receivers"
             multiple
             placeholder="请选择接收者"
           >
@@ -132,15 +158,15 @@
           </el-select>
         </el-form-item>
         <el-form-item label="每日统计" prop="send_daily_stats">
-          <el-switch v-model="feishuForm.send_daily_stats" />
+          <el-switch v-model="notificationForm.send_daily_stats" />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="feishuDialogVisible = false">
+          <el-button @click="notificationDialogVisible = false">
             <el-icon><Close /></el-icon>取消
           </el-button>
-          <el-button type="primary" @click="submitFeishuForm(feishuFormRef)">
+          <el-button type="primary" @click="submitNotificationForm(notificationFormRef)">
             <el-icon><Check /></el-icon>确定
           </el-button>
         </span>
@@ -267,21 +293,22 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Plus, Search, RefreshRight, Edit, Delete, Close, Check, View, Document } from '@element-plus/icons-vue'
+import { Plus, Search, RefreshRight, Edit, Delete, Close, Check, View, Document, ArrowDown } from '@element-plus/icons-vue' // Added ArrowDown
 import type { FormInstance } from 'element-plus'
 import dayjs from 'dayjs'
 import {
-  searchName,
+  searchCriteria,
   handleSearch,
   handleReset,
   tableData,
   handleEdit,
   handleDelete,
-  handleAddFeishu,
-  feishuDialogVisible,
-  feishuForm,
-  feishuFormRules,
-  submitFeishuForm,
+  handleAddNotification, // Renamed
+  notificationDialogVisible, // Renamed
+  notificationForm, // Renamed
+  feishuFormRules, // Keeping this name for now, can be made generic later
+  submitNotificationForm, // Renamed
+  dialogTitle, // Added
   loading,
   currentPage,
   pageSize,
@@ -301,7 +328,7 @@ import {
   cardContentData
 } from './notificationManage'
 
-const feishuFormRef = ref<FormInstance>()
+const notificationFormRef = ref<FormInstance>() // Renamed from feishuFormRef
 
 // 格式化日期
 const formatDate = (date: string) => {

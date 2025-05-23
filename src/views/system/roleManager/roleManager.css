@@ -1,21 +1,27 @@
 .role-manager-container {
-  padding: 24px;
-  background: #f5f7fa;
-  min-height: calc(100vh - 48px);
+  padding: 0; /* Padding will be handled by .box-card */
+  /* background: #f5f7fa; Removed, parent layout or body provides background */
+  min-height: calc(100vh - 48px); /* Assuming 48px is header height, adjust if needed */
+  height: 100%; /* Ensure container takes full height */
+  width: 100%;
 }
 
 .box-card {
-  margin-bottom: 24px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: none;
-  transition: all 0.3s ease;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  /* border: none; Removed, default or shadow provides separation */
+  /* transition: all 0.3s ease; Removed custom transition for consistency */
+  /* margin-bottom: 24px; Removed, assuming this is the main content card */
+  margin-bottom: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* Ensure card takes full width of container */
 }
 
-.box-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
+/* Removed .box-card:hover styles for consistency with other main cards */
 
 .card-header {
   display: flex;

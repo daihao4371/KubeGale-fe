@@ -1,0 +1,166 @@
+/* Main Page Container */
+.execute-commands-page-container {
+  padding: 0; /* Assuming parent layout provides overall page padding */
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Standard Main Card Styling */
+.box-card {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden; /* For border-radius clipping */
+}
+
+.box-card > :deep(.el-card__header) {
+  padding: 0; /* Reset, custom .card-header handles padding */
+}
+
+.box-card > :deep(.el-card__body) {
+  padding: 0; /* Reset, content sections will manage their own padding/margins */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Allow card content to scroll */
+}
+
+/* Card Header Styling */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--el-border-color-light, #e4e7ed);
+}
+
+.card-header .header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--el-text-color-primary, #303133);
+}
+
+/* Content Sections Layout */
+.content-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* Space between major sections */
+}
+
+.section {
+  padding: 16px;
+  border: 1px solid var(--el-border-color-lighter, #ebeef5);
+  border-radius: 6px;
+  background-color: var(--el-bg-color-page, #f9fafb); /* Light background for sections */
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-text-color-primary, #303133);
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--el-border-color-lighter, #e4e7ed);
+}
+
+/* Host Selection Section Specifics */
+.host-selection-section .el-table {
+  margin-bottom: 16px;
+}
+.host-pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+.selected-count {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
+}
+
+/* Command Input Section Specifics */
+.command-input-section .el-form-item {
+  margin-bottom: 16px;
+}
+.command-input-section .el-form-item:last-child {
+  margin-bottom: 0;
+}
+
+
+/* Execution Section Specifics */
+.execution-section .el-button .el-icon {
+  margin-right: 4px;
+}
+
+/* Results Section Specifics */
+.results-section .results-summary-title,
+.results-section .results-logs-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: var(--el-text-color-primary);
+}
+
+.results-summary {
+  padding: 12px;
+  background-color: var(--el-bg-color, #ffffff);
+  border: 1px solid var(--el-border-color-extra-light, #f0f0f0);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+.results-summary p {
+  margin: 6px 0;
+  line-height: 1.6;
+}
+.results-summary strong {
+  color: var(--el-text-color-regular);
+}
+
+.results-section .el-table {
+  margin-top: 8px;
+}
+
+.log-output {
+  white-space: pre-wrap; /* Allow wrapping */
+  word-break: break-all; /* Break long words */
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  background-color: #2c3e50; /* Dark background for logs */
+  color: #ecf0f1; /* Light text */
+  padding: 8px;
+  border-radius: 4px;
+  max-height: 200px; /* Limit height and allow scroll within pre */
+  overflow-y: auto;
+}
+
+.error-output {
+  color: #e74c3c; /* Red for errors */
+}
+
+/* General Table Styling (if not covered by Element Plus defaults or global styles) */
+:deep(.el-table th.el-table__cell) {
+  background-color: var(--el-fill-color-lighter, #f5f7fa) !important;
+  color: var(--el-text-color-regular, #606266);
+  font-weight: 500;
+  padding: 10px 10px; /* Slightly less padding for these tables */
+}
+
+:deep(.el-table td.el-table__cell) {
+  padding: 8px 10px; /* Slightly less padding */
+  color: var(--el-text-color-primary, #303133);
+}
+
+:deep(.el-table) {
+  border-radius: 4px;
+  border: 1px solid var(--el-border-color-lighter, #ebeef5);
+}

@@ -1,46 +1,131 @@
 .rds-manager-container {
   height: 100%;
-  padding: 20px;
+  padding: 0; /* Overall page padding handled by .rds-layout now */
+  width: 100%; /* Ensure full width */
 }
 
 .rds-layout {
   display: flex;
   height: 100%;
-  gap: 20px;
+  gap: 20px; /* Spacing between tree and content */
+  padding: 24px; /* Standard page padding */
+  box-sizing: border-box; /* Ensure padding is included in height/width */
 }
 
 .platform-tree {
   width: 240px;
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  background-color: var(--el-bg-color-page, #f0f2f5); /* Blend with page background */
+  border-radius: 4px; /* Keep if desired, less visible with same bg */
+  /* box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); Removed shadow */
+  border-right: 1px solid var(--el-border-color-light, #e0e0e0); /* Separation line */
+  padding: 16px; /* Internal padding for tree component */
+  flex-shrink: 0; /* Prevent tree from shrinking */
+  overflow-y: auto; /* Allow tree to scroll if content overflows */
 }
 
 .content-area {
   flex: 1;
-  overflow: auto;
+  /* overflow: auto; Let box-card handle its internal scrolling */
+  display: flex; /* To make .box-card take full height */
+  flex-direction: column;
+  height: 100%;
+  padding: 0; /* .box-card will provide padding */
+}
+
+/* Standard main content card style for .box-card in CloudRds.vue */
+.box-card {
+  padding: 24px; /* This will be the main content padding */
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden; /* For border-radius clipping */
+}
+
+.box-card > :deep(.el-card__header) {
+  padding: 0; /* Reset, custom .card-header handles padding */
+}
+
+.box-card > :deep(.el-card__body) {
+  padding: 0; /* Reset, content inside body will have its own padding or structure */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Allow card content to scroll */
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 16px; /* Standard header padding */
+  border-bottom: 1px solid var(--el-border-color-light, #e4e7ed);
+  margin-bottom: 20px; /* Space below header */
+}
+
+/* Assuming a title span like other pages, e.g., <span>云数据库管理</span> */
+.card-header span { /* Simple selector for the title span */
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--el-text-color-primary, #303133);
 }
 
 .header-buttons {
   display: flex;
-  gap: 10px;
+  gap: 10px; /* Consistent button spacing */
 }
 
+/* Standard Search Form Styling */
 .search-form {
   margin-bottom: 20px;
-  padding: 15px;
-  background-color: #f8f8f8;
+  padding: 16px; /* Standard padding */
+  background-color: var(--el-fill-color-lighter, #f5f7fa); /* Standard background */
+  border-radius: 6px; /* Standard radius */
+}
+.search-form .el-form-item {
+  margin-bottom: 0; /* For inline forms */
+}
+
+/* Standard Table Styling */
+:deep(.el-table) {
+  margin-top: 0; /* Remove top margin if search form provides bottom margin */
   border-radius: 4px;
+  border: 1px solid var(--el-border-color-lighter, #ebeef5);
+  flex: 1; /* Allows table to take available space in flex column */
+  width: 100%;
+  display: flex; /* Ensure table itself is a flex container for its parts */
+  flex-direction: column;
+}
+
+:deep(.el-table__header-wrapper),
+:deep(.el-table__body-wrapper) {
+  width: 100%; /* Ensure these parts take full width of the flex parent el-table */
+}
+:deep(.el-table__body-wrapper) {
+  flex-grow: 1; /* Allow body to take available space */
+  overflow-y: auto; /* Enable scrolling for table body */
+}
+
+
+:deep(.el-table th.el-table__cell) {
+  background-color: var(--el-fill-color-lighter, #f5f7fa) !important;
+  color: var(--el-text-color-regular, #606266);
+  font-weight: 500;
+  padding: 12px 10px; /* Consistent header padding */
+}
+
+:deep(.el-table td.el-table__cell) {
+  padding: 10px 10px; /* Consistent cell padding */
+  color: var(--el-text-color-primary, #303133);
 }
 
 .pagination-container {
-  margin-top: 20px;
+  margin-top: 24px; /* Consistent margin */
+  padding: 10px 0; /* Add some vertical padding */
   display: flex;
   justify-content: flex-end;
+  flex-shrink: 0; /* Prevent pagination from shrinking */
 }

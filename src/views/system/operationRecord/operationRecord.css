@@ -13,29 +13,83 @@
 }
 
 .search-form .el-form-item:last-child {
-  margin-right: 0;
+  margin-right: 0; /* Correct */
 }
 
 .operation-record-container {
-  padding: 20px;
+  padding: 0; /* Padding handled by .box-card */
+  height: 100%;
+  width: 100%;
+}
+
+/* Standard main content card style */
+.box-card {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.box-card > :deep(.el-card__body) {
+  padding: 0; /* Reset if .box-card itself has padding:24px */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto; /* Allow card body to scroll if content overflows */
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e4e7ed;
+  margin-bottom: 20px; /* Space below header */
+}
+
+/* Assuming a title span like other pages, e.g., <span class="header-title">操作记录</span> */
+.card-header .header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
 }
 
 .operation-buttons {
-  margin-bottom: 20px;
+  margin-bottom: 20px; /* Keep if it's for buttons above the table */
 }
 
-.operation-table {
-  margin-top: 20px;
+.operation-table { /* This class might wrap the el-table */
+  margin-top: 0; /* Adjusted as search-form or card-header provides top spacing */
+  /* Standard table styling will be applied directly via :deep(.el-table) */
+}
+
+/* Standard Table Styling */
+:deep(.el-table) {
+  border-radius: 4px; /* Optional: subtle radius for table */
+  border: 1px solid #ebeef5; /* Add a light border around the table */
+  flex: 1; /* Allows table to take available space in flex column */
+  width: 100%;
+}
+
+:deep(.el-table th.el-table__cell) {
+  background-color: #f5f7fa !important; /* Important to override Element Plus default */
+  color: #606266;
+  font-weight: 500;
+  padding: 12px 10px; /* Consistent header padding */
+}
+
+:deep(.el-table td.el-table__cell) {
+  padding: 12px 10px; /* Consistent cell padding */
+  color: #303133;
 }
 
 .pagination-container {
-  margin-top: 20px;
+  margin-top: 24px; /* Consistent margin */
+  padding: 10px 0; /* Add some padding for spacing */
   display: flex;
   justify-content: flex-end;
 }
@@ -61,6 +115,7 @@ pre {
   word-wrap: break-word;
   max-width: 100%;
   overflow-x: auto;
+  font-family: monospace; /* Good for preformatted text */
 }
 
 /* 系统用户样式 */
@@ -109,14 +164,20 @@ pre {
   padding: 8px;
   background-color: #f5f7fa;
   border-radius: 4px;
-  font-family: monospace;
-  font-size: 12px;
+  font-family: monospace; /* Already set here, ensure consistency */
+  font-size: 13px; /* Slightly larger for better readability */
 }
 
 /* JSON格式化显示 */
 .json-content {
-  white-space: pre-wrap;
-  word-break: break-all;
-  max-width: 100%;
-  overflow-x: auto;
+  white-space: pre-wrap; /* Keep */
+  word-break: break-all; /* Keep */
+  max-width: 100%; /* Keep */
+  overflow-x: auto; /* Keep */
+  font-family: monospace; /* Ensure monospace for JSON */
+  font-size: 13px; /* Consistent with pre tag */
+  padding: 10px; /* Add padding if not already part of pre */
+  background-color: #f9fafb; /* Light background for JSON block */
+  border: 1px solid #eef0f2; /* Subtle border */
+  border-radius: 4px; /* Rounded corners */
 }

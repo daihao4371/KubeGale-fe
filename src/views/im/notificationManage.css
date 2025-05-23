@@ -1,36 +1,104 @@
 .notification-manage {
   height: 100%;
-  min-height: 0;
-  padding: 20px;
+  /* min-height: 0; Not strictly needed if height is 100% and display is flex */
+  padding: 0; /* Standard: Page padding handled by parent layout or main card */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  width: 100%; /* Ensure full width */
 }
+
 .box-card {
-  flex: 1 1 0%;
+  padding: 24px; /* Standard card padding */
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  width: 100%; /* Ensure card takes full width of its container */
+  flex: 1 1 0%; /* Existing good flex property */
+  display: flex; /* Existing good flex property */
+  flex-direction: column; /* Existing good flex property */
+  min-height: 0; /* Existing good flex property */
+  overflow: hidden; /* For border-radius clipping */
+}
+
+.box-card > :deep(.el-card__header) {
+  padding: 0; /* Reset, custom .card-header handles padding */
+}
+
+.box-card > :deep(.el-card__body) {
+  padding: 0; /* Reset, content inside body will define its own padding/margins */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  overflow-y: auto; /* Allow card content to scroll */
 }
-.el-table {
-  flex: 1 1 0%;
-  min-height: 0;
-}
+
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 16px; /* Standard header padding */
+  border-bottom: 1px solid var(--el-border-color-light, #e4e7ed);
+  margin-bottom: 20px; /* Space below header, before search form */
 }
+
+/* Assuming a title span like other pages, e.g., <span class="header-title">通知管理</span> */
+.card-header .header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--el-text-color-primary, #303133);
+}
+
 .header-buttons {
   display: flex;
-  gap: 10px;
+  gap: 10px; /* Consistent button spacing */
 }
+
 .search-form {
   margin-bottom: 20px;
-  padding: 15px;
-  background-color: #f8f8f8;
-  border-radius: 4px;
+  padding: 16px; /* Standard padding */
+  background-color: var(--el-fill-color-lighter, #f5f7fa); /* Standard background */
+  border-radius: 6px; /* Standard radius */
+  /* display: flex; align-items: center; /* Add if form items should be inline by default */
 }
+.search-form .el-form-item {
+  margin-bottom: 0; /* For inline forms or if using grid/flex for layout */
+}
+
+
+/* Table Styling */
+.el-table { /* This targets el-table directly if it's a direct child or specifically classed */
+  flex: 1 1 0%; /* Existing good flex property */
+  min-height: 0; /* Existing good flex property */
+  border-radius: 4px; /* Standard table radius */
+  border: 1px solid var(--el-border-color-lighter, #ebeef5); /* Standard table border */
+  width: 100%; /* Ensure table takes full width */
+  display: flex; /* For internal flex layout of header/body */
+  flex-direction: column;
+}
+
+:deep(.el-table__header-wrapper),
+:deep(.el-table__body-wrapper) {
+  width: 100%; /* Ensure these parts take full width */
+}
+:deep(.el-table__body-wrapper) {
+  flex-grow: 1; /* Allow body to take available space */
+  overflow-y: auto; /* Enable scrolling for table body */
+}
+
+:deep(.el-table th.el-table__cell) {
+  background-color: var(--el-fill-color-lighter, #f5f7fa) !important;
+  color: var(--el-text-color-regular, #606266);
+  font-weight: 500;
+  padding: 12px 10px; /* Standard header padding */
+}
+
+:deep(.el-table td.el-table__cell) {
+  padding: 10px 10px; /* Standard cell padding */
+  color: var(--el-text-color-primary, #303133);
+}
+
+/* Existing link button styles are fine, ensure they don't override global link styles if any */
 :deep(.el-button--primary.is-link) {
   color: #409eff;
 }
@@ -44,21 +112,22 @@
   color: #ff9999;
 }
 
-.search-bar {
+/* search-bar, search-input, operation-bar are specific, review if they are still needed */
+/* If search-form replaces search-bar, these might be redundant or need re-scoping */
+.search-bar { /* If this is different from .search-form */
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
 }
-
 .search-input {
   width: 300px;
 }
-
-.operation-bar {
+.operation-bar { /* If this is different from .header-buttons */
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
 }
+
 
 .dialog-footer {
   display: flex;
@@ -67,40 +136,43 @@
 }
 
 .pagination-container {
-  margin-top: 20px;
+  margin-top: 24px; /* Consistent margin */
+  padding: 10px 0; /* Add some vertical padding */
   display: flex;
   justify-content: flex-end;
+  flex-shrink: 0; /* Prevent pagination from shrinking */
 }
 
-.empty-data {
+.empty-data { /* Keep if used for empty states */
   margin: 40px 0;
+  text-align: center;
+  color: var(--el-text-color-secondary);
 }
 
-/* 为按钮图标添加右侧间距 */
-.el-button .el-icon {
+/* General button icon margin */
+.el-button .el-icon:not(:last-child) { /* Apply margin only if icon is not the last element */
   margin-right: 4px;
 }
 
-/* 对于链接按钮特别处理 */
+/* Link button icon alignment */
 .el-button--link .el-icon {
   vertical-align: middle;
 }
 
-/* 响应式布局 */
+/* Responsive layout - keep if relevant */
 @media screen and (max-width: 768px) {
-  .search-bar {
+  .search-bar { /* Adjust if .search-form is used instead */
     flex-direction: column;
   }
-
-  .search-input {
+  .search-input { /* Adjust if .search-form .el-input is used */
     width: 100%;
   }
-
-  .operation-bar {
+  .operation-bar { /* Adjust if .header-buttons are used */
     flex-direction: column;
   }
 }
 
+/* Table button margins - keep if el-button-group is not used or this is preferred */
 .el-table .el-button {
   margin-right: 6px;
 }

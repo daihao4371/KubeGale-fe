@@ -7,14 +7,20 @@ import type { PlatformRegionTreeItem, RegionNode } from '@/api/cloudCmdb/cloud_r
 // 类型定义
 export interface SearchInfo {
   keyword: string
+  platformId: number | null // Added
+  region: string | null     // Added
 }
 
 export default function useLoadBalancer() {
   // 状态定义
   const tableData = ref<LoadBalancerItem[]>([])
   const loading = ref(false)
-  const currentProviderId = ref(0)
-  const searchInfo = ref<SearchInfo>({ keyword: '' })
+  // currentProviderId is replaced by searchInfo.platformId
+  const searchInfo = ref<SearchInfo>({ 
+    keyword: '',
+    platformId: null,
+    region: null,
+  })
   const pageSize = ref(10)
   const currentPage = ref(1)
   const total = ref(0)
@@ -25,18 +31,19 @@ export default function useLoadBalancer() {
   const fetchList = async () => {
     loading.value = true
     try {
-      const params = {
+      const params: any = { // Using any temporarily to add platform_id
         loadBalancer: {
-          name: searchInfo.value.keyword || '',
-          instanceId: searchInfo.value.keyword || '',
-          region: ''
+          name: searchInfo.value.keyword || undefined, // Use undefined if empty
+          instanceId: searchInfo.value.keyword || undefined, // Use undefined if empty
+          region: searchInfo.value.region || undefined, // Added region from searchInfo
         },
         page: currentPage.value,
         pageSize: pageSize.value,
-        keyword: searchInfo.value.keyword || '',
-        field: '',
+        keyword: searchInfo.value.keyword || undefined,
+        field: '', // Consider removing if not used
         orderKey: 'id' as const,
-        desc: false
+        desc: false,
+        platform_id: searchInfo.value.platformId || undefined, // Added platform_id
       }
       const res = await getLoadBalancerList(params)
       if (res.code === 0) {
@@ -59,21 +66,32 @@ export default function useLoadBalancer() {
 
   // 处理平台选择
   const handlePlatformSelect = (payload: { platform: PlatformRegionTreeItem, region: RegionNode | null }) => {
-    currentProviderId.value = payload.platform.id
-    currentPage.value = 1
-    fetchList()
+    if (payload.region) {
+      searchInfo.value.platformId = payload.platform.id; // Assuming platform context is passed with region
+      searchInfo.value.region = payload.region.region_id; // Use region_id for consistency
+    } else if (payload.platform) {
+      searchInfo.value.platformId = payload.platform.id;
+      searchInfo.value.region = null; // Clear region if only platform is selected
+    } else {
+      searchInfo.value.platformId = null;
+      searchInfo.value.region = null;
+    }
+    currentPage.value = 1;
+    fetchList();
   }
 
   // 搜索
   const onSearch = () => {
-    currentPage.value = 1
-    fetchList()
+    currentPage.value = 1; // Reset page on new search
+    fetchList();
   }
 
   const onReset = () => {
-    searchInfo.value.keyword = ''
-    currentPage.value = 1
-    fetchList()
+    searchInfo.value.keyword = '';
+    searchInfo.value.platformId = null; // Reset platformId
+    searchInfo.value.region = null;     // Reset region
+    currentPage.value = 1;
+    fetchList();
   }
 
   // 分页
@@ -89,13 +107,13 @@ export default function useLoadBalancer() {
 
   // 同步
   const onSync = async () => {
-    if (!currentProviderId.value) {
+    if (!searchInfo.value.platformId) { // Use searchInfo.platformId
       ElMessage.warning('请先选择云厂商')
       return
     }
-    loading.value = true
+    loading.value = true // Consider a separate syncing ref if needed
     try {
-      const res = await syncLoadBalancer(currentProviderId.value)
+      const res = await syncLoadBalancer(searchInfo.value.platformId) // Use searchInfo.platformId
       if (res.code === 0) {
         ElMessage.success(res.msg || '同步操作成功')
         fetchList()
@@ -118,8 +136,8 @@ export default function useLoadBalancer() {
   return {
     tableData,
     loading,
-    currentProviderId,
-    searchInfo,
+    // currentProviderId, // Removed
+    searchInfo, // Now includes platformId and region
     pageSize,
     currentPage,
     total,
