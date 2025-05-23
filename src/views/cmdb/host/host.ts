@@ -8,7 +8,9 @@ import {
   updateHost,
   deleteHost,
   batchDeleteHosts,
-  getHostDetail
+  getHostDetail,
+  importHosts,
+  authenticateHost
 } from '@/api/cmdb/host'
 import { getProjectList } from '@/api/cmdb/project'
 
@@ -60,6 +62,23 @@ export default function useHost() {
   const detailVisible = ref(false)
   const hostDetail = ref<Host | null>(null)
   const detailLoading = ref(false)
+
+  // 导入对话框
+  const importVisible = ref(false)
+  const importForm = reactive({
+    file: null as File | null,
+    project: undefined as number | undefined
+  })
+  const importFormRef = ref<FormInstance>()
+  const importRules = {
+    file: [{ required: true, message: '请选择Excel文件', trigger: 'change' }],
+    project: [{ required: true, message: '请选择所属项目', trigger: 'change' }]
+  }
+
+  // 终端对话框
+  const terminalVisible = ref(false)
+  const terminalLoading = ref(false)
+  const currentHost = ref<Host | null>(null)
 
   // 获取项目列表
   const fetchProjectList = async () => {
@@ -229,9 +248,34 @@ export default function useHost() {
   }
 
   // 打开终端
-  const handleTerminal = (row: Host) => {
-    // TODO: 实现终端连接逻辑
-    console.log('打开终端:', row)
+  const handleTerminal = async (row: Host) => {
+    terminalLoading.value = true
+    try {
+      // 1. 先进行 SSH 认证
+      const res = await authenticateHost({
+        name: row.name,
+        serverHost: row.serverHost,
+        port: row.port,
+        username: row.username,
+        password: row.password,
+        project: row.project,
+        note: row.note
+      })
+
+      if (res.code === 0 && res.data.sessionID && res.data.wsUrl) {
+        // 2. 认证成功后，使用后端返回的 wsUrl 打开终端页面
+        const terminalUrl = `/terminal?wsUrl=${encodeURIComponent(res.data.wsUrl)}&name=${encodeURIComponent(row.name)}&host=${encodeURIComponent(row.serverHost)}`
+        window.open(terminalUrl, '_blank')
+        ElMessage.success('SSH认证成功，正在打开终端...')
+      } else {
+        ElMessage.error(res.msg || 'SSH认证失败')
+      }
+    } catch (error) {
+      console.error('SSH认证失败:', error)
+      ElMessage.error('SSH认证失败，请检查连接信息')
+    } finally {
+      terminalLoading.value = false
+    }
   }
 
   // 查看详情
@@ -249,6 +293,57 @@ export default function useHost() {
     } finally {
       detailLoading.value = false
     }
+  }
+
+  // 处理文件选择
+  const handleFileChange = (file: { raw: File }) => {
+    importForm.file = file.raw
+    return false
+  }
+
+  // 下载模板
+  const downloadTemplate = () => {
+    const template = [
+      ['主机名称', 'IP地址', '端口', '用户名', '密码', '备注'],
+      ['示例主机', '192.168.1.1', '22', 'root', 'password', '示例备注']
+    ].map(row => row.join(',')).join('\n')
+    
+    const blob = new Blob([template], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = '主机导入模板.csv'
+    link.click()
+    URL.revokeObjectURL(link.href)
+  }
+
+  // 提交导入
+  const handleImport = async () => {
+    if (!importFormRef.value) return
+    await importFormRef.value.validate(async (valid) => {
+      if (valid && importForm.file && importForm.project) {
+        const formData = new FormData()
+        formData.append('file', importForm.file)
+        formData.append('projectId', importForm.project.toString())
+        
+        try {
+          const res = await importHosts(formData)
+          if (res.code === 0) {
+            ElMessage.success(res.msg || '导入成功')
+            importVisible.value = false
+            // 重置表单
+            importForm.file = null
+            importForm.project = undefined
+            if (importFormRef.value) {
+              importFormRef.value.resetFields()
+            }
+            fetchList()
+          }
+        } catch (error) {
+          console.error('导入主机失败:', error)
+          ElMessage.error('导入主机失败')
+        }
+      }
+    })
   }
 
   // 初始化
@@ -285,6 +380,16 @@ export default function useHost() {
     handleSizeChange,
     handleCurrentChange,
     handleTerminal,
-    handleDetail
+    handleDetail,
+    importVisible,
+    importForm,
+    importFormRef,
+    importRules,
+    handleFileChange,
+    downloadTemplate,
+    handleImport,
+    terminalVisible,
+    terminalLoading,
+    currentHost
   }
 }

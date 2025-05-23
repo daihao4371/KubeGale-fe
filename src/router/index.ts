@@ -14,6 +14,15 @@ const router = createRouter({
       component: () => import('../views/login/Login.vue')
     },
     {
+      path: '/terminal',
+      name: 'Terminal',
+      component: () => import('@/views/terminal/index.vue'),
+      meta: {
+        title: '终端',
+        requiresAuth: true
+      }
+    },
+    {
       path: '/homepage',
       name: 'homepage',
       component: () => import('../views/homepage/Homepage.vue'),

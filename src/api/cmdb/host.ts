@@ -14,6 +14,11 @@ interface ListResponse<T> {
   pageSize: number
 }
 
+interface AuthenticationResponse {
+  sessionID: string
+  wsUrl: string
+}
+
 // 获取主机列表
 export const getHostList = (params: {
   project?: number
@@ -87,4 +92,38 @@ export const getHostDetail = (id: number) => {
     method: 'get',
     params: { id }
   })
+}
+
+// 批量导入主机
+export const importHosts = (data: FormData) => {
+  return request<ApiResponse>({
+    url: '/cmdb/hosts/import',
+    method: 'post',
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+// SSH 认证
+export const authenticateHost = (data: {
+  name: string
+  serverHost: string
+  port: number
+  username: string
+  password: string
+  project: number
+  note: string
+}) => {
+  return request<ApiResponse<AuthenticationResponse>>({
+    url: '/cmdb/hosts/authentication',
+    method: 'post',
+    data
+  })
+}
+
+// 获取终端 WebSocket 连接
+export const getTerminalWebSocket = (wsUrl: string) => {
+  return new WebSocket(wsUrl)
 }

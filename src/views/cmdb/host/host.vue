@@ -29,6 +29,10 @@
           <el-icon><Plus /></el-icon>
           新建主机
         </el-button>
+        <el-button type="primary" @click="importVisible = true">
+          <el-icon><Upload /></el-icon>
+          批量导入
+        </el-button>
         <el-button type="danger" :disabled="!selectedHosts.length" @click="handleBatchDelete">
           <el-icon><Delete /></el-icon>
           批量删除
@@ -212,6 +216,72 @@
         <el-descriptions-item label="备注" :span="2">{{ hostDetail?.note || '-' }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
+
+    <!-- 导入对话框 -->
+    <el-dialog
+      v-model="importVisible"
+      title="批量导入主机"
+      width="500px"
+    >
+      <el-form
+        ref="importFormRef"
+        :model="importForm"
+        :rules="importRules"
+        label-width="100px"
+      >
+        <el-form-item label="Excel文件" prop="file">
+          <el-upload
+            class="upload-demo"
+            :auto-upload="false"
+            :show-file-list="true"
+            :limit="1"
+            accept=".csv"
+            :on-change="handleFileChange"
+          >
+            <template #trigger>
+              <el-button type="primary">选择文件</el-button>
+            </template>
+            <template #tip>
+              <div class="el-upload__tip">
+                请上传Excel文件，<el-button type="primary" link @click="downloadTemplate">下载模板</el-button>
+              </div>
+            </template>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="所属项目" prop="project">
+          <el-select v-model="importForm.project" placeholder="请选择项目">
+            <el-option
+              v-for="item in projectOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="importVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleImport">确定</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 终端对话框 -->
+    <el-dialog
+      v-model="terminalVisible"
+      :title="`终端 - ${currentHost?.name || ''}`"
+      width="800px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
+      class="terminal-dialog"
+    >
+      <div v-loading="terminalLoading" class="terminal-container">
+        <div id="terminal" class="terminal"></div>
+      </div>
+      <template #footer>
+        <el-button @click="terminalVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -223,9 +293,17 @@ import {
   Delete,
   Edit,
   Connection,
-  View
+  View,
+  Upload
 } from '@element-plus/icons-vue'
 import useHost from './host'
+import { onMounted, onUnmounted } from 'vue'
+import { Terminal } from 'xterm'
+import { FitAddon } from 'xterm-addon-fit'
+import { ElMessage } from 'element-plus'
+import 'xterm/css/xterm.css'
+import type { Host } from '@/types/cmdb'
+import { authenticateHost } from '@/api/cmdb/host'
 
 defineOptions({
   name: 'HostView',
@@ -259,11 +337,96 @@ const {
   handleSubmit,
   handleSizeChange,
   handleCurrentChange,
-  handleTerminal,
-  handleDetail
+  handleDetail,
+  importVisible,
+  importForm,
+  importRules,
+  handleFileChange,
+  downloadTemplate,
+  handleImport,
+  terminalVisible,
+  terminalLoading,
+  currentHost
 } = useHost()
+
+// 终端相关
+let terminal: Terminal | null = null
+let fitAddon: FitAddon | null = null
+
+// 打开终端
+const handleTerminal = async (row: Host) => {
+  terminalLoading.value = true
+  try {
+    // 1. 先进行 SSH 认证
+    const res = await authenticateHost({
+      name: row.name,
+      serverHost: row.serverHost,
+      port: row.port,
+      username: row.username,
+      password: row.password,
+      project: row.project,
+      note: row.note
+    })
+
+    if (res.code === 0) {
+      // 2. 认证成功后，使用后端返回的 wsUrl 打开终端页面
+      const terminalUrl = `/terminal?wsUrl=${encodeURIComponent(res.data.wsUrl)}&name=${encodeURIComponent(row.name)}&host=${encodeURIComponent(row.serverHost)}`
+      window.open(terminalUrl, '_blank')
+      ElMessage.success('SSH认证成功，正在打开终端...')
+    } else {
+      ElMessage.error(res.msg || 'SSH认证失败')
+    }
+  } catch (error) {
+    console.error('SSH认证失败:', error)
+    ElMessage.error('SSH认证失败，请检查连接信息')
+  } finally {
+    terminalLoading.value = false
+  }
+}
+
+onMounted(() => {
+  // 初始化终端
+  terminal = new Terminal({
+    cursorBlink: true,
+    fontSize: 14,
+    fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+    theme: {
+      background: '#1e1e1e'
+    }
+  })
+  fitAddon = new FitAddon()
+  terminal.loadAddon(fitAddon)
+  
+  const terminalElement = document.getElementById('terminal')
+  if (terminalElement) {
+    terminal.open(terminalElement)
+    fitAddon.fit()
+  }
+})
+
+onUnmounted(() => {
+  if (terminal) {
+    terminal.dispose()
+  }
+})
 </script>
 
 <style scoped>
 @import './host.css';
+
+.terminal-dialog :deep(.el-dialog__body) {
+  padding: 0;
+}
+
+.terminal-container {
+  width: 100%;
+  height: 500px;
+  background-color: #1e1e1e;
+  padding: 10px;
+}
+
+.terminal {
+  width: 100%;
+  height: 100%;
+}
 </style>
