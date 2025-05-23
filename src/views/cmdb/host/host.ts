@@ -56,6 +56,11 @@ export default function useHost() {
   // 项目选项
   const projectOptions = ref<{ id: number; name: string }[]>([])
 
+  // 详情对话框
+  const detailVisible = ref(false)
+  const hostDetail = ref<Host | null>(null)
+  const detailLoading = ref(false)
+
   // 获取项目列表
   const fetchProjectList = async () => {
     try {
@@ -229,6 +234,23 @@ export default function useHost() {
     console.log('打开终端:', row)
   }
 
+  // 查看详情
+  const handleDetail = async (row: Host) => {
+    detailLoading.value = true
+    try {
+      const res = await getHostDetail(row.ID)
+      if (res.code === 0) {
+        hostDetail.value = res.data
+        detailVisible.value = true
+      }
+    } catch (error) {
+      console.error('获取主机详情失败:', error)
+      ElMessage.error('获取主机详情失败')
+    } finally {
+      detailLoading.value = false
+    }
+  }
+
   // 初始化
   onMounted(() => {
     fetchList()
@@ -249,6 +271,9 @@ export default function useHost() {
     formData,
     formRules,
     projectOptions,
+    detailVisible,
+    hostDetail,
+    detailLoading,
     handleSearch,
     handleReset,
     handleSelectionChange,
@@ -259,6 +284,7 @@ export default function useHost() {
     handleSubmit,
     handleSizeChange,
     handleCurrentChange,
-    handleTerminal
+    handleTerminal,
+    handleDetail
   }
 }

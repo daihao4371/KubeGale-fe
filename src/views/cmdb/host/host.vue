@@ -84,6 +84,10 @@
               <el-icon><Edit /></el-icon>
               编辑
             </el-button>
+            <el-button type="primary" link @click="handleDetail(row)">
+              <el-icon><View /></el-icon>
+              详情
+            </el-button>
             <el-button type="primary" link @click="handleTerminal(row)">
               <el-icon><Connection /></el-icon>
               终端
@@ -166,6 +170,48 @@
         <el-button type="primary" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
+
+    <!-- 主机详情对话框 -->
+    <el-dialog
+      v-model="detailVisible"
+      title="主机详情"
+      width="800px"
+    >
+      <el-descriptions
+        v-loading="detailLoading"
+        :column="2"
+        border
+      >
+        <el-descriptions-item label="主机名称">{{ hostDetail?.name }}</el-descriptions-item>
+        <el-descriptions-item label="IP地址">{{ hostDetail?.serverHost }}</el-descriptions-item>
+        <el-descriptions-item label="端口">{{ hostDetail?.port }}</el-descriptions-item>
+        <el-descriptions-item label="用户名">{{ hostDetail?.username }}</el-descriptions-item>
+        <el-descriptions-item label="操作系统">{{ hostDetail?.os }}</el-descriptions-item>
+        <el-descriptions-item label="系统版本">{{ hostDetail?.osVersion }}</el-descriptions-item>
+        <el-descriptions-item label="系统架构">{{ hostDetail?.osArch }}</el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <el-tag :type="hostDetail?.status === '已验证' ? 'primary' : 'warning'">
+            {{ hostDetail?.status }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="CPU型号">{{ hostDetail?.cpuModel }}</el-descriptions-item>
+        <el-descriptions-item label="CPU核心数">{{ hostDetail?.cpuCount }}</el-descriptions-item>
+        <el-descriptions-item label="内存">{{ hostDetail?.memory }}</el-descriptions-item>
+        <el-descriptions-item label="磁盘">{{ hostDetail?.diskTotal }}</el-descriptions-item>
+        <el-descriptions-item label="公网IP">{{ hostDetail?.publicIP }}</el-descriptions-item>
+        <el-descriptions-item label="私网IP">{{ hostDetail?.privateIP }}</el-descriptions-item>
+        <el-descriptions-item label="所属项目">
+          {{ projectOptions.find(p => p.id === Number(hostDetail?.project))?.name || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="创建时间">
+          {{ hostDetail?.CreatedAt ? new Date(hostDetail.CreatedAt).toLocaleString() : '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="更新时间">
+          {{ hostDetail?.UpdatedAt ? new Date(hostDetail.UpdatedAt).toLocaleString() : '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="备注" :span="2">{{ hostDetail?.note || '-' }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
   </div>
 </template>
 
@@ -176,7 +222,8 @@ import {
   Plus,
   Delete,
   Edit,
-  Connection
+  Connection,
+  View
 } from '@element-plus/icons-vue'
 import useHost from './host'
 
@@ -199,6 +246,9 @@ const {
   formData,
   formRules,
   projectOptions,
+  detailVisible,
+  hostDetail,
+  detailLoading,
   handleSearch,
   handleReset,
   handleSelectionChange,
@@ -209,7 +259,8 @@ const {
   handleSubmit,
   handleSizeChange,
   handleCurrentChange,
-  handleTerminal
+  handleTerminal,
+  handleDetail
 } = useHost()
 </script>
 
