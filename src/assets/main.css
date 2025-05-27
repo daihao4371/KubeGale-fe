@@ -71,8 +71,14 @@
 .el-button {
   border-radius: var(--border-radius-md) !important;
   font-weight: var(--font-weight-normal);
-  padding: var(--spacing-sm) var(--spacing-md); /* Example padding */
+  /* padding: var(--spacing-sm) var(--spacing-md); Example padding */
   transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  height: 32px;
+  padding: 0 var(--spacing-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm); /* Explicitly 14px */
 }
 
 .el-button--primary {
@@ -86,19 +92,31 @@
   border-color: var(--color-primary-dark) !important;
 }
 
-.el-button--default { /* Explicitly style default buttons */
-  background-color: var(--bg-color-card) !important; /* Or a specific default button bg */
-  border-color: var(--border-color-light) !important;
-  color: var(--text-color-primary) !important;
+.el-button--default { /* Ghost button style */
+  background-color: transparent !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
 }
 .el-button--default:hover,
 .el-button--default:focus {
-  background-color: var(--bg-color-page) !important; /* Slightly different for hover */
+  background-color: #e6f7ff !important; /* Light blue background for hover/focus */
   border-color: var(--color-primary) !important;
   color: var(--color-primary) !important;
 }
 
 /* Add styles for other button types if used (e.g., success, warning, danger) */
+.el-button--danger {
+  background-color: var(--error-color) !important;
+  border-color: var(--error-color) !important;
+  color: var(--text-color-on-primary) !important;
+}
+.el-button--danger:hover,
+.el-button--danger:focus {
+  background-color: #d91a2a !important; /* Darker shade of error-color */
+  border-color: #d91a2a !important; /* Darker shade of error-color */
+  color: var(--text-color-on-primary) !important;
+}
+
 .el-button--success {
   background-color: var(--success-color) !important;
   border-color: var(--success-color) !important;
@@ -167,11 +185,17 @@
   color: var(--color-heading) !important;
   font-weight: var(--font-weight-bold);
   border-bottom: 1px solid var(--border-color-strong); /* Stronger border under header */
+  font-size: var(--font-size-xs);
+  height: 48px;
+  vertical-align: middle;
 }
 .el-table td.el-table__cell,
 .el-table th.el-table__cell.is-leaf {
   border-bottom: 1px solid var(--border-color-light);
   color: var(--text-color-primary);
+  font-size: var(--font-size-xs);
+  height: 48px;
+  vertical-align: middle;
 }
 .el-table tr {
   background-color: var(--bg-color-card) !important;
@@ -242,9 +266,9 @@
   background-color: var(--error-color) !important;
   color: var(--text-color-on-primary) !important;
 }
-.el-tag--info {
-  background-color: var(--info-color) !important;
-  color: var(--text-color-on-primary) !important;
+.el-tag--info { /* Styled as gray for "disabled" or general info state */
+  background-color: var(--text-color-secondary) !important; /* Medium Gray */
+  color: var(--text-color-on-primary) !important; /* White text */
 }
 
 

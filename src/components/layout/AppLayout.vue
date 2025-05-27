@@ -80,16 +80,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { 
-  DataLine, 
-  Connection, 
-  SetUp, 
-  Files, 
-  DataAnalysis, 
-  Box, 
-  Monitor, 
-  Setting, 
-  Fold 
+import {
+  DataLine,
+  Connection,
+  SetUp,
+  Files,
+  DataAnalysis,
+  Box,
+  Monitor,
+  Setting,
+  Fold
 } from '@element-plus/icons-vue'
 import Breadcrumb from './Breadcrumb.vue'
 
@@ -152,5 +152,10 @@ const activeMenu = computed(() => route.path)
   font-size: 12px;
   color: #999;
   padding: 10px 0;
+}
+
+/* Ensure el-main has appropriate padding using our global variable */
+.el-main { /* Targeting the el-main component directly. Scoped styles will handle specificity. */
+  padding: var(--spacing-lg);
 }
 </style>
