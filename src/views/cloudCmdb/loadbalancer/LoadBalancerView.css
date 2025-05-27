@@ -1,164 +1,167 @@
+/* Main Layout */
 .loadbalancer-layout {
-    display: flex;
-    height: 100vh;
-    gap: 20px;
-    padding: 20px;
-    min-width: 0;
-  }
-  
-  .sidebar {
-    width: 280px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-  
-  .sidebar-title {
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 8px;
-    margin-bottom: 16px;
-    font-weight: bold;
-    font-size: 16px;
-    color: var(--el-text-color-primary);
-  }
-  
-  .el-card {
-    border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.04);
-    background: #fff;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 0;
-    min-width: 0;
-  }
-  
-  .el-tree {
-    flex: 1;
-    overflow: auto;
-    padding: 8px;
-    min-width: 0;
-  }
-  
-  :deep(.el-tree-node__content) {
-    height: 40px;
-    border-radius: 6px;
-    font-size: 15px;
-    transition: background 0.2s;
-  }
-  
-  :deep(.el-tree-node__content:hover) {
-    background: #f5f7fa;
-  }
-  
-  :deep(.el-tree-node.is-current > .el-tree-node__content) {
-    background: var(--el-color-primary-light-8);
-    color: var(--el-color-primary);
-  }
-  
-  .main-content {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  
-  .main-card {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    min-width: 0;
-    height: 100%;
-  }
-  
-  .search-form {
-    background: #f7f8fa;
-    border-radius: 6px;
-    padding: 12px 16px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
+  display: flex;
+  height: 100%; /* Changed from 100vh to fit within parent content area */
+  gap: var(--spacing-lg); /* Use theme variable */
+  /* padding: var(--spacing-lg); */ /* Assuming parent .content provides padding */
+  min-width: 0; /* Prevent flexbox overflow issues */
+}
 
-  .search-form .el-input {
-    width: 220px;
-  }
+/* Sidebar (contains CloudPlatformTree) */
+.sidebar {
+  width: 280px; /* Keep fixed width if desired, or use flex-basis */
+  flex: 0 0 280px; /* Explicit flex property */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
 
-  .search-form .el-button {
-    min-width: 80px;
-  }
+.sidebar .el-card { /* Targeting the el-card within the sidebar */
+  /* border-radius: var(--border-radius-lg); */ /* Inherited from global */
+  /* box-shadow: var(--box-shadow-md); */ /* Inherited */
+  /* background: var(--bg-color-card); */ /* Inherited */
+  flex: 1; /* Allow card to fill sidebar height */
+  display: flex;
+  flex-direction: column;
+  /* height: 100%; */ /* Redundant with flex:1 and parent height */
+  /* padding: 0; */ /* el-card has its own padding for header/body */
+  min-width: 0;
+}
+:deep(.sidebar .el-card__body) { /* Ensure card body can contain tree properly */
+  padding: var(--spacing-md); /* Adjust padding if needed for tree */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Tree itself should scroll */
+}
+:deep(.sidebar .el-card__header) {
+  padding: var(--spacing-md) var(--spacing-lg);
+}
 
-  /* 表格相关样式 */
-  .table-wrapper {
-    flex: 1;
-    overflow: auto;
-    padding: 0;
-    margin: 0;
-    min-width: 0;
-    height: 100%;
-  }
+.sidebar-title {
+  border-bottom: 1px solid var(--border-color-light); /* Use theme variable */
+  padding-bottom: var(--spacing-sm); /* Use theme variable */
+  margin-bottom: var(--spacing-md); /* Use theme variable */
+  font-weight: var(--font-weight-bold); /* Use theme variable */
+  font-size: var(--font-size-lg); /* Use theme variable */
+  color: var(--color-heading); /* Use theme variable */
+}
 
-  .table-container {
-    background: #fff;
-    border-radius: 6px;
-    overflow: hidden;
-    height: 100%;
-    min-width: 0;
-  }
+/* el-tree styling is now within CloudPlatformTree.vue's scoped CSS */
+/* Remove :deep tree styles from here if they were meant for CloudPlatformTree */
 
-  /* 表格内容区域样式 */
-  :deep(.el-table__body-wrapper) {
-    overflow-y: auto;
-    height: 100% !important;
-  }
+/* Main Content Area */
+.main-content {
+  flex: 1; /* Takes remaining space */
+  min-width: 0; /* Prevent flexbox overflow issues */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
-  :deep(.el-table__header-wrapper) {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
+.main-card.el-card { /* Targeting the el-card in main-content */
+  flex: 1; /* Allow card to fill main-content height */
+  display: flex;
+  flex-direction: column;
+  /* padding: 0; */ /* el-card handles its padding */
+  min-width: 0;
+  /* height: 100%; */ /* Redundant */
+}
+:deep(.main-card.el-card > .el-card__header) {
+  /* Standard el-card header padding should apply */
+  /* Add custom styles if needed, e.g., title alignment */
+}
+:deep(.main-card.el-card > .el-card__body) {
+  padding: var(--spacing-lg);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto; /* If content inside body needs to scroll before page does */
+}
 
-  :deep(.el-table th) {
-    background: #f5f7fa;
-    color: #333;
-    font-weight: 600;
-  }
 
-  :deep(.el-table__row:hover) {
-    background: #f0f7ff;
-  }
+/* Search Form */
+.search-form {
+  background: var(--bg-color-page); /* Consistent with other search forms */
+  border-radius: var(--border-radius-md); /* Consistent radius */
+  padding: var(--spacing-lg); /* Consistent padding */
+  margin-bottom: var(--spacing-lg); /* Space below form */
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; /* Allow wrapping */
+  gap: var(--spacing-md); /* Consistent gap */
+}
+.search-form .el-form-item {
+  margin-bottom: 0 !important; /* Remove default el-form-item margin */
+}
+/* .search-form .el-input { */ /* Width can be controlled by el-form-item or specific classes */
+/* width: 220px; */
+/* } */
+/* .search-form .el-button { */ /* Global el-button styles apply */
+/* min-width: 80px; */
+/* } */
 
-  :deep(.el-table .el-tag) {
-    border-radius: 4px;
-    font-size: 13px;
-    padding: 0 8px;
-  }
+/* Table Wrapper */
+.table-wrapper {
+  flex: 1; /* Allow table wrapper to take available space */
+  overflow: auto; /* Primary scroll for table content */
+  /* padding: 0; */ /* No padding needed for wrapper if table is styled correctly */
+  /* margin: 0; */
+  min-width: 0;
+  /* height: 100%; */ /* Flex handles height */
+  display: flex; /* Added to ensure table takes full height */
+  flex-direction: column; /* Added */
+}
 
-  /* 分页条美化 */
-  .pagination-container {
-    margin-top: 12px;
-    display: flex;
-    justify-content: flex-end;
-    background: #fff;
-    padding: 12px 0 0 0;
-    border-radius: 0 0 6px 6px;
-  }
+.table-container.el-table { /* Targeting el-table instance */
+  /* background: var(--bg-color-card); */ /* Inherited from main.css */
+  /* border-radius: var(--border-radius-md); */ /* Inherited */
+  /* overflow: hidden; */ /* el-table default */
+  /* height: 100%; */ /* Let flexbox manage height */
+  width: 100% !important; /* Override inline style from template */
+  flex-grow: 1; /* Allow table to grow in .table-wrapper */
+  min-width: 0;
+}
 
-  /* 详情弹窗美化 */
-  :deep(.el-dialog__body) {
-    background: #f7f8fa;
-  }
+/* Remove most :deep table styles, rely on global main.css overrides */
+/* :deep(.el-table__body-wrapper) { ... } */ /* Global styles should handle scrolling */
+/* :deep(.el-table__header-wrapper) { ... } */ /* Global styles for sticky header if needed */
+/* :deep(.el-table th) { ... } */ /* Global styles */
+/* :deep(.el-table__row:hover) { ... } */ /* Global styles */
+/* :deep(.el-table .el-tag) { ... } */ /* Global el-tag styles */
 
-  :deep(.el-descriptions__label) {
-    color: #888;
-    font-weight: 500;
-  }
 
-  :deep(.el-descriptions__content) {
-    color: #222;
-  }
+/* Pagination Container */
+.pagination-container {
+  margin-top: var(--spacing-lg); /* Space above pagination */
+  display: flex;
+  justify-content: flex-end;
+  /* background: var(--bg-color-card); */ /* If part of main-card, it's fine */
+  padding: var(--spacing-md) 0; /* Padding top/bottom, no horizontal if full width */
+  /* border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg); */ /* If part of main-card */
+}
+/* el-pagination will inherit global styles */
+
+
+/* Dialog Detail Styles */
+/* Remove :deep styles for dialogs, rely on global main.css overrides */
+/* :deep(.el-dialog__body) { ... } */
+/* :deep(.el-descriptions__label) { ... } */
+/* :deep(.el-descriptions__content) { ... } */
+
+/* Icon Spacing in Buttons (if not globally handled in main.css) */
+.el-button .el-icon + span,
+.el-button span + .el-icon {
+  margin-left: var(--spacing-xs);
+}
+.el-button > .el-icon:first-child:not(:last-child) {
+  margin-right: var(--spacing-xs);
+}
+.el-button > .el-icon:last-child:not(:first-child) {
+  margin-left: var(--spacing-xs);
+}
+.el-button > .el-icon:first-child:last-child {
+  margin-left: 0;
+  margin-right: 0;
+}

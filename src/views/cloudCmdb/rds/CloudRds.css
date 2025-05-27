@@ -1,46 +1,125 @@
+/* Outermost container for the view - assuming parent .content provides necessary page padding */
 .rds-manager-container {
   height: 100%;
-  padding: 20px;
+  /* padding: var(--spacing-lg); */ /* Handled by parent .content if this is not the absolute root */
+  display: flex; /* Added to ensure layout takes full height if this is the root */
+  flex-direction: column; /* Added */
 }
 
+/* Main layout: sidebar tree + content area */
 .rds-layout {
   display: flex;
   height: 100%;
-  gap: 20px;
+  gap: var(--spacing-lg); /* Consistent gap */
+  flex-grow: 1; /* Allow this layout to fill the container */
 }
 
+/* Sidebar for CloudPlatformTree */
 .platform-tree {
-  width: 240px;
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  flex: 0 0 300px; /* Match virtualMachine.css tree width */
+  background-color: var(--bg-color-card);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow-sm);
+  overflow-y: auto; /* Tree itself will handle internal scroll */
+  height: 100%; /* Take full height of .rds-layout */
 }
+/* CloudPlatformTree.vue component itself has its own scoped styles for tree items */
 
+/* Content Area for the main card (table, search, etc.) */
 .content-area {
-  flex: 1;
-  overflow: auto;
+  flex: 1; /* Take remaining space */
+  overflow: auto; /* Allow content area to scroll if its content overflows (e.g. very small screen) */
+  display: flex; /* Added */
+  flex-direction: column; /* Added */
+  height: 100%; /* Added */
 }
 
+/* el-card within content-area */
+.content-area .box-card { /* Assuming el-card has class="box-card" */
+  flex-grow: 1; /* Allow card to take full height */
+  display: flex;
+  flex-direction: column;
+  /* background-color: var(--bg-color-card); */ /* Inherited */
+  /* border-radius: var(--border-radius-lg); */ /* Inherited */
+  /* box-shadow: var(--box-shadow-md); */ /* Inherited */
+}
+:deep(.content-area .box-card > .el-card__header) {
+  /* Standard el-card header padding & border should apply */
+}
+:deep(.content-area .box-card > .el-card__body) {
+  padding: var(--spacing-lg);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto; /* If content inside body needs to scroll */
+}
+
+
+/* Card Header (content wrapper in el-card__header slot) */
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%; /* Ensure it takes full width */
+}
+.card-header span { /* Title */
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-heading);
 }
 
 .header-buttons {
   display: flex;
-  gap: 10px;
+  gap: var(--spacing-md);
 }
+/* Buttons will inherit global styles */
 
+/* Search Form */
 .search-form {
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: #f8f8f8;
-  border-radius: 4px;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-lg) 0 0 0; /* Padding top, or remove if card body padding is enough */
+  background-color: transparent; /* Search form is part of card body, no separate bg needed */
+  border-radius: var(--border-radius-md); /* Not needed if no separate bg/border */
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+.search-form .el-form-item {
+  margin-bottom: 0 !important;
+}
+/* el-input, el-select will inherit global styles */
+
+
+/* Table - el-table styling is global from main.css */
+.el-table {
+  flex-grow: 1; /* Allow table to take available space */
+  width: 100%;
 }
 
+/* Pagination Container */
 .pagination-container {
-  margin-top: 20px;
+  margin-top: var(--spacing-lg); /* Space above pagination */
+  padding: var(--spacing-md) 0; /* Padding around pagination */
   display: flex;
   justify-content: flex-end;
+}
+/* el-pagination will inherit global styles */
+
+/* Dialogs - el-dialog, el-descriptions will inherit global styles */
+/* Icon Spacing in Buttons (if not globally handled in main.css) */
+.el-button .el-icon + span,
+.el-button span + .el-icon {
+  margin-left: var(--spacing-xs);
+}
+.el-button > .el-icon:first-child:not(:last-child) {
+  margin-right: var(--spacing-xs);
+}
+.el-button > .el-icon:last-child:not(:first-child) {
+  margin-left: var(--spacing-xs);
+}
+.el-button > .el-icon:first-child:last-child {
+  margin-left: 0;
+  margin-right: 0;
 }

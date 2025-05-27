@@ -1,68 +1,132 @@
+/* Main Layout */
 .virtual-machine-container {
   display: flex;
   height: 100%;
+  gap: var(--spacing-lg); /* Gap between tree and list */
+  /* padding: var(--spacing-lg); */ /* Assuming parent .content has padding */
 }
 
 .platform-tree {
-  width: 300px;
-  border-right: 1px solid #e0e0e0;
-  padding: 16px;
-  overflow-y: auto;
+  flex: 0 0 300px; /* Fixed width for the tree */
+  background-color: var(--bg-color-card); /* Card background for the tree area */
+  padding: var(--spacing-lg); /* Consistent padding */
+  border-radius: var(--border-radius-lg); /* Consistent border radius */
+  overflow-y: auto; /* Allow tree to scroll if content overflows */
+  box-shadow: var(--box-shadow-sm); /* Subtle shadow */
+  height: 100%; /* Take full height of the container */
 }
 
 .virtual-machine-list {
-  padding: 24px;
-  background: #fff;
+  flex: 1; /* Take remaining space */
+  display: flex; /* Allow card to grow */
+  flex-direction: column; /* Ensure card takes full height */
+  height: 100%;
+  /* background: var(--bg-color-card); */ /* Card itself will have background */
+  /* padding: var(--spacing-lg); */ /* Card body will have padding */
 }
 
-.box-card {
-  overflow: hidden;
+/* Card within virtual-machine-list */
+.virtual-machine-list .box-card { /* Targeting el-card instance */
+  /* overflow: hidden; */ /* el-card default */
+  flex-grow: 1; /* Allow card to take full height of its container */
+  display: flex; /* For internal layout */
+  flex-direction: column; /* For internal layout */
+  /* background-color: var(--bg-color-card); */ /* Inherited */
+  /* border-radius: var(--border-radius-lg); */ /* Inherited */
+  /* box-shadow: var(--box-shadow-md); */ /* Inherited */
 }
 
-.card-header {
+.virtual-machine-list .card-header { /* Content wrapper in el-card__header slot */
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%; /* Ensure it takes full width of el-card__header */
+}
+.virtual-machine-list .card-header span { /* Title */
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-heading);
 }
 
-.header-buttons {
+.virtual-machine-list .header-buttons {
   display: flex;
-  gap: 8px;
+  gap: var(--spacing-md);
+}
+/* Buttons will inherit global styles */
+
+/* Search Form */
+.virtual-machine-list .search-form {
+  /* margin-bottom: var(--spacing-lg); */ /* Handled by card body padding or direct margin */
+  padding: var(--spacing-lg) 0 0 0; /* Add padding if not using a separate padded container */
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+.virtual-machine-list .search-form .el-form-item {
+  margin-bottom: 0 !important;
 }
 
+
+/* Table Container */
 .table-container {
-  overflow: auto;
-  margin-bottom: 0;
-  position: relative;
+  flex-grow: 1; /* Allow table container to take available space */
+  overflow: auto; /* Allow scrolling for the table itself */
+  /* margin-bottom: 0; */ /* No specific margin needed if pagination is separate */
+  position: relative; /* For sticky header if implemented */
+  width: 100%; /* Ensure it uses full width of card body */
 }
 
-.table-container :deep(.el-table) {
-  height: 100%;
-}
-
-.table-container :deep(.el-table__body-wrapper) {
+/* :deep styles for el-table should be minimized, relying on global styles from main.css */
+/* .table-container :deep(.el-table) {
+  height: 100%; // This can be tricky, prefer flex-grow on parent
+} */
+/* .table-container :deep(.el-table__body-wrapper) {
   overflow-y: auto;
-  height: calc(100% - 40px); /* 减去表头高度 */
-}
-
-.table-container :deep(.el-table__header-wrapper) {
+  height: calc(100% - 40px); // Avoid fixed calculations
+} */
+/* .table-container :deep(.el-table__header-wrapper) {
   position: sticky;
   top: 0;
-  z-index: 2;
-}
+  z-index: 2; // Ensure this is necessary and doesn't conflict
+} */
 
+/* Custom cell content */
 .vm-name {
-  color: #888;
-  font-size: 12px;
+  color: var(--text-color-secondary);
+  font-size: var(--font-size-sm);
 }
 
+/* Pagination Container */
 .pagination-container {
-  margin-top: 20px;
+  margin-top: var(--spacing-lg); /* Space above pagination */
+  padding: var(--spacing-md) 0; /* Padding around pagination */
+  /* background: var(--bg-color-card); */ /* If part of the card, card bg is enough */
+  /* border-top: 1px solid var(--border-color-light); */ /* Optional separator */
   display: flex;
   justify-content: flex-end;
-  background: #fff;
-  border-top: 1px solid #f0f0f0;
-  z-index: 2;
-  position: static;
-  padding: 0;
+  /* z-index: 2; */ /* Check if needed */
+  /* position: static; */ /* Default, fine */
 }
+/* el-pagination will inherit global styles */
+
+/* Ensure el-card__body allows table and pagination to fit */
+:deep(.virtual-machine-list .box-card > .el-card__body) {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: auto; /* Allow scrolling within card body if content overflows */
+  width: 100%;
+}
+/* el-table should be direct child or wrapped in a flex-grow:1 container */
+.el-table {
+  flex-grow: 1; /* if table is direct child of .el-card__body */
+  width: 100%;
+}
+
+/* Dialog Details (el-descriptions) */
+/* Global el-descriptions styles from main.css should apply */
+/* If specific overrides are needed: */
+/* .el-dialog .el-descriptions__label { color: var(--text-color-primary); font-weight: var(--font-weight-bold); } */
+/* .el-dialog .el-descriptions__content { color: var(--text-color-secondary); } */

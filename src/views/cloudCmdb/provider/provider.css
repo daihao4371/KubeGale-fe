@@ -1,427 +1,304 @@
+/* Main Container */
 .provider-container {
-  padding: 24px;
-  background-color: var(--el-bg-color-page);
+  /* padding: var(--spacing-lg); */ /* Should be handled by parent .content */
+  background-color: var(--bg-color-page); /* Use global page background */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Main Card - el-card instance, should inherit global styles */
 .box-card {
-  border-radius: 8px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  /* border-radius: var(--border-radius-lg); */ /* Inherited */
+  /* box-shadow: var(--box-shadow-md); */ /* Inherited */
+  flex-grow: 1; /* Allow card to take available space */
+  display: flex; /* Added */
+  flex-direction: column; /* Added */
 }
 
+/* Card Header (content wrapper within el-card__header slot) */
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  background-color: var(--el-bg-color);
+  /* Padding should be handled by el-card__header itself */
+  /* border-bottom: 1px solid var(--border-color-light); */ /* Handled by el-card__header */
+  /* background-color: var(--bg-color-card); */ /* el-card__header has its own bg */
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--spacing-md); /* Consistent gap */
 }
 
-.header-icon {
-  font-size: 24px;
-  color: var(--el-color-primary);
+.header-icon { /* Assuming this is an el-icon component */
+  font-size: 1.5rem; /* 24px */
+  color: var(--color-primary);
 }
 
 .header-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
+  font-size: 1.25rem; /* Consistent with other page titles */
+  font-weight: var(--font-weight-bold);
+  color: var(--color-heading);
 }
 
 .header-buttons {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-md); /* Consistent gap */
 }
+/* Buttons will inherit global el-button styles */
 
+/* Stats Container */
 .stats-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  /* padding: 0 var(--spacing-lg); */ /* Add padding if container is not full width of page padding */
 }
 
 .stat-card {
-  background: var(--el-bg-color);
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  background: var(--bg-color-card);
+  border-radius: var(--border-radius-md); /* Consistent with other cards */
+  padding: var(--spacing-lg); /* Use larger padding */
+  box-shadow: var(--box-shadow-sm); /* Subtle shadow */
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--spacing-md);
 }
 
-.stat-icon {
+.stat-icon { /* This is a div wrapping an el-icon */
   width: 48px;
   height: 48px;
-  border-radius: 8px;
+  border-radius: var(--border-radius-md); /* Consistent radius */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 1.5rem; /* 24px */
+  /* Specific background/color provided inline in template, can be themed here if consistent */
+  /* Example:
+  background-color: var(--color-primary-light-hover);
+  color: var(--color-primary);
+  */
 }
+.stat-icon.primary { background-color: var(--color-primary-light); color: var(--color-primary-dark); }
+.stat-icon.success { background-color: var(--success-color); color: var(--text-color-on-primary); } /* Example, adjust for contrast */
+.stat-icon.warning { background-color: var(--warning-color); color: var(--text-color-primary); } /* Example, adjust for contrast */
+
 
 .stat-content {
   flex: 1;
 }
 
 .stat-title {
-  font-size: 14px;
-  color: var(--el-text-color-secondary);
-  margin-bottom: 4px;
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+  margin-bottom: var(--spacing-xs);
 }
 
 .stat-value {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
+  font-size: 1.5rem; /* 24px */
+  font-weight: var(--font-weight-bold);
+  color: var(--text-color-primary);
 }
 
+/* Search Form */
 .search-form {
-  margin: 24px;
-  padding: 24px;
-  background-color: var(--el-bg-color);
-  border-radius: 8px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+  /* margin: var(--spacing-lg); */ /* If inside card body, card body has padding */
+  padding: var(--spacing-lg);
+  background-color: var(--bg-color-page); /* Consistent with other search forms */
+  border-radius: var(--border-radius-md);
+  /* box-shadow: var(--box-shadow-sm); */ /* Optional for search form */
+  display: flex; /* Changed from grid to flex for consistency */
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  align-items: center; /* Align items if they have different heights */
 }
 
 .search-form .el-form-item {
-  margin-bottom: 0;
+  margin-bottom: 0 !important; /* Remove el-form-item default margin */
 }
 
+/* Platform Option in Select Dropdown */
 .platform-option {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 4px 0;
+  gap: var(--spacing-sm); /* Consistent gap */
+  /* padding: var(--spacing-xs) 0; */ /* el-option has padding */
 }
 
-.platform-icon {
-  font-size: 18px;
-  color: var(--el-color-primary);
+.platform-icon { /* Assuming this is an el-icon */
+  font-size: 1.125rem; /* 18px */
+  color: var(--color-primary); /* Or inherit from text */
 }
 
+/* Table Custom Cell Content */
 .provider-name {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 4px 0;
-  color: var(--el-text-color-primary);
+  gap: var(--spacing-sm);
+  /* padding: var(--spacing-xs) 0; */ /* Cell padding is global */
+  color: var(--text-color-primary);
 }
 
-.provider-icon {
+.provider-icon { /* This is a div wrapping an icon/img */
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  background-color: var(--el-bg-color-page);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--bg-color-page); /* Subtle background */
 }
 
-.provider-icon img {
-  width: 24px;
-  height: 24px;
+.provider-icon img { /* If using img tag */
+  width: 20px; /* Slightly smaller if needed */
+  height: 20px;
   object-fit: contain;
 }
-
-.platform-tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 12px;
-  height: 28px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  min-width: 80px;
-  background-color: transparent !important;
+.provider-icon .el-icon { /* If using el-icon */
+  font-size: 1.25rem; /* 20px */
+  color: var(--text-color-secondary); /* Example color */
 }
 
-.platform-tag.aliyun {
-  color: #1890ff;
-}
 
-.platform-tag.aws {
-  color: #ff7a45;
+/* Platform Tag Styling */
+.platform-tag.el-tag { /* Be specific to ensure it's an el-tag */
+  /* display: inline-flex; */ /* el-tag default */
+  /* align-items: center; */ /* el-tag default */
+  /* justify-content: center; */ /* el-tag default */
+  /* padding: var(--spacing-xs) var(--spacing-sm); */ /* Use el-tag global padding */
+  /* height: auto; */ /* Use el-tag global height */
+  border-radius: var(--border-radius-sm); /* el-tag global radius */
+  font-size: var(--font-size-sm); /* Consistent font size */
+  font-weight: var(--font-weight-normal);
+  min-width: 80px; /* Keep if needed for alignment */
+  /* background-color: transparent !important; */ /* This makes tags invisible, rely on el-tag types */
+  /* Custom colors are okay, but prefer using el-tag types if possible */
 }
+/* Example of using theme status colors for specific tags if not using el-tag types */
+.platform-tag.aliyun { color: var(--color-primary); border: 1px solid var(--color-primary); background-color: var(--color-primary-light-hover); }
+.platform-tag.aws { color: var(--warning-color); border: 1px solid var(--warning-color); background-color: var(--warning-color-light-hover); } /* Example, map to your theme */
+.platform-tag.huawei { color: var(--error-color); border: 1px solid var(--error-color); background-color: var(--error-color-light-hover); }   /* Example, map to your theme */
+.platform-tag.tencent { color: var(--success-color); border: 1px solid var(--success-color); background-color: var(--success-color-light-hover); }/* Example, map to your theme */
 
-.platform-tag.huawei {
-  color: #ff4d4f;
-}
-
-.platform-tag.tencent {
-  color: #52c41a;
-}
 
 .time-cell {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--el-text-color-secondary);
-  font-size: 14px;
-  padding: 4px 0;
+  gap: var(--spacing-xs);
+  color: var(--text-color-secondary);
+  font-size: var(--font-size-sm);
+  /* padding: var(--spacing-xs) 0; */ /* Cell padding is global */
 }
 
 .time-cell .el-icon {
-  font-size: 16px;
-  color: var(--el-text-color-secondary);
+  font-size: 1rem; /* 16px */
+  color: var(--text-color-secondary); /* Inherit or be specific */
 }
 
+/* Operation Buttons in Table */
 .operation-buttons {
   display: flex;
-  gap: 16px;
-  justify-content: center;
+  gap: var(--spacing-sm); /* Smaller gap for table action buttons */
+  justify-content: center; /* Or flex-start if preferred */
   align-items: center;
   flex-wrap: nowrap;
   white-space: nowrap;
 }
+/* .operation-button specific styles with !important can likely be removed if global el-button[link] styles are correct */
+/* Rely on global el-button size="small" type="primary" link styles */
+/* .operation-button { ... } */
+/* .operation-button:hover { ... } */
+/* .operation-button .el-icon { ... } */
+/* .operation-button.el-button--danger { ... } */
+/* .operation-button.el-button--danger:hover { ... } */
+/* .operation-button.el-button--info { ... } */
+/* .operation-button.el-button--info:hover { ... } */
 
-.operation-button {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 4px 8px !important;
-  height: 32px !important;
-  min-width: 80px !important;
-  font-size: 14px !important;
-  border-radius: 4px !important;
-  transition: all 0.3s ease !important;
-  color: var(--el-color-primary) !important;
-}
 
-.operation-button:hover {
-  background-color: var(--el-color-primary-light-9) !important;
-  color: var(--el-color-primary-light-3) !important;
-}
-
-.operation-button .el-icon {
-  margin-right: 4px !important;
-  font-size: 16px !important;
-  color: inherit !important;
-}
-
-/* 删除按钮特殊样式 */
-.operation-button.el-button--danger {
-  color: var(--el-color-danger) !important;
-}
-
-.operation-button.el-button--danger:hover {
-  color: var(--el-color-danger-light-3) !important;
-  background-color: var(--el-color-danger-light-9) !important;
-}
-
-/* Region同步按钮特殊样式 */
-.operation-button.el-button--info {
-  color: var(--el-color-primary) !important;
-}
-
-.operation-button.el-button--info:hover {
-  color: var(--el-color-primary-light-3) !important;
-  background-color: var(--el-color-primary-light-9) !important;
-}
-
-/* 同步状态样式 */
+/* Sync Status (if this is a custom component/class) */
 .sync-status {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-lg); /* Pill shape */
+  font-size: var(--font-size-sm);
 }
+.sync-status.success { background-color: var(--success-color-light-hover); color: var(--success-color); }
+.sync-status.warning { background-color: var(--warning-color-light-hover); color: var(--warning-color); }
+.sync-status.error   { background-color: var(--error-color-light-hover); color: var(--error-color); }
 
-.sync-status.success {
-  background-color: var(--el-color-success-light-9);
-  color: var(--el-color-success);
-}
+/* Remove most :deep styles for Element Plus components, assume they are globally styled in main.css */
+/* :deep(.el-table) { ... } */
+/* :deep(.el-table th) { ... } */
+/* :deep(.el-table td) { ... } */
+/* :deep(.el-table .cell) { ... } */
+/* :deep(.el-table--striped .el-table__body tr.el-table__row--striped td) { ... } */
+/* :deep(.el-table__body tr:hover > td) { ... } */
+/* :deep(.el-table .el-table__cell) { ... } */
+/* :deep(.el-table .el-table__cell.is-center .cell) { ... } */
+/* :deep(.el-button) { ... } */
+/* :deep(.el-button--primary) { ... } */
+/* :deep(.el-form-item__label) { ... } */
+/* :deep(.el-input__wrapper) { ... } */
+/* :deep(.el-input__wrapper:hover) { ... } */
+/* :deep(.el-pagination) { ... } */
+/* :deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) { ... } */
+/* :deep(.el-pagination.is-background .el-pager li:not(.is-disabled):hover) { ... } */
+/* :deep(.el-select) { ... } */
+/* :deep(.el-select .el-input__wrapper) { ... } */
+/* :deep(.el-select-dropdown__item) { ... } */
+/* :deep(.el-dialog__header) { ... } */
+/* :deep(.el-dialog__body) { ... } */
+/* :deep(.el-dialog__footer) { ... } */
+/* :deep(.el-table__selection) { ... } */
+/* :deep(.el-table--border) { ... } */
+/* :deep(.el-table--border .el-table__cell) { ... } */
+/* :deep(.el-table__header) { ... } */
+/* :deep(.el-table__body) { ... } */
+/* :deep(.el-table__row) { ... } */
 
-.sync-status.warning {
-  background-color: var(--el-color-warning-light-9);
-  color: var(--el-color-warning);
-}
 
-.sync-status.error {
-  background-color: var(--el-color-danger-light-9);
-  color: var(--el-color-danger);
-}
-
-/* 表格样式优化 */
-:deep(.el-table) {
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 0 24px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
-}
-
-:deep(.el-table th) {
-  font-weight: 600;
-  background-color: var(--el-bg-color) !important;
-  padding: 16px;
-  height: 56px;
-  color: var(--el-text-color-primary);
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-
-:deep(.el-table td) {
-  padding: 16px;
-  height: 56px;
-  color: var(--el-text-color-regular);
-}
-
-:deep(.el-table .cell) {
-  padding: 0;
-  line-height: 1.5;
-  white-space: nowrap;
-}
-
-:deep(.el-table--striped .el-table__body tr.el-table__row--striped td) {
-  background-color: var(--el-bg-color-page);
-}
-
-:deep(.el-table__body tr:hover > td) {
-  background-color: rgba(59, 132, 246, 0.1) !important;
-  cursor: pointer;
-}
-
-/* 表格列宽优化 */
-:deep(.el-table .el-table__cell) {
-  padding: 0;
-}
-
-:deep(.el-table .el-table__cell.is-center .cell) {
+/* Ensure el-card__body allows table to grow */
+:deep(.box-card > .el-card__body) {
+  padding: var(--spacing-lg); /* Consistent padding for the main card body */
   display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 按钮样式优化 */
-:deep(.el-button) {
-  font-weight: 500;
-  padding: 8px 16px;
-  height: 36px;
-}
-
-:deep(.el-button--primary) {
-  --el-button-hover-bg-color: var(--el-color-primary-light-3);
-  --el-button-hover-border-color: var(--el-color-primary-light-3);
-}
-
-/* 表单样式优化 */
-:deep(.el-form-item__label) {
-  font-weight: 500;
-  padding-right: 16px;
-}
-
-:deep(.el-input__wrapper) {
-  box-shadow: 0 0 0 1px var(--el-border-color) inset;
-  padding: 0 12px;
-  height: 36px;
-}
-
-:deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px var(--el-color-primary) inset;
-}
-
-/* 分页样式优化 */
-:deep(.el-pagination) {
-  padding: 0;
-  font-weight: 500;
-}
-
-:deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
-  background-color: var(--el-color-primary);
-  font-weight: 600;
-}
-
-:deep(.el-pagination.is-background .el-pager li:not(.is-disabled):hover) {
-  color: var(--el-color-primary);
-}
-
-/* 下拉选择框样式优化 */
-:deep(.el-select) {
+  flex-direction: column;
+  flex-grow: 1; /* Allow card body to grow */
+  overflow: auto; /* Allow scrolling within card body if content overflows */
   width: 100%;
 }
-
-:deep(.el-select .el-input__wrapper) {
-  padding: 0 12px;
+/* Table should be directly inside this, or its wrapper needs flex-grow:1 too */
+.el-table { /* If table is direct child of flex column */
+  flex-grow: 1;
 }
 
-:deep(.el-select-dropdown__item) {
-  padding: 8px 16px;
-  height: auto;
-  line-height: 1.5;
-}
 
-/* 弹窗样式优化 */
-:deep(.el-dialog__header) {
-  padding: 20px 24px;
-  margin: 0;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-
-:deep(.el-dialog__body) {
-  padding: 24px;
-}
-
-:deep(.el-dialog__footer) {
-  padding: 16px 24px;
-  border-top: 1px solid var(--el-border-color-lighter);
-}
-
-/* 为按钮图标添加右侧间距 */
-.el-button .el-icon {
-  margin-right: 4px;
-}
-
-/* 对于链接按钮特别处理 */
-.el-button--link .el-icon {
-  vertical-align: middle;
-}
-
-/* 表格选择列样式 */
-:deep(.el-table__selection) {
-  padding-left: 14px;
-}
-
-/* 表格边框样式 */
-:deep(.el-table--border) {
-  border: 1px solid var(--el-border-color-lighter);
-}
-
-:deep(.el-table--border .el-table__cell) {
-  border-right: 1px solid var(--el-border-color-lighter);
-}
-
-/* 表格头部样式 */
-:deep(.el-table__header) {
-  background-color: var(--el-bg-color);
-}
-
-/* 表格内容区域样式 */
-:deep(.el-table__body) {
-  background-color: var(--el-bg-color);
-}
-
-/* 表格行样式 */
-:deep(.el-table__row) {
-  transition: all 0.3s ease;
-}
-
-/* 表格分页样式优化 */
+/* Pagination Container - ensure it's outside the scrolling table body */
 .pagination-container {
-  margin-top: 24px;
-  padding: 16px 24px;
+  margin-top: var(--spacing-lg); /* Space above pagination */
+  padding: var(--spacing-md) 0; /* Padding around pagination, adjust if inside card */
+  /* border-top: 1px solid var(--border-color-light); */ /* Optional border if distinct section */
+  /* background-color: var(--bg-color-card); */ /* If pagination is part of the card */
   display: flex;
   justify-content: flex-end;
-  border-top: 1px solid var(--el-border-color-lighter);
-  background-color: var(--el-bg-color);
+}
+
+/* Icon Spacing in Buttons (copied from apiManager.css for consistency if not global) */
+.el-button .el-icon + span, /* Icon followed by text */
+.el-button span + .el-icon { /* Text followed by icon */
+  margin-left: var(--spacing-xs);
+}
+.el-button > .el-icon:first-child:not(:last-child) { /* Icon on left, text follows */
+  margin-right: var(--spacing-xs);
+}
+.el-button > .el-icon:last-child:not(:first-child) { /* Icon on right, text precedes */
+  margin-left: var(--spacing-xs);
+}
+.el-button > .el-icon:first-child:last-child { /* Icon only button */
+  margin-left: 0;
+  margin-right: 0;
 }

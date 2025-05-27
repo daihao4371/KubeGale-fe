@@ -326,7 +326,7 @@ body {
 
 :deep(.el-input__inner:focus) {
   border-color: var(--vt-c-indigo); /* Use CSS variable */
-  box-shadow: 0 0 0 2px rgba(52, 94, 255, 0.1); /* Updated focus shadow */
+  box-shadow: 0 0 0 2px rgba(52, 255, 248, 0.1); /* Updated focus shadow */
 }
 
 /* 调整验证码输入框样式 */
