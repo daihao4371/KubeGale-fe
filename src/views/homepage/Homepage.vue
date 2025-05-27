@@ -13,7 +13,7 @@
         >
           <div
             class="menu-item"
-            :class="{ 
+            :class="{
               active: activeMenu === item.id,
               'parent-active': hasActiveChild(item)
             }"
@@ -28,10 +28,10 @@
               <arrow-right v-else />
             </el-icon>
           </div>
-          
+
           <!-- 子菜单 -->
-          <div 
-            v-if="item.children && item.children.length && expandedMenus.includes(item.id)" 
+          <div
+            v-if="item.children && item.children.length && expandedMenus.includes(item.id)"
             class="submenu"
           >
             <div
@@ -48,7 +48,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- 退出登录按钮 -->
         <div class="menu-item logout-item" @click="handleLogout">
           <el-icon class="menu-item-icon">
@@ -65,8 +65,8 @@
         <div class="header-left">
           <el-breadcrumb separator="/">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item 
-              v-for="(item, index) in recentPages" 
+            <el-breadcrumb-item
+              v-for="(item, index) in recentPages"
               :key="index"
               :to="{ path: item.path }"
             >
@@ -93,7 +93,7 @@
 
 <script setup lang="ts">
 import useHomepage from './homepage.ts'
-import { 
+import {
   SwitchButton,
   ArrowDown,
   ArrowRight
@@ -117,4 +117,21 @@ const {
 </script>
 <style src="./homepage.css"></style>
 <style>
+/* Component-specific styles for breadcrumbs */
+.header .el-breadcrumb__inner a,
+.header .el-breadcrumb__inner.is-link {
+  color: var(--vt-c-indigo);
+  font-weight: 500;
+}
+
+.header .el-breadcrumb__item:last-child .el-breadcrumb__inner {
+  color: var(--color-text); /* Or a specific breadcrumb non-link color if desired */
+}
+
+/* Ensure hover states for breadcrumbs also align if needed */
+.header .el-breadcrumb__inner a:hover,
+.header .el-breadcrumb__inner.is-link:hover {
+  color: var(--vt-c-indigo); /* Keep the same color, or make it slightly darker/lighter if preferred */
+  opacity: 0.8; /* Example hover effect */
+}
 </style>

@@ -71,11 +71,40 @@ const handleSizeChange = (val: number) => {
 <style scoped>
 .pagination-wrapper {
   margin-top: 20px;
-  padding: 16px 24px;
+  padding: 12px 16px; /* Adjusted padding */
   display: flex;
   justify-content: flex-end;
-  background-color: var(--el-bg-color);
+  background-color: var(--color-background-soft); /* Changed background */
   border-radius: 8px;
-  box-shadow: var(--el-box-shadow-light);
+  /* box-shadow: var(--el-box-shadow-light); */ /* Removed shadow */
+}
+
+/* Deep styles for Element Plus pagination */
+.pagination-container :deep(.el-pager li.is-active) {
+  background-color: var(--vt-c-indigo) !important;
+  color: var(--vt-c-white) !important;
+  border-radius: 6px; /* Updated to 6px for consistency */
+}
+
+.pagination-container :deep(.el-pager li:hover) {
+  color: var(--vt-c-indigo);
+}
+
+.pagination-container :deep(.el-pagination__jump .el-input__inner) {
+  border-color: var(--color-border);
+}
+
+.pagination-container :deep(.el-pagination__jump .el-input__inner:focus) {
+  border-color: var(--vt-c-indigo);
+  box-shadow: 0 0 0 1px var(--vt-c-indigo); /* Consistent focus shadow */
+}
+
+.pagination-container :deep(.el-pagination button:hover) {
+  color: var(--vt-c-indigo);
+}
+
+.pagination-container :deep(.el-pagination button:disabled) {
+  color: var(--vt-c-text-light-2); /* Or a specific disabled color */
+  opacity: 0.6;
 }
 </style>

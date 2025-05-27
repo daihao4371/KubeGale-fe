@@ -8,14 +8,14 @@
   position: absolute;
   top: 0;
   left: 0;
-  background: #f5f7fa;
+  background: var(--color-background-mute); /* Use CSS variable */
   animation: fadeIn 0.5s ease-out;
 }
 
 .sidebar {
   width: 240px;
-  background: linear-gradient(180deg, #001529 0%, #002140 100%);
-  color: #fff;
+  background: var(--vt-c-black-soft); /* Updated background */
+  color: var(--vt-c-text-dark-1); /* Ensure text is readable */
   height: 100%;
   overflow-y: auto;
   transition: width 0.3s;
@@ -29,12 +29,13 @@
   height: 64px;
   display: flex;
   align-items: center;
-  padding-left: 24px;
-  font-size: 20px;
+  padding-left: 20px; /* Adjusted padding */
+  font-size: 18px; /* Adjusted font-size */
   font-weight: 600;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--color-border); /* Updated border color */
+  background: rgba(0, 0, 0, 0.2); /* Kept for slight distinction, could be var(--vt-c-black-mute) */
   letter-spacing: 1px;
+  color: var(--vt-c-text-dark-1); /* Ensure header text is visible */
 }
 
 .sidebar-menu {
@@ -45,7 +46,7 @@
 }
 
 .menu-item {
-  padding: 12px 24px;
+  padding: 14px 20px; /* Adjusted padding */
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -55,17 +56,17 @@
 }
 
 .menu-item:hover {
-  background: rgba(24, 144, 255, 0.2);
+  background-color: rgba(52, 94, 255, 0.1); /* Updated hover background */
 }
 
 .menu-item.active {
-  background: rgba(24, 144, 255, 0.3);
-  border-left: 3px solid #1890ff;
+  background-color: rgba(52, 94, 255, 0.2); /* Updated active background */
+  border-left: 3px solid var(--vt-c-indigo); /* Updated active border */
 }
 
 .menu-item-icon {
   margin-right: 12px;
-  font-size: 18px;
+  font-size: 20px; /* Increased icon size */
   width: 24px;
   height: 24px;
   display: flex;
@@ -80,17 +81,17 @@
 
 .logout-item {
   margin-top: auto;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 40, 77, 0.5);
+  border-top: 1px solid var(--color-border); /* Updated border color */
+  background: rgba(0, 40, 77, 0.5); /* Kept for distinction or use a variable */
 }
 
 .logout-item:hover {
-  background: rgba(245, 108, 108, 0.2);
+  background: rgba(220, 53, 69, 0.1); /* Adjusted hover background */
 }
 
 .main-content {
   flex: 1;
-  background: #f5f7fa;
+  background: var(--color-background-mute); /* Use CSS variable */
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -100,8 +101,8 @@
 
 .header {
   height: 64px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: var(--color-background-soft); /* Softer background */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03); /* More subtle shadow */
   display: flex;
   align-items: center;
   padding: 0 24px;
@@ -116,12 +117,12 @@
 .content {
   margin: 24px;
   padding: 24px;
-  background: #fff;
-  min-height: calc(100vh - 184px);
+  background: var(--color-background); /* Updated background */
+  min-height: calc(100vh - 184px); /* Consider header and margin heights */
   border-radius: 8px;
   flex: 1;
   overflow-y: auto;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 0 15px rgba(0,0,0,0.03); /* Softened shadow */
   transition: all 0.3s ease;
 }
 
@@ -143,11 +144,11 @@
 .submenu {
   padding-left: 24px;
   width: calc(100% - 24px);
-  background: rgba(0, 40, 77, 0.3);
+  background: rgba(0, 40, 77, 0.3); /* Kept for visual hierarchy, could be a variable */
   border-radius: 0 0 4px 4px;
   overflow: hidden;
   transition: all 0.3s;
-  border-left: 2px solid #1890ff;
+  border-left: 2px solid var(--vt-c-indigo); /* Use variable */
   margin-top: 2px;
   margin-bottom: 2px;
 }
@@ -155,7 +156,7 @@
 .submenu-item {
   display: flex;
   align-items: center;
-  padding: 10px 16px;
+  padding: 12px 20px 12px 30px; /* Adjusted padding for hierarchy */
   cursor: pointer;
   transition: all 0.3s ease;
   margin: 2px 0;
@@ -169,7 +170,7 @@
   top: 50%;
   width: 6px;
   height: 1px;
-  background: #1890ff;
+  background: var(--vt-c-indigo); /* Use variable */
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -179,12 +180,12 @@
 }
 
 .submenu-item:hover {
-  background: rgba(24, 144, 255, 0.2);
+  background-color: rgba(52, 94, 255, 0.1); /* Updated hover background */
 }
 
 .submenu-item.active {
-  background: rgba(24, 144, 255, 0.3);
-  color: #fff;
+  background-color: rgba(52, 94, 255, 0.2); /* Updated active background */
+  color: var(--vt-c-text-dark-1); /* Ensure text is readable */
 }
 
 .submenu-item.active:before {
@@ -192,8 +193,8 @@
 }
 
 .parent-active {
-  background: rgba(0, 33, 64, 0.5);
-  border-left: 3px solid #1890ff;
+  background: rgba(0, 33, 64, 0.5); /* Kept for distinction or use a variable like --vt-c-black-mute but darker */
+  border-left: 3px solid var(--vt-c-indigo); /* Use variable */
 }
 
 /* 添加悬停效果增强交互感 */
@@ -231,25 +232,41 @@
   .sidebar {
     width: 64px;
   }
-  
+
+  .sidebar.collapsed .menu-title,
+  .sidebar.collapsed .menu-arrow {
+    display: none;
+  }
+
+  .sidebar.collapsed .menu-item {
+    justify-content: center;
+  }
+  .sidebar.collapsed .menu-item-icon {
+    margin-right: 0;
+  }
+
   .sidebar-header {
     padding-left: 0;
     justify-content: center;
   }
-  
+
+  .sidebar:not(.collapsed) .menu-title { /* Only show title if not collapsed */
+    display: inline-block;
+  }
+
   .menu-title {
-    display: none;
+    display: none; /* Default to none for collapsed */
   }
-  
+
   .menu-item {
-    padding: 12px;
-    justify-content: center;
+    padding: 12px; /* Keep padding for collapsed */
+    justify-content: center; /* Center items when collapsed */
   }
-  
+
   .menu-item-icon {
-    margin-right: 0;
+    margin-right: 0; /* No margin when collapsed */
   }
-  
+
   .main-content {
     width: calc(100vw - 64px);
   }

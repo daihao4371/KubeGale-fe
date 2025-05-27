@@ -1,23 +1,23 @@
 @import './base.css';
 
 #app {
-  max-width: 1280px;
+  max-width: 1440px; /* Increased max-width */
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem; /* Reduced padding */
   font-weight: normal;
 }
 
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+  color: var(--vt-c-indigo); /* Changed link color to primary accent */
   transition: 0.4s;
   padding: 3px;
 }
 
 @media (hover: hover) {
   a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+    background-color: #e6f0ff; /* Light blue background for links on hover */
   }
 }
 
@@ -28,8 +28,143 @@ a,
   }
 
   #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+    /* display: grid; */ /* Removed generic grid display */
+    /* grid-template-columns: 1fr 1fr; */ /* Removed generic grid columns */
+    padding: 0 1.5rem; /* Reduced padding */
   }
+}
+
+/* Element Plus Global Overrides */
+
+/* Element Plus Input Overrides */
+.el-input__wrapper, .el-textarea__inner {
+  background-color: var(--color-background-soft) !important;
+  box-shadow: 0 0 0 1px var(--color-border) inset !important; /* Mimics border */
+  color: var(--color-text);
+}
+.el-input__wrapper.is-focus, .el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px var(--vt-c-indigo) inset !important;
+}
+.el-input__inner { /* For placeholder and actual text color */
+  color: var(--color-text);
+}
+.el-input .el-input__icon {
+  color: var(--vt-c-text-light-2);
+}
+
+/* Element Plus Button Overrides */
+.el-button--primary {
+  background-color: var(--vt-c-indigo) !important;
+  border-color: var(--vt-c-indigo) !important;
+  color: var(--vt-c-white) !important;
+}
+.el-button--primary:hover, .el-button--primary:focus {
+  background-color: #2A4BC8 !important; /* Darker shade of --vt-c-indigo */
+  border-color: #2A4BC8 !important;
+}
+
+.el-button { /* Default button style */
+  color: var(--color-text);
+  border-color: var(--color-border);
+  background-color: var(--color-background-soft);
+}
+.el-button:hover, .el-button:focus {
+  color: var(--vt-c-indigo);
+  border-color: var(--vt-c-indigo);
+  background-color: var(--color-background-mute);
+}
+
+/* Element Plus Select Overrides */
+/* .el-select .el-input__wrapper is already covered by .el-input__wrapper */
+
+.el-select-dropdown {
+  background-color: var(--color-background-soft) !important;
+  border: 1px solid var(--color-border) !important;
+}
+.el-select-dropdown__item {
+  color: var(--color-text);
+}
+.el-select-dropdown__item.hover, .el-select-dropdown__item:hover {
+  background-color: rgba(52, 94, 255, 0.1) !important; /* Using pre-calculated rgba for --vt-c-indigo */
+  color: var(--vt-c-indigo);
+}
+.el-select-dropdown__item.selected {
+  background-color: rgba(52, 94, 255, 0.2) !important; /* Slightly darker for selected */
+  color: var(--vt-c-indigo);
+  font-weight: bold;
+}
+
+/* Element Plus Card Overrides */
+.el-card {
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+}
+.el-card__header {
+  background-color: var(--color-background-soft) !important;
+  color: var(--color-heading);
+  border-bottom: 1px solid var(--color-border) !important;
+}
+.el-card__body {
+  color: var(--color-text);
+}
+
+/* Element Plus Table Overrides */
+.el-table th.el-table__cell { /* More specific selector for header cells */
+  background-color: var(--color-background-soft) !important;
+  color: var(--color-heading) !important; /* Ensure text color is applied */
+}
+.el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf { /* More specific for td and th */
+  border-bottom: 1px solid var(--color-border);
+}
+.el-table, .el-table__expanded-cell {
+  background-color: var(--color-background);
+}
+.el-table tr {
+  background-color: var(--color-background) !important; /* Important to override potential inline styles or more specific rules */
+  color: var(--color-text);
+}
+.el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell { /* More specific for td */
+  background-color: var(--color-background-mute) !important;
+}
+.el-table .el-table__cell { /* General cell style for text color if not overridden by th/tr */
+  color: var(--color-text);
+  background-color: transparent; /* Allow tr background to show */
+}
+.el-table--border .el-table__inner-wrapper, .el-table--border td, .el-table--border th, .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed {
+  border-color: var(--color-border); /* Ensure all borders use the theme color */
+}
+.el-table th.el-table__cell, .el-table td.el-table__cell { /* Ensure text color in header and body cells */
+  color: var(--color-text);
+}
+.el-table th.el-table__cell { /* Header text specifically */
+  color: var(--color-heading) !important;
+}
+
+/* Consistent Border Radius for Element Plus Components */
+.el-button,
+.el-input__wrapper,
+.el-textarea__inner,
+.el-card,
+.el-select-dropdown,
+.el-select-dropdown__item, /* Though dropdown items are usually not rounded individually */
+.el-picker-panel,
+.el-date-picker,
+.el-time-picker,
+.el-message-box,
+.el-dialog,
+.el-popover,
+.el-pagination .el-pager li, /* For individual pager items */
+.el-tag {
+  border-radius: 6px !important;
+}
+
+/* Ensure pagination buttons (prev, next) also get the radius if they are separate buttons */
+.el-pagination .btn-prev,
+.el-pagination .btn-next {
+  border-radius: 6px !important;
+}
+
+/* For components that might have internal elements needing radius */
+.el-input__wrapper { /* Already listed, but good to be explicit if it contains other elements */
+  overflow: hidden; /* Helps if internal elements try to break out of the border-radius */
 }
