@@ -7,21 +7,6 @@
   font-weight: var(--font-weight-normal); /* Use font variable */
 }
 
-/* Remove generic .green class if not used elsewhere, link styling is in base.css */
-/* a,
-.green {
-  text-decoration: none;
-  color: var(--vt-c-indigo); // Now --text-color-link
-  transition: 0.4s;
-  padding: 3px;
-} */
-
-/* Hover effect for links is now in base.css */
-/* @media (hover: hover) {
-  a:hover {
-    background-color: #e6f0ff;
-  }
-} */
 
 @media (min-width: 1024px) {
   body {
@@ -93,28 +78,28 @@
 }
 
 .el-button--default { /* Ghost button style */
+  color: var(--color-primary);
   background-color: transparent !important;
-  border-color: var(--color-primary) !important;
-  color: var(--color-primary) !important;
+  border-color: var(--color-primary);
 }
 .el-button--default:hover,
 .el-button--default:focus {
-  background-color: #e6f7ff !important; /* Light blue background for hover/focus */
-  border-color: var(--color-primary) !important;
-  color: var(--color-primary) !important;
+  color: var(--color-primary-dark);
+  background-color: rgba(24, 144, 255, 0.05) !important;
+  border-color: var(--color-primary-dark);
 }
 
 /* Add styles for other button types if used (e.g., success, warning, danger) */
 .el-button--danger {
-  background-color: var(--error-color) !important;
+  color: var(--error-color) !important;
+  background-color: transparent !important;
   border-color: var(--error-color) !important;
-  color: var(--text-color-on-primary) !important;
 }
 .el-button--danger:hover,
 .el-button--danger:focus {
-  background-color: #d91a2a !important; /* Darker shade of error-color */
-  border-color: #d91a2a !important; /* Darker shade of error-color */
-  color: var(--text-color-on-primary) !important;
+  color: var(--error-color) !important;
+  background-color: rgba(245, 34, 45, 0.05) !important;
+  border-color: #d91a2a !important;
 }
 
 .el-button--success {
@@ -325,30 +310,7 @@
   margin-bottom: var(--spacing-sm);
 }
 
-/* Remove generic border radius override if specific components cover it */
-/*
-.el-button,
-.el-input__wrapper,
-.el-textarea__inner,
-.el-card,
-.el-select-dropdown,
-// .el-select-dropdown__item, // Usually not rounded individually
-.el-picker-panel,
-.el-date-picker,
-.el-time-picker,
-.el-message-box,
-.el-dialog,
-.el-popover,
-.el-pagination .el-pager li,
-.el-tag {
-  border-radius: var(--border-radius-md) !important; // Use the medium radius
-}
 
-.el-pagination .btn-prev,
-.el-pagination .btn-next {
-  border-radius: var(--border-radius-md) !important; // Use the medium radius
-}
-*/
 
 /* Ensure overflow hidden for components where content might break border-radius */
 .el-input__wrapper,

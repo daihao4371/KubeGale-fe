@@ -4,7 +4,7 @@
       {{ item.meta.title }}
     </el-breadcrumb-item>
   </el-breadcrumb>
-  
+
   <!-- 历史记录下拉菜单 -->
   <el-dropdown class="history-dropdown" trigger="click">
     <el-button type="primary" size="small" plain>
@@ -13,9 +13,9 @@
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item v-if="visitedPages.length === 0" disabled>暂无历史记录</el-dropdown-item>
-        <el-dropdown-item 
-          v-for="(page, index) in visitedPages" 
-          :key="index" 
+        <el-dropdown-item
+          v-for="(page, index) in visitedPages"
+          :key="index"
           @click="navigateTo(page.path)"
         >
           {{ page.meta.title }}
@@ -28,14 +28,17 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import type { RouteLocationMatched } from 'vue-router'
 import { ArrowDown } from '@element-plus/icons-vue'
+
+defineOptions({
+  name: 'BreadcrumbNav'
+})
 
 interface BreadcrumbItem {
   path: string
   meta: {
     title: string
-    [key: string]: any
+    [key: string]: string | number | boolean | undefined
   }
 }
 
@@ -67,21 +70,21 @@ const saveVisitedPages = () => {
 const addToHistory = (item: BreadcrumbItem) => {
   // 如果页面没有标题，不添加到历史记录
   if (!item.meta?.title) return
-  
+
   // 如果已经存在相同路径的页面，先移除它
   const existingIndex = visitedPages.value.findIndex(page => page.path === item.path)
   if (existingIndex !== -1) {
     visitedPages.value.splice(existingIndex, 1)
   }
-  
+
   // 添加到历史记录开头
   visitedPages.value.unshift(item)
-  
+
   // 限制历史记录数量
   if (visitedPages.value.length > MAX_HISTORY) {
     visitedPages.value = visitedPages.value.slice(0, MAX_HISTORY)
   }
-  
+
   // 保存到本地存储
   saveVisitedPages()
 }
@@ -93,19 +96,19 @@ const navigateTo = (path: string) => {
 
 const getBreadcrumbs = () => {
   const matched = route.matched.filter(item => item.meta && item.meta.title)
-  
+
   const result = matched.map(item => {
     return {
       path: item.path,
-      meta: { 
+      meta: {
         title: item.meta.title as string,
-        ...item.meta 
+        ...item.meta
       }
     } as BreadcrumbItem
   })
-  
+
   breadcrumbs.value = result
-  
+
   // 如果当前页面有标题，添加到历史记录
   if (result.length > 0) {
     addToHistory(result[result.length - 1])

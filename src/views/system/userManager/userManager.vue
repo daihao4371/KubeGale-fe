@@ -20,7 +20,7 @@
           </div>
         </div>
       </template>
-      
+
       <!-- 用户统计卡片 -->
       <div class="stats-cards">
         <el-card class="stats-card" shadow="hover">
@@ -60,7 +60,7 @@
           </div>
         </el-card>
       </div>
-      
+
       <!-- 搜索表单 -->
       <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="用户名">
@@ -84,10 +84,10 @@
           </el-button>
         </el-form-item>
       </el-form>
-      
-      <el-table 
-        :data="userList" 
-        style="width: 100%" 
+
+      <el-table
+        :data="userList"
+        style="width: 100%"
         v-loading="loading"
         border
         stripe
@@ -148,7 +148,7 @@
           </template>
         </el-table-column>
       </el-table>
-      
+
       <div class="pagination-container">
         <el-pagination
           v-model:current-page="currentPage"
@@ -161,7 +161,7 @@
           background
         />
       </div>
-      
+
       <!-- 添加/编辑用户对话框 -->
       <el-dialog
         v-model="dialogVisible"
@@ -227,7 +227,7 @@
           </span>
         </template>
       </el-dialog>
-      
+
       <!-- 用户详细信息对话框 -->
       <el-dialog
         v-model="userInfoDialogVisible"
@@ -283,7 +283,7 @@
           </span>
         </template>
       </el-dialog>
-      
+
       <!-- 修改密码对话框 -->
       <el-dialog
         v-model="changePasswordDialogVisible"
@@ -320,17 +320,17 @@
 <script setup lang="ts">
 import { Plus, Edit, Delete, Key, User, Lock, Search, Refresh, CircleCheck, CircleClose } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
-import { 
-  currentPage, 
-  pageSize, 
-  total, 
-  loading, 
-  userList, 
-  fetchUserList, 
-  handleCurrentChange, 
-  handleSizeChange, 
-  handleAddUser, 
-  handleEdit, 
+import {
+  currentPage,
+  pageSize,
+  total,
+  loading,
+  userList,
+  fetchUserList,
+  handleCurrentChange,
+  handleSizeChange,
+  handleAddUser,
+  handleEdit,
   handleDelete,
   handleEnableChange,
   // 新增导入
