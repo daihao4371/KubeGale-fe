@@ -1,95 +1,129 @@
+/* Main Container */
 .notification-manage {
   height: 100%;
-  min-height: 0;
-  padding: 20px;
+  min-height: 0; /* For flex children */
+  padding: var(--spacing-lg); /* Use theme variable */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
 }
-.box-card {
-  flex: 1 1 0%;
+
+/* Main Card */
+.box-card { /* Assuming this is an el-card instance */
+  flex: 1 1 0%; /* Allow card to grow and shrink */
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  min-height: 0; /* For flex children */
+  /* Global el-card styles from main.css apply */
 }
+
+/* Table should grow within the card's body */
 .el-table {
   flex: 1 1 0%;
   min-height: 0;
+  /* Global el-table styles from main.css apply */
 }
+
+/* Card Header (content wrapper in el-card__header slot) */
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%; /* Ensure it takes full width of el-card__header */
 }
+
 .header-buttons {
   display: flex;
-  gap: 10px;
-}
-.search-form {
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: #f8f8f8;
-  border-radius: 4px;
-}
-:deep(.el-button--primary.is-link) {
-  color: #409eff;
-}
-:deep(.el-button--primary.is-link:hover) {
-  color: #66b1ff;
-}
-:deep(.el-button--danger.is-link) {
-  color: #f56c6c;
-}
-:deep(.el-button--danger.is-link:hover) {
-  color: #ff9999;
+  gap: var(--spacing-sm); /* Use theme variable */
 }
 
+/* Search Form */
+.search-form {
+  margin-bottom: var(--spacing-lg); /* Use theme variable */
+  padding: var(--spacing-lg); /* Use theme variable, consistent with other search forms */
+  background-color: var(--bg-color-page); /* Use theme variable */
+  border-radius: var(--border-radius-md); /* Use theme variable */
+  display: flex; /* For layout of internal form items */
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+.search-form .el-form-item {
+  margin-bottom: 0 !important; /* For inline forms */
+}
+
+
+/* Search Bar (if different from search-form, e.g., simpler filter) */
 .search-bar {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: var(--spacing-sm); /* Use theme variable */
+  margin-bottom: var(--spacing-lg); /* Use theme variable */
+  align-items: center;
 }
 
-.search-input {
-  width: 300px;
+.search-input { /* Specific width for search input if needed */
+  width: 300px; /* Kept specific width as per original */
 }
 
+/* Operation Bar (for action buttons above table) */
 .operation-bar {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: var(--spacing-sm); /* Use theme variable */
+  margin-bottom: var(--spacing-lg); /* Use theme variable */
 }
 
+/* Dialog Footer (standardized class for dialog footers) */
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: var(--spacing-sm); /* Use theme variable */
 }
 
+/* Pagination Container */
 .pagination-container {
-  margin-top: 20px;
+  margin-top: var(--spacing-lg); /* Use theme variable */
   display: flex;
   justify-content: flex-end;
+  padding: var(--spacing-md) 0; /* Consistent padding */
 }
 
+/* Empty Data Placeholder */
 .empty-data {
-  margin: 40px 0;
+  margin: var(--spacing-xl) 0; /* Use theme variable */
+  text-align: center;
+  color: var(--text-color-secondary); /* Use theme variable */
 }
 
-/* 为按钮图标添加右侧间距 */
-.el-button .el-icon {
-  margin-right: 4px;
+/* Icon spacing in buttons */
+.el-button .el-icon { /* General rule for icon in button */
+  /* Element Plus 2.3+ handles spacing better. This can be a fallback or adjustment. */
+  /* margin-right: var(--spacing-xs); */ /* Default for icon on left, if text follows */
+}
+/* More specific rules for icon spacing if needed (copied from other files for consistency) */
+.el-button .el-icon + span,
+.el-button span + .el-icon {
+  margin-left: var(--spacing-xs);
+}
+.el-button > .el-icon:first-child:not(:last-child) {
+  margin-right: var(--spacing-xs);
+}
+.el-button > .el-icon:last-child:not(:first-child) {
+  margin-left: var(--spacing-xs);
 }
 
-/* 对于链接按钮特别处理 */
-.el-button--link .el-icon {
-  vertical-align: middle;
+/* Table specific button margins */
+.el-table .el-button {
+  margin-right: var(--spacing-xs); /* Use theme variable, 6px -> 4px or 8px. xs=4px is closer */
+}
+.el-table .el-button:last-child {
+  margin-right: 0;
 }
 
-/* 响应式布局 */
+/* Responsive Layout */
 @media screen and (max-width: 768px) {
-  .search-bar {
+  .search-bar { /* Assuming .search-bar is the primary filter area */
     flex-direction: column;
+    gap: var(--spacing-md); /* Keep consistent gap for column layout */
   }
 
   .search-input {
@@ -98,12 +132,9 @@
 
   .operation-bar {
     flex-direction: column;
+    gap: var(--spacing-md); /* Keep consistent gap */
   }
-}
-
-.el-table .el-button {
-  margin-right: 6px;
-}
-.el-table .el-button:last-child {
-  margin-right: 0;
+  .operation-bar .el-button {
+    width: 100%; /* Make buttons full width in column layout */
+  }
 }

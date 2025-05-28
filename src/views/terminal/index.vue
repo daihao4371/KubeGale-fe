@@ -128,7 +128,7 @@ onMounted(() => {
   terminal = new Terminal(TERMINAL_CONFIG)
   fitAddon = new FitAddon()
   terminal.loadAddon(fitAddon)
-  
+
   if (terminalRef.value) {
     terminal.open(terminalRef.value)
     fitAddon.fit()
@@ -225,8 +225,8 @@ onUnmounted(() => {
 
 .header {
   position: absolute;
-  top: 24px;
-  right: 40px;
+  top: var(--spacing-lg); /* Use theme variable */
+  right: var(--spacing-xl); /* Use theme variable */
   margin: 0;
   z-index: 20;
 }
@@ -246,4 +246,4 @@ onUnmounted(() => {
   align-items: center;
   border-radius: 0;
 }
-</style> 
+</style>

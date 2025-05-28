@@ -19,7 +19,6 @@
           :prefix-icon="Search"
           clearable
           @clear="handleReset"
-          style="width: 300px; margin-right: 10px;"
         />
         <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
         <el-button :icon="RefreshRight" @click="handleReset">重置</el-button>
@@ -312,4 +311,4 @@ const formatDate = (date: string) => {
 <style scoped>
 @import './notificationManage.css';
 </style>
-
+[end of src/views/im/notificationManage.vue]

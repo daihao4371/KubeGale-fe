@@ -85,21 +85,8 @@
 .el-button--default:hover,
 .el-button--default:focus {
   color: var(--color-primary-dark);
-  background-color: rgba(24, 144, 255, 0.05) !important;
+  background-color: var(--color-primary-ultralight-transparent) !important;
   border-color: var(--color-primary-dark);
-}
-
-/* Add styles for other button types if used (e.g., success, warning, danger) */
-.el-button--danger {
-  color: var(--error-color) !important;
-  background-color: transparent !important;
-  border-color: var(--error-color) !important;
-}
-.el-button--danger:hover,
-.el-button--danger:focus {
-  color: var(--error-color) !important;
-  background-color: rgba(245, 34, 45, 0.05) !important;
-  border-color: #d91a2a !important;
 }
 
 .el-button--success {
@@ -107,11 +94,35 @@
   border-color: var(--success-color) !important;
   color: var(--text-color-on-primary) !important;
 }
-.el-button--success:hover, .el-button--success:focus {
-  background-color: darken(var(--success-color), 10%) !important; /* Needs a SASS-like function or pre-calculated dark shade */
-  border-color: darken(var(--success-color), 10%) !important;
+.el-button--success:hover,
+.el-button--success:focus {
+  background-color: var(--success-color-dark) !important;
+  border-color: var(--success-color-dark) !important;
 }
-/* Similar for warning, error/danger, info */
+
+.el-button--warning {
+  color: var(--warning-text-color-on-button) !important;
+  background-color: var(--warning-color) !important;
+  border-color: var(--warning-color) !important;
+}
+.el-button--warning:hover,
+.el-button--warning:focus {
+  color: var(--warning-text-color-on-button) !important;
+  background-color: var(--warning-color-dark) !important;
+  border-color: var(--warning-color-dark) !important;
+}
+
+.el-button--danger { /* Ghost button style for danger */
+  color: var(--error-color) !important;
+  background-color: transparent !important;
+  border-color: var(--error-color) !important;
+}
+.el-button--danger:hover,
+.el-button--danger:focus {
+  color: var(--error-color-dark) !important;
+  background-color: var(--error-color-ultralight-transparent) !important;
+  border-color: var(--error-color-dark) !important;
+}
 
 
 /* Select Dropdowns */
@@ -164,6 +175,7 @@
   background-color: var(--bg-color-card); /* Table itself can have card background */
   border-radius: var(--border-radius-md); /* Rounded corners for the table */
   overflow: hidden; /* To make border-radius work on inner elements */
+  margin-bottom: var(--spacing-lg); /* Space for pagination or content below */
 }
 .el-table th.el-table__cell {
   background-color: var(--bg-color-page) !important; /* Header distinct from rows */
@@ -245,7 +257,7 @@
 }
 .el-tag--warning {
   background-color: var(--warning-color) !important;
-  color: var(--text-color-primary) !important; /* Yellow often needs dark text */
+  color: var(--warning-text-color) !important;
 }
 .el-tag--danger { /* Element Plus uses 'danger' for error type tags */
   background-color: var(--error-color) !important;

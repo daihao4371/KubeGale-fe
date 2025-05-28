@@ -38,44 +38,46 @@
             </el-form-item>
           </el-form>
           
-          <el-table
-            :data="tableData"
-            style="width: 100%"
-            v-loading="loading"
-            border
-          >
-            <el-table-column prop="name" label="实例名称" min-width="150" />
-            <el-table-column prop="instance_id" label="实例ID" min-width="150" />
-            <el-table-column prop="private_addr" label="私有地址" min-width="200" />
-            <el-table-column prop="public_addr" label="公网地址" min-width="200">
-              <template #default="{ row }">
-                {{ row.public_addr || '-' }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="region_name" label="区域" width="120" />
-            <el-table-column prop="status" label="状态" width="100">
-              <template #default="{ row }">
-                <el-tag :type="getStatusType(row.status)">{{ row.status }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="creation_time" label="创建时间" width="180">
-              <template #default="{ row }">
-                {{ formatDateTime(row.creation_time) }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="expired_time" label="过期时间" width="180">
-              <template #default="{ row }">
-                {{ row.expired_time || '-' }}
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="120" fixed="right">
-              <template #default="{ row }">
-                <el-button type="primary" link @click="handleView(row)">
-                  <el-icon><View /></el-icon>详情
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <div class="table-container">
+            <el-table
+              :data="tableData"
+              style="width: 100%"
+              v-loading="loading"
+              border
+            >
+              <el-table-column prop="name" label="实例名称" min-width="150" />
+              <el-table-column prop="instance_id" label="实例ID" min-width="150" />
+              <el-table-column prop="private_addr" label="私有地址" min-width="200" />
+              <el-table-column prop="public_addr" label="公网地址" min-width="200">
+                <template #default="{ row }">
+                  {{ row.public_addr || '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column prop="region_name" label="区域" width="120" />
+              <el-table-column prop="status" label="状态" width="100">
+                <template #default="{ row }">
+                  <el-tag :type="getStatusType(row.status)">{{ row.status }}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column prop="creation_time" label="创建时间" width="180">
+                <template #default="{ row }">
+                  {{ formatDateTime(row.creation_time) }}
+                </template>
+              </el-table-column>
+              <el-table-column prop="expired_time" label="过期时间" width="180">
+                <template #default="{ row }">
+                  {{ row.expired_time || '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="120" fixed="right">
+                <template #default="{ row }">
+                  <el-button type="primary" link @click="handleView(row)">
+                    <el-icon><View /></el-icon>详情
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
           
           <!-- 分页组件 -->
           <div class="pagination-container">

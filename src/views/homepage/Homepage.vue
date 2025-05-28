@@ -120,18 +120,18 @@ const {
 /* Component-specific styles for breadcrumbs */
 .header .el-breadcrumb__inner a,
 .header .el-breadcrumb__inner.is-link {
-  color: var(--vt-c-indigo);
-  font-weight: 500;
+  color: var(--text-color-link); /* Use theme variable */
+  font-weight: 500; /* Keep specific font-weight */
 }
 
 .header .el-breadcrumb__item:last-child .el-breadcrumb__inner {
-  color: var(--color-text); /* Or a specific breadcrumb non-link color if desired */
+  color: var(--text-color-secondary); /* Use theme secondary text color for non-interactive item */
 }
 
 /* Ensure hover states for breadcrumbs also align if needed */
 .header .el-breadcrumb__inner a:hover,
 .header .el-breadcrumb__inner.is-link:hover {
-  color: var(--vt-c-indigo); /* Keep the same color, or make it slightly darker/lighter if preferred */
-  opacity: 0.8; /* Example hover effect */
+  color: var(--text-color-link-hover); /* Use theme variable */
 }
 </style>
+[end of src/views/homepage/Homepage.vue]

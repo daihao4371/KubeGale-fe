@@ -3,47 +3,43 @@
   display: flex;
   height: 100%;
   gap: var(--spacing-lg); /* Gap between tree and list */
-  /* padding: var(--spacing-lg); */ /* Assuming parent .content has padding */
+  /* Assuming parent .content provides page padding */
 }
 
 .platform-tree {
   flex: 0 0 300px; /* Fixed width for the tree */
-  background-color: var(--bg-color-card); /* Card background for the tree area */
-  padding: var(--spacing-lg); /* Consistent padding */
-  border-radius: var(--border-radius-lg); /* Consistent border radius */
+  background-color: var(--bg-color-card);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
   overflow-y: auto; /* Allow tree to scroll if content overflows */
-  box-shadow: var(--box-shadow-sm); /* Subtle shadow */
-  height: 100%; /* Take full height of the container */
+  box-shadow: var(--box-shadow-sm);
+  height: 100%;
 }
 
 .virtual-machine-list {
   flex: 1; /* Take remaining space */
-  display: flex; /* Allow card to grow */
-  flex-direction: column; /* Ensure card takes full height */
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  /* background: var(--bg-color-card); */ /* Card itself will have background */
-  /* padding: var(--spacing-lg); */ /* Card body will have padding */
+  min-width: 0; /* Prevent overflow in flex layouts */
 }
 
 /* Card within virtual-machine-list */
 .virtual-machine-list .box-card { /* Targeting el-card instance */
-  /* overflow: hidden; */ /* el-card default */
-  flex-grow: 1; /* Allow card to take full height of its container */
-  display: flex; /* For internal layout */
-  flex-direction: column; /* For internal layout */
-  /* background-color: var(--bg-color-card); */ /* Inherited */
-  /* border-radius: var(--border-radius-lg); */ /* Inherited */
-  /* box-shadow: var(--box-shadow-md); */ /* Inherited */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  /* Global el-card styles from main.css apply for background, radius, shadow */
 }
 
 .virtual-machine-list .card-header { /* Content wrapper in el-card__header slot */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%; /* Ensure it takes full width of el-card__header */
+  width: 100%;
 }
 .virtual-machine-list .card-header span { /* Title */
-  font-size: 1.25rem;
+  font-size: 1.25rem; /* 20px */
   font-weight: var(--font-weight-bold);
   color: var(--color-heading);
 }
@@ -51,64 +47,56 @@
 .virtual-machine-list .header-buttons {
   display: flex;
   gap: var(--spacing-md);
+  /* Buttons will inherit global styles from main.css */
 }
-/* Buttons will inherit global styles */
 
 /* Search Form */
 .virtual-machine-list .search-form {
-  /* margin-bottom: var(--spacing-lg); */ /* Handled by card body padding or direct margin */
-  padding: var(--spacing-lg) 0 0 0; /* Add padding if not using a separate padded container */
+  /* Padding is handled by el-card__body */
+  margin-bottom: var(--spacing-lg); /* Add space below search form before table */
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-md);
   align-items: center;
 }
 .virtual-machine-list .search-form .el-form-item {
-  margin-bottom: 0 !important;
+  margin-bottom: 0 !important; /* For inline forms */
 }
 
 
-/* Table Container */
+/* Table Container - Wrapper for el-table to manage flex growth and scrolling */
 .table-container {
-  flex-grow: 1; /* Allow table container to take available space */
-  overflow: auto; /* Allow scrolling for the table itself */
-  /* margin-bottom: 0; */ /* No specific margin needed if pagination is separate */
-  position: relative; /* For sticky header if implemented */
-  width: 100%; /* Ensure it uses full width of card body */
+  flex-grow: 1;
+  overflow: auto;
+  position: relative; /* For potential sticky header (though Element Plus handles this) */
+  width: 100%;
+  min-height: 0; /* For nested flex */
+  display: flex; /* Ensure table fills this container */
+  flex-direction: column;
 }
 
-/* :deep styles for el-table should be minimized, relying on global styles from main.css */
-/* .table-container :deep(.el-table) {
-  height: 100%; // This can be tricky, prefer flex-grow on parent
-} */
-/* .table-container :deep(.el-table__body-wrapper) {
-  overflow-y: auto;
-  height: calc(100% - 40px); // Avoid fixed calculations
-} */
-/* .table-container :deep(.el-table__header-wrapper) {
-  position: sticky;
-  top: 0;
-  z-index: 2; // Ensure this is necessary and doesn't conflict
-} */
+/* el-table itself */
+.el-table {
+  width: 100%;
+  flex-grow: 1; /* Ensure table grows within table-container */
+  /* Global styles from main.css apply for el-table */
+}
 
 /* Custom cell content */
-.vm-name {
-  color: var(--text-color-secondary);
+.vm-name { /* Assuming this is a class applied to content within a cell */
+  color: var(--text-color-secondary); /* Example: use secondary text color */
   font-size: var(--font-size-sm);
+  /* Other styles like padding should be handled by cell's default padding */
 }
 
 /* Pagination Container */
 .pagination-container {
-  margin-top: var(--spacing-lg); /* Space above pagination */
-  padding: var(--spacing-md) 0; /* Padding around pagination */
-  /* background: var(--bg-color-card); */ /* If part of the card, card bg is enough */
-  /* border-top: 1px solid var(--border-color-light); */ /* Optional separator */
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) 0;
   display: flex;
   justify-content: flex-end;
-  /* z-index: 2; */ /* Check if needed */
-  /* position: static; */ /* Default, fine */
+  /* Global el-pagination styles from main.css apply */
 }
-/* el-pagination will inherit global styles */
 
 /* Ensure el-card__body allows table and pagination to fit */
 :deep(.virtual-machine-list .box-card > .el-card__body) {
@@ -116,17 +104,6 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  overflow: auto; /* Allow scrolling within card body if content overflows */
+  overflow: hidden; /* Let children (.table-container) manage their scroll */
   width: 100%;
 }
-/* el-table should be direct child or wrapped in a flex-grow:1 container */
-.el-table {
-  flex-grow: 1; /* if table is direct child of .el-card__body */
-  width: 100%;
-}
-
-/* Dialog Details (el-descriptions) */
-/* Global el-descriptions styles from main.css should apply */
-/* If specific overrides are needed: */
-/* .el-dialog .el-descriptions__label { color: var(--text-color-primary); font-weight: var(--font-weight-bold); } */
-/* .el-dialog .el-descriptions__content { color: var(--text-color-secondary); } */

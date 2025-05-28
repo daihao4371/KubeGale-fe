@@ -1,97 +1,74 @@
 /* Main Container */
 .project-container {
-  padding: var(--spacing-lg); /* Use theme variable */
-  background: var(--bg-color-card); /* Use card background */
-  border-radius: var(--border-radius-lg); /* Consistent large radius for page cards */
-  box-shadow: var(--box-shadow-md); /* Consistent shadow */
-  display: flex; /* Added for internal flex layout */
-  flex-direction: column; /* Added */
-  height: 100%; /* Ensure it fills parent if applicable */
+  padding: var(--spacing-lg);
+  background: var(--bg-color-card);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow-md);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 /* Search Bar */
 .search-bar {
-  margin-bottom: var(--spacing-lg); /* Consistent margin */
-  padding: var(--spacing-lg); /* Consistent padding */
-  background: var(--bg-color-page); /* Lighter background for search area */
-  border-radius: var(--border-radius-md); /* Consistent medium radius */
-  display: flex; /* Added for consistency with other search forms */
-  flex-wrap: wrap; /* Allow items to wrap */
-  gap: var(--spacing-md); /* Consistent gap */
-  align-items: center; /* Align items vertically */
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background: var(--bg-color-page);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  align-items: center;
 }
 .search-bar .el-form-item {
-  margin-bottom: 0 !important; /* Remove el-form-item default margin */
+  margin-bottom: 0 !important; /* Remove el-form-item default margin for inline forms */
 }
-/* el-input, el-button will inherit global styles */
+/* el-input, el-button will inherit global styles from main.css */
 
 /* Action Bar */
 .action-bar {
-  margin-bottom: var(--spacing-lg); /* Consistent margin */
+  margin-bottom: var(--spacing-lg);
   display: flex;
-  justify-content: flex-end; /* Keep existing alignment */
+  justify-content: flex-end;
 }
 
 .action-right {
   display: flex;
-  gap: var(--spacing-md); /* Consistent gap */
+  gap: var(--spacing-md);
 }
-/* Buttons will inherit global styles */
+/* Buttons will inherit global styles from main.css */
 
 /* Table - el-table styling is global from main.css */
-.el-table { /* Target direct el-table if applicable, or use a wrapper class */
-  margin-top: 0; /* Remove specific margin if action-bar provides enough */
+.el-table {
   flex-grow: 1; /* Allow table to take available space */
   width: 100%;
-  /* border-radius & box-shadow should be handled by global styles or a wrapper card if needed */
+  /* Global el-table styles from main.css apply for radius, shadow, borders, etc. */
 }
-/* Remove :deep styles for el-table th, el-table__row:hover as they should be globally themed in main.css */
 
 /* Pagination */
 .pagination {
-  margin-top: var(--spacing-lg); /* Consistent margin */
+  margin-top: var(--spacing-lg);
   display: flex;
-  justify-content: flex-end; /* Keep existing alignment */
-  padding: var(--spacing-md) 0; /* Add some padding, especially if inside a card without bottom padding */
+  justify-content: flex-end;
+  padding: var(--spacing-md) 0;
 }
-/* el-pagination will inherit global styles */
+/* el-pagination will inherit global styles from main.css */
 
 /* Dialogs - el-dialog styling is global from main.css */
-/* Remove :deep(.el-dialog__body) if global padding is sufficient */
-/* :deep(.el-dialog__body) {
-  padding: var(--spacing-lg) var(--spacing-xl); // Example: more horizontal padding
-} */
-
 .dialog-footer { /* This class is used in the template for the footer slot */
   display: flex;
   justify-content: flex-end;
-  gap: var(--spacing-md); /* Consistent gap */
+  gap: var(--spacing-md); /* Consistent gap for dialog footer buttons */
 }
 
-/* Icon Spacing in Buttons - Standardize this, preferably globally in main.css if possible */
-/* If not global, this is okay here, but ensure it's consistent. */
+/* Icon Spacing in Buttons (common utility, keep if not made global) */
 .el-button .el-icon + span,
 .el-button span + .el-icon {
   margin-left: var(--spacing-xs);
 }
-.el-button > .el-icon:first-child:not(:last-child) { /* Icon on left, text follows */
+.el-button > .el-icon:first-child:not(:last-child) {
   margin-right: var(--spacing-xs);
 }
-.el-button > .el-icon:last-child:not(:first-child) { /* Icon on right, text precedes */
+.el-button > .el-icon:last-child:not(:first-child) {
   margin-left: var(--spacing-xs);
 }
-.el-button > .el-icon:first-child:last-child { /* Icon only button */
-  margin-left: 0;
-  margin-right: 0;
-}
-
-/* el-descriptions styling for detail dialog should be global from main.css */
-/* Example of what might be in main.css or here if specific:
-:deep(.el-descriptions__label) {
-  color: var(--text-color-secondary);
-  font-weight: var(--font-weight-bold);
-}
-:deep(.el-descriptions__content) {
-  color: var(--text-color-primary);
-}
-*/

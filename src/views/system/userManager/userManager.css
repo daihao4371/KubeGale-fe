@@ -1,30 +1,28 @@
-/* Main Container - Assuming parent .content already has padding */
+/* Main Container */
 .user-manager-container {
   height: 100%;
   width: 100%;
-  display: flex; /* Added to make sure card takes full height */
-  flex-direction: column; /* Added */
+  display: flex;
+  flex-direction: column;
+  /* Assuming parent .content provides page padding */
 }
 
 /* Main Card - .box-card is an el-card instance */
 .box-card {
-  /* margin-bottom: 0; */ /* Handled by global el-card if needed or page layout */
-  /* border-radius: 0; */ /* Should inherit global --border-radius-lg or specific el-card style */
-  height: 100%; /* Ensure it fills the container */
+  height: 100%;
   display: flex;
   flex-direction: column;
   width: 100%;
-  /* background-color: var(--bg-color-card); */ /* Should be inherited */
-  /* box-shadow: var(--box-shadow-md); */ /* Should be inherited */
+  /* Global el-card styles from main.css apply for background, radius, shadow, border */
 }
 
-/* Card Header */
+/* Card Header (content wrapper in el-card__header slot) */
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* padding: var(--spacing-md) var(--spacing-lg); */ /* el-card__header has padding */
-  /* border-bottom: 1px solid var(--border-color-light); */ /* el-card__header has border */
+  width: 100%; /* Ensure it takes full width of el-card__header */
+  /* el-card__header global styles provide padding and border */
 }
 
 .header-left {
@@ -33,7 +31,7 @@
 }
 
 .header-title {
-  font-size: 1.25rem; /* Consistent with h4 or h5 */
+  font-size: 1.25rem; /* 20px */
   font-weight: var(--font-weight-bold);
   color: var(--color-heading);
 }
@@ -46,69 +44,66 @@
 
 .header-right {
   display: flex;
-  gap: var(--spacing-md); /* Spacing between buttons */
+  gap: var(--spacing-md);
+  /* Buttons will inherit global styles from main.css */
 }
 
 /* Stats Cards */
 .stats-cards {
   display: flex;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
-  gap: var(--spacing-lg); /* Gap between cards */
-  margin-bottom: var(--spacing-lg); /* Space below stats cards section */
-  /* padding: 0 var(--spacing-lg); */ /* Padding moved to individual cards or handled by parent */
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
 }
 
 .stats-card { /* This is an el-card instance */
   flex: 1;
-  min-width: 220px; /* Slightly more min-width */
-  /* background-color: var(--bg-color-card); */ /* Inherited */
-  /* border-radius: var(--border-radius-lg); */ /* Inherited */
-  /* box-shadow: var(--box-shadow-sm); */ /* Inherited */
+  min-width: 220px;
+  /* Global el-card styles from main.css apply for background, radius, shadow */
 }
 
-.stats-card .el-card__header { /* Targeting header within stats-card */
-  padding: var(--spacing-sm) var(--spacing-md); /* Smaller padding for stats card headers */
-  border-bottom: none; /* Optional: remove border for a cleaner look in small cards */
+.stats-card :deep(.el-card__header) { /* Targeting header within stats-card */
+  padding: var(--spacing-sm) var(--spacing-md) !important; /* Smaller padding for stats card headers */
+  border-bottom: none !important; /* Optional: remove border for a cleaner look */
 }
 
 .stats-card-header { /* Content within el-card__header */
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  color: var(--text-color-secondary); /* Default text color for header */
+  color: var(--text-color-secondary);
   font-weight: var(--font-weight-normal);
 }
 
 .stats-card-header .el-icon {
-  font-size: 1.1rem; /* Adjust icon size */
-  color: var(--color-primary); /* Example: Use primary color for icons */
+  font-size: 1.1rem;
 }
-/* Specific icon colors for different stats if desired - requires adding classes in template */
+/* Specific icon colors for different stats */
 .stats-card.total-users .stats-card-header .el-icon { color: var(--color-primary); }
 .stats-card.enabled-users .stats-card-header .el-icon { color: var(--success-color); }
 .stats-card.disabled-users .stats-card-header .el-icon { color: var(--error-color); }
 
 
-.stats-card .el-card__body { /* Targeting body within stats-card */
-  padding: var(--spacing-md) !important; /* Consistent padding, important if global is larger */
+.stats-card :deep(.el-card__body) { /* Targeting body within stats-card */
+  padding: var(--spacing-md) !important;
 }
 
 .stats-card-content {
   display: flex;
   align-items: baseline;
-  justify-content: center; /* Center content within card body */
-  padding: var(--spacing-sm) 0; /* Some vertical padding */
+  justify-content: center;
+  padding: var(--spacing-sm) 0;
 }
 
 .stats-number {
-  font-size: 1.75rem; /* Larger number */
+  font-size: 1.75rem; /* 28px */
   font-weight: var(--font-weight-bold);
   color: var(--text-color-primary);
   margin-right: var(--spacing-xs);
 }
 
 .stats-label {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-base); /* 16px */
   color: var(--text-color-secondary);
 }
 
@@ -116,110 +111,77 @@
 .search-form {
   margin-bottom: var(--spacing-lg);
   padding: var(--spacing-lg);
-  background-color: var(--bg-color-page); /* Use page background or a very light card bg */
+  background-color: var(--bg-color-page);
   border-radius: var(--border-radius-md);
-  display: flex; /* For better alignment of form items */
-  flex-wrap: wrap; /* Allow items to wrap */
-  gap: var(--spacing-md); /* Gap between form items */
-  align-items: center; /* Align items vertically */
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  align-items: center;
 }
 
 .search-form .el-form-item {
-  margin-bottom: 0 !important; /* Remove default bottom margin from ElFormItem */
-  margin-right: 0 !important; /* Remove default right margin */
+  margin-bottom: 0 !important;
+  margin-right: 0 !important; /* Ensure no extra right margin if not needed by ElForm layout */
 }
+/* el-input, el-select, el-button will inherit global styles from main.css */
 
-/* .search-form .el-input { */ /* Width handled by el-form-item or specific classes if needed */
-/* width: 200px; */ /* Consider removing fixed width or using responsive units */
-/* } */
-
-.search-form .el-button {
-  /* margin-left: var(--spacing-sm); */ /* Handled by gap in .search-form */
-}
-
-/* Table Container (if a specific wrapper is used, otherwise direct el-table styling) */
+/* Table Container */
 .el-table {
-  /* border-radius: 0; */ /* Should inherit from global el-table styles if any */
-  margin-top: var(--spacing-md); /* Space above the table */
-  flex: 1; /* Allow table to take available vertical space */
+  margin-top: var(--spacing-md);
+  flex: 1;
   width: 100%;
-  /* border: 1px solid var(--border-color-light); */ /* Global style should handle this */
+  /* Global el-table styles from main.css apply */
 }
 
 /* Ensure el-card__body allows table to grow */
 :deep(.box-card > .el-card__body) {
-  padding: var(--spacing-lg); /* Consistent padding for the main card body */
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Allow card body to grow */
-  overflow: auto; /* Allow scrolling within card body if content overflows */
+  flex-grow: 1;
+  overflow: hidden; /* Let children (e.g., table wrapper) manage their scroll */
   width: 100%;
 }
 
+/* Table Wrapper - if needed for specific scroll/layout control */
+.table-wrapper { /* Add this class around el-table in template if needed */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto; /* Scroll for table content */
+  min-height: 0; /* For nested flex */
+}
 
-/* :deep(.el-table__inner-wrapper),
-:deep(.el-table__header-wrapper),
-:deep(.el-table__body-wrapper) {
-  width: 100%; // These should be default behavior
-} */
-
-/* :deep(.el-table th) { */ /* Handled by global el-table styles */
-/* font-weight: var(--font-weight-bold); */
-/* } */
 
 /* Operation Buttons within Table */
 .operation-buttons {
   display: flex;
-  /* justify-content: flex-start; */ /* Default for flex */
   align-items: center;
-  flex-wrap: nowrap; /* Keep buttons on one line */
-  gap: var(--spacing-sm); /* Gap between buttons */
+  flex-wrap: nowrap;
+  gap: var(--spacing-sm);
+  /* Rely on global el-button size="small" type="primary/danger/info" link styles from main.css */
 }
-
-.operation-buttons .el-button {
-  /* margin-right: 0; */ /* Handled by gap */
-  padding: var(--spacing-xs) var(--spacing-sm); /* Adjust padding for small buttons */
-  /* font-size: var(--font-size-sm); */ /* el-button size="small" should handle this */
-}
-/* Text button colors are handled by Element Plus global overrides based on type (primary, danger) */
-
 
 /* Pagination Container */
 .pagination-container {
   margin-top: var(--spacing-lg);
   display: flex;
-  justify-content: flex-end; /* Align to the right */
-  padding: var(--spacing-md) 0; /* Add some padding around pagination */
+  justify-content: flex-end;
+  padding: var(--spacing-md) 0;
 }
-/* :deep(.el-pagination) styles should be inherited from global main.css */
-
+/* Global el-pagination styles from main.css apply */
 
 /* Dialog Styling */
-/* :deep(.el-dialog__body) { */ /* Global style from main.css */
-/* padding: var(--spacing-lg); */
-/* } */
-
-/* :deep(.el-form-item__label) { */ /* Global style from Element Plus or main.css */
-/* font-weight: var(--font-weight-bold); */
-/* } */
-
-/* :deep(.el-select) { */ /* Global style from Element Plus */
-/* width: 100%; */
-/* } */
-
 .dialog-footer { /* This class is used in the template for the footer slot */
   display: flex;
   justify-content: flex-end;
-  gap: var(--spacing-md); /* Gap between footer buttons */
-  /* padding-top: var(--spacing-lg); */ /* el-dialog__footer has padding */
+  gap: var(--spacing-md);
 }
+/* Global el-dialog, el-form-item, el-select styles from main.css apply */
 
 /* Specific Tag Styling (e.g., for roles in user details) */
-.auth-tag.el-tag { /* Be specific if only targeting these tags */
+.auth-tag.el-tag {
   margin-right: var(--spacing-xs);
-  margin-bottom: var(--spacing-xs);
-  /* background-color: var(--color-primary-light); */ /* Example, if global is not enough */
-  /* color: var(--color-primary-dark); */
-  /* border-color: transparent; */
+  margin-bottom: var(--spacing-xs); /* For wrapping */
+  /* Colors and other styles should come from el-tag global types or specific type overrides in main.css */
 }
-

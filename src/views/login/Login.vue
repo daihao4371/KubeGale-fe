@@ -77,14 +77,14 @@ const handleLogin = async () => {
           captchaId: captchaId.value,
           captcha: loginForm.captcha
         })
-        
+
         if (res.data.code === 0) {
           ElMessage.success('登录成功')
-          
+
           // 保存token和用户信息
           saveToken(res.data.data.token)
           saveUserInfo(res.data.data.user)
-          
+
           // 修改这里：跳转到首页
           router.push('/homepage')
         } else {
@@ -129,20 +129,20 @@ const togglePasswordVisibility = () => {
                 <el-input id="username" v-model="loginForm.username" placeholder="请输入用户名" />
               </div>
             </el-form-item>
-            
+
             <el-form-item prop="password">
               <label for="password">密码</label>
               <div class="input-with-icon">
                 <el-icon class="input-icon"><Lock /></el-icon>
-                <el-input 
-                  id="password" 
-                  v-model="loginForm.password" 
-                  :type="passwordVisible ? 'text' : 'password'" 
+                <el-input
+                  id="password"
+                  v-model="loginForm.password"
+                  :type="passwordVisible ? 'text' : 'password'"
                   placeholder="请输入密码"
                 >
                   <template #suffix>
-                    <el-icon 
-                      class="password-eye" 
+                    <el-icon
+                      class="password-eye"
                       @click="togglePasswordVisibility"
                     >
                       <component :is="passwordVisible ? ElIconView : ElIconHide" />
@@ -151,14 +151,14 @@ const togglePasswordVisibility = () => {
                 </el-input>
               </div>
             </el-form-item>
-            
+
             <el-form-item prop="captcha">
               <label for="captcha">验证码</label>
               <div class="captcha-block">
-                <el-input 
-                  id="captcha" 
-                  v-model="loginForm.captcha" 
-                  placeholder="请输入验证码" 
+                <el-input
+                  id="captcha"
+                  v-model="loginForm.captcha"
+                  placeholder="请输入验证码"
                 />
                 <img
                   :src="captchaImg"
@@ -171,7 +171,7 @@ const togglePasswordVisibility = () => {
                 </div>
               </div>
             </el-form-item>
-            
+
             <el-button type="primary" class="login-button" @click="handleLogin" :loading="loading">
               {{ loading ? '登录中...' : '登录' }}
             </el-button>

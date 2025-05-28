@@ -1,58 +1,55 @@
-/* Outermost container for the view - assuming parent .content provides necessary page padding */
+/* Outermost container for the view */
 .rds-manager-container {
   height: 100%;
-  /* padding: var(--spacing-lg); */ /* Handled by parent .content if this is not the absolute root */
-  display: flex; /* Added to ensure layout takes full height if this is the root */
-  flex-direction: column; /* Added */
+  display: flex;
+  flex-direction: column;
+  /* Assuming parent .content provides necessary page padding */
 }
 
 /* Main layout: sidebar tree + content area */
 .rds-layout {
   display: flex;
   height: 100%;
-  gap: var(--spacing-lg); /* Consistent gap */
-  flex-grow: 1; /* Allow this layout to fill the container */
+  gap: var(--spacing-lg);
+  flex-grow: 1;
+  min-height: 0; /* Ensure flex children can shrink properly */
 }
 
 /* Sidebar for CloudPlatformTree */
 .platform-tree {
-  flex: 0 0 300px; /* Match virtualMachine.css tree width */
+  flex: 0 0 300px;
   background-color: var(--bg-color-card);
   padding: var(--spacing-lg);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--box-shadow-sm);
-  overflow-y: auto; /* Tree itself will handle internal scroll */
-  height: 100%; /* Take full height of .rds-layout */
+  overflow-y: auto;
+  height: 100%;
 }
-/* CloudPlatformTree.vue component itself has its own scoped styles for tree items */
 
 /* Content Area for the main card (table, search, etc.) */
 .content-area {
-  flex: 1; /* Take remaining space */
-  overflow: auto; /* Allow content area to scroll if its content overflows (e.g. very small screen) */
-  display: flex; /* Added */
-  flex-direction: column; /* Added */
-  height: 100%; /* Added */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0; /* Prevent overflow */
 }
 
 /* el-card within content-area */
 .content-area .box-card { /* Assuming el-card has class="box-card" */
-  flex-grow: 1; /* Allow card to take full height */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  /* background-color: var(--bg-color-card); */ /* Inherited */
-  /* border-radius: var(--border-radius-lg); */ /* Inherited */
-  /* box-shadow: var(--box-shadow-md); */ /* Inherited */
+  /* Global el-card styles from main.css apply for background, radius, shadow */
 }
-:deep(.content-area .box-card > .el-card__header) {
-  /* Standard el-card header padding & border should apply */
-}
+/* :deep(.content-area .box-card > .el-card__header) can be used for specific adjustments if needed */
 :deep(.content-area .box-card > .el-card__body) {
   padding: var(--spacing-lg);
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  overflow: auto; /* If content inside body needs to scroll */
+  overflow: hidden; /* Let children manage their scroll, e.g. table wrapper */
+  width: 100%; /* Ensure full width */
 }
 
 
@@ -61,10 +58,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%; /* Ensure it takes full width */
+  width: 100%;
 }
 .card-header span { /* Title */
-  font-size: 1.25rem;
+  font-size: 1.25rem; /* 20px */
   font-weight: var(--font-weight-bold);
   color: var(--color-heading);
 }
@@ -72,43 +69,52 @@
 .header-buttons {
   display: flex;
   gap: var(--spacing-md);
+  /* Buttons will inherit global styles from main.css */
 }
-/* Buttons will inherit global styles */
 
 /* Search Form */
 .search-form {
   margin-bottom: var(--spacing-lg);
-  padding: var(--spacing-lg) 0 0 0; /* Padding top, or remove if card body padding is enough */
-  background-color: transparent; /* Search form is part of card body, no separate bg needed */
-  border-radius: var(--border-radius-md); /* Not needed if no separate bg/border */
+  /* Padding is handled by el-card__body */
+  background-color: transparent; /* Search form is part of card body */
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-md);
   align-items: center;
 }
 .search-form .el-form-item {
-  margin-bottom: 0 !important;
+  margin-bottom: 0 !important; /* For inline forms */
 }
-/* el-input, el-select will inherit global styles */
+/* el-input, el-select will inherit global styles from main.css */
 
 
-/* Table - el-table styling is global from main.css */
-.el-table {
-  flex-grow: 1; /* Allow table to take available space */
+/* Table Wrapper - to manage table growth and scrolling within card body */
+.table-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto; /* Scroll for table content */
+  min-height: 0; /* For nested flex */
+}
+
+.el-table { /* el-table styling is global from main.css */
+  flex-grow: 1;
   width: 100%;
+  /* Global styles from main.css apply */
 }
 
 /* Pagination Container */
 .pagination-container {
-  margin-top: var(--spacing-lg); /* Space above pagination */
-  padding: var(--spacing-md) 0; /* Padding around pagination */
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) 0;
   display: flex;
   justify-content: flex-end;
+  /* el-pagination will inherit global styles from main.css */
 }
-/* el-pagination will inherit global styles */
 
-/* Dialogs - el-dialog, el-descriptions will inherit global styles */
-/* Icon Spacing in Buttons (if not globally handled in main.css) */
+/* Dialogs - el-dialog, el-descriptions will inherit global styles from main.css */
+
+/* Icon Spacing in Buttons (common utility, keep if not made global) */
 .el-button .el-icon + span,
 .el-button span + .el-icon {
   margin-left: var(--spacing-xs);
@@ -119,7 +125,4 @@
 .el-button > .el-icon:last-child:not(:first-child) {
   margin-left: var(--spacing-xs);
 }
-.el-button > .el-icon:first-child:last-child {
-  margin-left: 0;
-  margin-right: 0;
-}
+/* No margin for icon-only buttons is default for el-button */

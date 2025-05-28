@@ -3,7 +3,7 @@
     <!-- 统计卡片 -->
     <div class="stats-container">
       <div class="stat-card">
-        <div class="stat-icon" style="background-color: var(--el-color-primary-light-9); color: var(--el-color-primary);">
+        <div class="stat-icon primary">
           <el-icon><Monitor /></el-icon>
         </div>
         <div class="stat-content">
@@ -12,7 +12,7 @@
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon" style="background-color: var(--el-color-success-light-9); color: var(--el-color-success);">
+        <div class="stat-icon success">
           <el-icon><Timer /></el-icon>
         </div>
         <div class="stat-content">
@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon" style="background-color: var(--el-color-warning-light-9); color: var(--el-color-warning);">
+        <div class="stat-icon warning">
           <el-icon><Warning /></el-icon>
         </div>
         <div class="stat-content">
@@ -39,8 +39,8 @@
             <span class="header-title">云厂商管理</span>
           </div>
           <div class="header-buttons">
-            <el-button 
-              type="danger" 
+            <el-button
+              type="danger"
               :disabled="!selectedRows.length"
               @click="handleBatchDelete"
               :icon="Delete"
@@ -53,7 +53,7 @@
           </div>
         </div>
       </template>
-      
+
       <!-- 搜索栏 -->
       <el-form :inline="true" :model="searchInfo" class="search-form" size="default">
         <el-form-item label="厂商名称">
@@ -106,7 +106,7 @@
           </el-button>
         </el-form-item>
       </el-form>
-      
+
       <el-table
         v-loading="loading"
         :data="tableData"
@@ -115,11 +115,6 @@
         stripe
         highlight-current-row
         @selection-change="handleSelectionChange"
-        :header-cell-style="{
-          background: '#f5f7fa',
-          color: '#606266',
-          fontWeight: 600
-        }"
       >
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column prop="id" label="ID" width="80" align="center" />
@@ -277,29 +272,29 @@
 import { ref, onMounted } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { 
-  Plus, 
-  Edit, 
-  Delete, 
-  Search, 
-  RefreshRight, 
+import {
+  Plus,
+  Edit,
+  Delete,
+  Search,
+  RefreshRight,
   Setting,
   Monitor,
   Calendar,
   Timer,
   Warning
 } from '@element-plus/icons-vue'
-import { 
-  cloudplatformlist, 
-  cloudplatformById, 
-  cloudplatformCreate, 
-  cloudplatformUpdate, 
+import {
+  cloudplatformlist,
+  cloudplatformById,
+  cloudplatformCreate,
+  cloudplatformUpdate,
   cloudplatformDelete,
   cloudplatformDeleteByIds
 } from '@/api/cloudCmdb/cloud_platform'
 import { syncRegion } from '@/api/cloudCmdb/cloud_region'
-import type { 
-  CloudProvider, 
+import type {
+  CloudProvider,
   CloudProviderForm
 } from '@/types/cloudCmdb'
 
@@ -365,9 +360,9 @@ const getPlatformLabel = (platform: string) => {
 const getTableData = async () => {
   loading.value = true
   try {
-    const response = await cloudplatformlist({ 
-      page: page.value, 
-      pageSize: pageSize.value, 
+    const response = await cloudplatformlist({
+      page: page.value,
+      pageSize: pageSize.value,
       name: searchInfo.value.name,
       type: searchInfo.value.type
     })
@@ -502,7 +497,7 @@ const closeDialog: () => void = () => {
 // 提交表单
 const submitForm = async () => {
   if (!formRef.value) return
-  
+
   await formRef.value.validate(async (valid) => {
     if (valid) {
       formLoading.value = true
@@ -598,3 +593,4 @@ onMounted(() => {
 </script>
 
 <style src="./provider.css" scoped></style>
+[end of src/views/cloudCmdb/provider/provider.vue]

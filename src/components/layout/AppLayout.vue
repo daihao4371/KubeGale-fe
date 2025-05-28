@@ -7,42 +7,42 @@
       <el-menu
         router
         :default-active="activeMenu"
-        background-color="#304156"
-        text-color="#bfcbd9"
-        active-text-color="#409EFF"
+        background-color="var(--bg-color-sidebar)" /* Assuming --bg-color-sidebar will be defined, e.g., #242424 or #304156 */
+      text-color="var(--vt-c-text-dark-2)" /* Light text for dark sidebar */
+      active-text-color="var(--color-primary)"
       >
-        <el-menu-item index="/dashboard">
-          <el-icon><DataLine /></el-icon>
-          <span>仪表盘</span>
-        </el-menu-item>
-        <el-menu-item index="/kubernetes">
-          <el-icon><Connection /></el-icon>
-          <span>Kubernetes管理</span>
-        </el-menu-item>
-        <el-menu-item index="/cicd">
-          <el-icon><SetUp /></el-icon>
-          <span>CI/CD管理</span>
-        </el-menu-item>
-        <el-menu-item index="/config">
-          <el-icon><Files /></el-icon>
-          <span>配置中心</span>
-        </el-menu-item>
-        <el-menu-item index="/cmdb">
-          <el-icon><DataAnalysis /></el-icon>
-          <span>CMDB管理</span>
-        </el-menu-item>
-        <el-menu-item index="/docker">
-          <el-icon><Box /></el-icon>
-          <span>Docker管理</span>
-        </el-menu-item>
-        <el-menu-item index="/prometheus">
-          <el-icon><Monitor /></el-icon>
-          <span>Prometheus监控</span>
-        </el-menu-item>
-        <el-menu-item index="/system">
-          <el-icon><Setting /></el-icon>
-          <span>系统管理</span>
-        </el-menu-item>
+      <el-menu-item index="/dashboard">
+        <el-icon><DataLine /></el-icon>
+        <span>仪表盘</span>
+      </el-menu-item>
+      <el-menu-item index="/kubernetes">
+        <el-icon><Connection /></el-icon>
+        <span>Kubernetes管理</span>
+      </el-menu-item>
+      <el-menu-item index="/cicd">
+        <el-icon><SetUp /></el-icon>
+        <span>CI/CD管理</span>
+      </el-menu-item>
+      <el-menu-item index="/config">
+        <el-icon><Files /></el-icon>
+        <span>配置中心</span>
+      </el-menu-item>
+      <el-menu-item index="/cmdb">
+        <el-icon><DataAnalysis /></el-icon>
+        <span>CMDB管理</span>
+      </el-menu-item>
+      <el-menu-item index="/docker">
+        <el-icon><Box /></el-icon>
+        <span>Docker管理</span>
+      </el-menu-item>
+      <el-menu-item index="/prometheus">
+        <el-icon><Monitor /></el-icon>
+        <span>Prometheus监控</span>
+      </el-menu-item>
+      <el-menu-item index="/system">
+        <el-icon><Setting /></el-icon>
+        <span>系统管理</span>
+      </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
@@ -103,8 +103,8 @@ const activeMenu = computed(() => route.path)
 }
 
 .sidebar {
-  background-color: #304156;
-  color: #fff;
+  background-color: var(--bg-color-sidebar); /* Assuming --bg-color-sidebar will be defined, e.g., #242424 or #304156 */
+  color: var(--vt-c-text-dark-2); /* Default text color for items directly in sidebar not in el-menu */
 }
 
 .logo {
@@ -112,12 +112,12 @@ const activeMenu = computed(() => route.path)
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--vt-c-text-dark-1); /* Brighter text for logo */
 }
 
 .header {
-  background-color: #fff;
-  border-bottom: 1px solid #e6e6e6;
+  background-color: var(--bg-color-header);
+  border-bottom: 1px solid var(--border-color-light);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -146,11 +146,11 @@ const activeMenu = computed(() => route.path)
 }
 
 .footer {
-  background-color: #fff;
-  border-top: 1px solid #e6e6e6;
+  background-color: var(--bg-color-card);
+  border-top: 1px solid var(--border-color-light);
   text-align: center;
   font-size: 12px;
-  color: #999;
+  color: var(--text-color-secondary);
   padding: 10px 0;
 }
 

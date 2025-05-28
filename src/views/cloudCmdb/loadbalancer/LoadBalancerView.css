@@ -1,16 +1,15 @@
 /* Main Layout */
 .loadbalancer-layout {
   display: flex;
-  height: 100%; /* Changed from 100vh to fit within parent content area */
-  gap: var(--spacing-lg); /* Use theme variable */
-  /* padding: var(--spacing-lg); */ /* Assuming parent .content provides padding */
+  height: 100%; /* Fit within parent content area */
+  gap: var(--spacing-lg);
   min-width: 0; /* Prevent flexbox overflow issues */
 }
 
 /* Sidebar (contains CloudPlatformTree) */
 .sidebar {
-  width: 280px; /* Keep fixed width if desired, or use flex-basis */
-  flex: 0 0 280px; /* Explicit flex property */
+  width: 280px;
+  flex: 0 0 280px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -18,38 +17,30 @@
 }
 
 .sidebar .el-card { /* Targeting the el-card within the sidebar */
-  /* border-radius: var(--border-radius-lg); */ /* Inherited from global */
-  /* box-shadow: var(--box-shadow-md); */ /* Inherited */
-  /* background: var(--bg-color-card); */ /* Inherited */
   flex: 1; /* Allow card to fill sidebar height */
   display: flex;
   flex-direction: column;
-  /* height: 100%; */ /* Redundant with flex:1 and parent height */
-  /* padding: 0; */ /* el-card has its own padding for header/body */
   min-width: 0;
 }
 :deep(.sidebar .el-card__body) { /* Ensure card body can contain tree properly */
-  padding: var(--spacing-md); /* Adjust padding if needed for tree */
+  padding: var(--spacing-md);
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden; /* Tree itself should scroll */
 }
-:deep(.sidebar .el-card__header) {
+:deep(.sidebar .el-card__header) { /* Standardized padding for consistency */
   padding: var(--spacing-md) var(--spacing-lg);
 }
 
 .sidebar-title {
-  border-bottom: 1px solid var(--border-color-light); /* Use theme variable */
-  padding-bottom: var(--spacing-sm); /* Use theme variable */
-  margin-bottom: var(--spacing-md); /* Use theme variable */
-  font-weight: var(--font-weight-bold); /* Use theme variable */
-  font-size: var(--font-size-lg); /* Use theme variable */
-  color: var(--color-heading); /* Use theme variable */
+  border-bottom: 1px solid var(--border-color-light);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  color: var(--color-heading);
 }
-
-/* el-tree styling is now within CloudPlatformTree.vue's scoped CSS */
-/* Remove :deep tree styles from here if they were meant for CloudPlatformTree */
 
 /* Main Content Area */
 .main-content {
@@ -64,20 +55,15 @@
   flex: 1; /* Allow card to fill main-content height */
   display: flex;
   flex-direction: column;
-  /* padding: 0; */ /* el-card handles its padding */
   min-width: 0;
-  /* height: 100%; */ /* Redundant */
 }
-:deep(.main-card.el-card > .el-card__header) {
-  /* Standard el-card header padding should apply */
-  /* Add custom styles if needed, e.g., title alignment */
-}
+/* :deep(.main-card.el-card > .el-card__header) can be used for specific adjustments if needed */
 :deep(.main-card.el-card > .el-card__body) {
   padding: var(--spacing-lg);
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  overflow: auto; /* If content inside body needs to scroll before page does */
+  overflow: hidden; /* Let child elements like table-wrapper handle their own scroll */
 }
 
 
@@ -93,75 +79,44 @@
   gap: var(--spacing-md); /* Consistent gap */
 }
 .search-form .el-form-item {
-  margin-bottom: 0 !important; /* Remove default el-form-item margin */
+  margin-bottom: 0 !important; /* Remove default el-form-item margin for inline forms */
 }
-/* .search-form .el-input { */ /* Width can be controlled by el-form-item or specific classes */
-/* width: 220px; */
-/* } */
-/* .search-form .el-button { */ /* Global el-button styles apply */
-/* min-width: 80px; */
-/* } */
 
 /* Table Wrapper */
 .table-wrapper {
   flex: 1; /* Allow table wrapper to take available space */
-  overflow: auto; /* Primary scroll for table content */
-  /* padding: 0; */ /* No padding needed for wrapper if table is styled correctly */
-  /* margin: 0; */
+  overflow: auto; /* Primary scroll for table content if table itself doesn't handle it well */
   min-width: 0;
-  /* height: 100%; */ /* Flex handles height */
-  display: flex; /* Added to ensure table takes full height */
-  flex-direction: column; /* Added */
+  display: flex;
+  flex-direction: column;
 }
 
 .table-container.el-table { /* Targeting el-table instance */
-  /* background: var(--bg-color-card); */ /* Inherited from main.css */
-  /* border-radius: var(--border-radius-md); */ /* Inherited */
-  /* overflow: hidden; */ /* el-table default */
-  /* height: 100%; */ /* Let flexbox manage height */
-  width: 100% !important; /* Override inline style from template */
+  width: 100% !important; /* Override inline style from template if necessary */
   flex-grow: 1; /* Allow table to grow in .table-wrapper */
   min-width: 0;
+  /* Global styles from main.css for el-table will apply for background, radius, borders, etc. */
 }
-
-/* Remove most :deep table styles, rely on global main.css overrides */
-/* :deep(.el-table__body-wrapper) { ... } */ /* Global styles should handle scrolling */
-/* :deep(.el-table__header-wrapper) { ... } */ /* Global styles for sticky header if needed */
-/* :deep(.el-table th) { ... } */ /* Global styles */
-/* :deep(.el-table__row:hover) { ... } */ /* Global styles */
-/* :deep(.el-table .el-tag) { ... } */ /* Global el-tag styles */
-
 
 /* Pagination Container */
 .pagination-container {
   margin-top: var(--spacing-lg); /* Space above pagination */
   display: flex;
   justify-content: flex-end;
-  /* background: var(--bg-color-card); */ /* If part of main-card, it's fine */
-  padding: var(--spacing-md) 0; /* Padding top/bottom, no horizontal if full width */
-  /* border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg); */ /* If part of main-card */
+  padding: var(--spacing-md) 0; /* Padding top/bottom */
+  /* Global el-pagination styles from main.css will apply */
 }
-/* el-pagination will inherit global styles */
 
-
-/* Dialog Detail Styles */
-/* Remove :deep styles for dialogs, rely on global main.css overrides */
-/* :deep(.el-dialog__body) { ... } */
-/* :deep(.el-descriptions__label) { ... } */
-/* :deep(.el-descriptions__content) { ... } */
-
-/* Icon Spacing in Buttons (if not globally handled in main.css) */
+/* Icon Spacing in Buttons (specific to this view if needed, or can be global) */
 .el-button .el-icon + span,
 .el-button span + .el-icon {
   margin-left: var(--spacing-xs);
 }
-.el-button > .el-icon:first-child:not(:last-child) {
+/* Styles for icon-only buttons or buttons with icon at start/end */
+.el-button > .el-icon:first-child:not(:last-child) { /* Icon at start followed by text */
   margin-right: var(--spacing-xs);
 }
-.el-button > .el-icon:last-child:not(:first-child) {
+.el-button > .el-icon:last-child:not(:first-child) { /* Icon at end preceded by text */
   margin-left: var(--spacing-xs);
 }
-.el-button > .el-icon:first-child:last-child {
-  margin-left: 0;
-  margin-right: 0;
-}
+/* .el-button > .el-icon:first-child:last-child ensures no margin for icon-only buttons, handled by Element Plus */

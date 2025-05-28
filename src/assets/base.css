@@ -1,13 +1,13 @@
 /* Enhanced Color Palette */
 :root {
   /* Primary Colors */
-  --color-primary: #1890ff; /* Vibrant Blue */
-  --color-primary-light: #5cadff;
-  --color-primary-dark: #0056b3;
+  --color-primary: #0077CC; /* Refined Blue */
+  --color-primary-light: #5DAEFF; /* Adjusted for new primary */
+  --color-primary-dark: #005FA3; /* Adjusted for new primary */
 
   /* Secondary & Accent */
   --color-secondary: #6c757d; /* Cool Gray */
-  --color-accent: #17a2b8; /* Teal */
+  --color-accent: #17a2b8; /* Teal - unchanged */
 
   /* Text Colors */
   --text-color-primary: #333333; /* Dark Gray */
@@ -31,14 +31,15 @@
   /* Status Colors */
   --success-color: #28a745; /* Green */
   --warning-color: #ffc107; /* Yellow */
-  --error-color: #f5222d; /* Red */
-  --info-color: #17a2b8; /* Teal (same as accent for now) */
+  --error-color: #E53935; /* Refined Red */
+  --info-color: var(--color-accent); /* Teal (same as accent) */
 
   /* Spacing Variables */
   --spacing-unit: 8px;
+  --spacing-xxs: calc(var(--spacing-unit) * 0.25); /* 2px - new */
   --spacing-xs: calc(var(--spacing-unit) * 0.5);  /* 4px */
   --spacing-sm: var(--spacing-unit);             /* 8px */
-  --spacing-xxs: calc(var(--spacing-unit) * 1.5);  /* 12px */
+  --spacing-smd: calc(var(--spacing-unit) * 1.5);  /* 12px - renamed from xxs */
   --spacing-md: calc(var(--spacing-unit) * 2);   /* 16px */
   --spacing-lg: calc(var(--spacing-unit) * 3);   /* 24px */
   --spacing-xl: calc(var(--spacing-unit) * 4);   /* 32px */
@@ -106,18 +107,18 @@
 /* Dark Theme Overrides */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-primary: #0d6efd; /* Slightly adjusted blue for dark mode if needed */
-    --color-primary-light: #6ea8fe;
-    --color-primary-dark: #0b5ed7;
+    --color-primary: #3399FF; /* Refined Blue for Dark Mode */
+    --color-primary-light: #7CC4FF; /* Adjusted for new dark primary */
+    --color-primary-dark: #0077E6; /* Adjusted for new dark primary */
 
     --color-secondary: #5a6268; /* Dark mode secondary */
-    --color-accent: #34d399; /* Example: Emerald for dark mode accent */
+    --color-accent: #34d399; /* Example: Emerald for dark mode accent - unchanged */
 
     --text-color-primary: #e0e0e0; /* Light Gray for dark mode text */
     --text-color-secondary: #b0b0b0; /* Medium-Light Gray */
     --text-color-on-primary: #ffffff;
     --text-color-link: var(--color-primary-light);
-    --text-color-link-hover: #8bbaff;
+    --text-color-link-hover: #8bbaff; /* This could be var(--color-primary) or a bit lighter still */
     --text-color-heading: #f0f0f0;
 
     --bg-color-page: #121212; /* Very Dark Gray/Black */
@@ -131,8 +132,8 @@
 
     --success-color: #38c172; /* Adjusted Green */
     --warning-color: #ffda6b; /* Adjusted Yellow */
-    --error-color: #e3342f;   /* Adjusted Red */
-    --info-color: #34d399;    /* Adjusted Teal/Emerald */
+    --error-color: #EF5350;   /* Refined Red for Dark Mode */
+    --info-color: #34d399;    /* Adjusted Teal/Emerald (matches dark accent) */
 
     /* Update legacy variables for dark mode */
     --vt-c-white: var(--bg-color-card);
