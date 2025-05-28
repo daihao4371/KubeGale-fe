@@ -104,6 +104,7 @@ const router = createRouter({
           children: [
             {
               path: '',
+              name: 'cloud-assets-default',
               redirect: '/homepage/cloud-assets/provider'
             },
             {
@@ -155,6 +156,7 @@ const router = createRouter({
           children: [
             {
               path: '',
+              name: 'cmdb-default',
               redirect: '/homepage/cmdb/project'
             },
             {

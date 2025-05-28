@@ -75,11 +75,6 @@ export default function useHost() {
     project: [{ required: true, message: '请选择所属项目', trigger: 'change' }]
   }
 
-  // 终端对话框
-  const terminalVisible = ref(false)
-  const terminalLoading = ref(false)
-  const currentHost = ref<Host | null>(null)
-
   // 获取项目列表
   const fetchProjectList = async () => {
     try {
@@ -247,37 +242,6 @@ export default function useHost() {
     fetchList()
   }
 
-  // 打开终端
-  const handleTerminal = async (row: Host) => {
-    terminalLoading.value = true
-    try {
-      // 1. 先进行 SSH 认证
-      const res = await authenticateHost({
-        name: row.name,
-        serverHost: row.serverHost,
-        port: row.port,
-        username: row.username,
-        password: row.password,
-        project: row.project,
-        note: row.note
-      })
-
-      if (res.code === 0 && res.data.sessionID && res.data.wsUrl) {
-        // 2. 认证成功后，使用后端返回的 wsUrl 打开终端页面
-        const terminalUrl = `/terminal?wsUrl=${encodeURIComponent(res.data.wsUrl)}&name=${encodeURIComponent(row.name)}&host=${encodeURIComponent(row.serverHost)}`
-        window.open(terminalUrl, '_blank')
-        ElMessage.success('SSH认证成功，正在打开终端...')
-      } else {
-        ElMessage.error(res.msg || 'SSH认证失败')
-      }
-    } catch (error) {
-      console.error('SSH认证失败:', error)
-      ElMessage.error('SSH认证失败，请检查连接信息')
-    } finally {
-      terminalLoading.value = false
-    }
-  }
-
   // 查看详情
   const handleDetail = async (row: Host) => {
     detailLoading.value = true
@@ -379,7 +343,6 @@ export default function useHost() {
     handleSubmit,
     handleSizeChange,
     handleCurrentChange,
-    handleTerminal,
     handleDetail,
     importVisible,
     importForm,
@@ -387,9 +350,6 @@ export default function useHost() {
     importRules,
     handleFileChange,
     downloadTemplate,
-    handleImport,
-    terminalVisible,
-    terminalLoading,
-    currentHost
+    handleImport
   }
 }

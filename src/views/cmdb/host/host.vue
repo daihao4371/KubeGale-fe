@@ -264,24 +264,6 @@
         <el-button type="primary" @click="handleImport">确定</el-button>
       </template>
     </el-dialog>
-
-    <!-- 终端对话框 -->
-    <el-dialog
-      v-model="terminalVisible"
-      :title="`终端 - ${currentHost?.name || ''}`"
-      width="800px"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      :show-close="false"
-      class="terminal-dialog"
-    >
-      <div v-loading="terminalLoading" class="terminal-container">
-        <div id="terminal" class="terminal"></div>
-      </div>
-      <template #footer>
-        <el-button @click="terminalVisible = false">关闭</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -298,12 +280,8 @@ import {
 } from '@element-plus/icons-vue'
 import useHost from './host'
 import { onMounted, onUnmounted } from 'vue'
-import { Terminal } from 'xterm'
-import { FitAddon } from 'xterm-addon-fit'
 import { ElMessage } from 'element-plus'
-import 'xterm/css/xterm.css'
 import type { Host } from '@/types/cmdb'
-import { authenticateHost } from '@/api/cmdb/host'
 
 defineOptions({
   name: 'HostView',
@@ -340,93 +318,34 @@ const {
   handleDetail,
   importVisible,
   importForm,
+  importFormRef,
   importRules,
   handleFileChange,
   downloadTemplate,
-  handleImport,
-  terminalVisible,
-  terminalLoading,
-  currentHost
+  handleImport
 } = useHost()
-
-// 终端相关
-let terminal: Terminal | null = null
-let fitAddon: FitAddon | null = null
 
 // 打开终端
 const handleTerminal = async (row: Host) => {
-  terminalLoading.value = true
   try {
-    // 1. 先进行 SSH 认证
-    const res = await authenticateHost({
-      name: row.name,
-      serverHost: row.serverHost,
-      port: row.port,
-      username: row.username,
-      password: row.password,
-      project: row.project,
-      note: row.note
-    })
-
-    if (res.code === 0) {
-      // 2. 认证成功后，使用后端返回的 wsUrl 打开终端页面
-      const terminalUrl = `/terminal?wsUrl=${encodeURIComponent(res.data.wsUrl)}&name=${encodeURIComponent(row.name)}&host=${encodeURIComponent(row.serverHost)}`
-      window.open(terminalUrl, '_blank')
-      ElMessage.success('SSH认证成功，正在打开终端...')
-    } else {
-      ElMessage.error(res.msg || 'SSH认证失败')
-    }
+    // 使用前端路由跳转到终端页面
+    const terminalUrl = `/terminal?id=${row.ID}`
+    window.open(terminalUrl, '_blank')
   } catch (error) {
-    console.error('SSH认证失败:', error)
-    ElMessage.error('SSH认证失败，请检查连接信息')
-  } finally {
-    terminalLoading.value = false
+    console.error('打开终端失败:', error)
+    ElMessage.error('打开终端失败')
   }
 }
 
 onMounted(() => {
-  // 初始化终端
-  terminal = new Terminal({
-    cursorBlink: true,
-    fontSize: 14,
-    fontFamily: 'Menlo, Monaco, "Courier New", monospace',
-    theme: {
-      background: '#1e1e1e'
-    }
-  })
-  fitAddon = new FitAddon()
-  terminal.loadAddon(fitAddon)
-  
-  const terminalElement = document.getElementById('terminal')
-  if (terminalElement) {
-    terminal.open(terminalElement)
-    fitAddon.fit()
-  }
+  // 初始化其他功能
 })
 
 onUnmounted(() => {
-  if (terminal) {
-    terminal.dispose()
-  }
+  // 清理其他资源
 })
 </script>
 
 <style scoped>
 @import './host.css';
-
-.terminal-dialog :deep(.el-dialog__body) {
-  padding: 0;
-}
-
-.terminal-container {
-  width: 100%;
-  height: 500px;
-  background-color: #1e1e1e;
-  padding: 10px;
-}
-
-.terminal {
-  width: 100%;
-  height: 100%;
-}
 </style>

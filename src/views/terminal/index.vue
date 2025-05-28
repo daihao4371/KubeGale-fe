@@ -1,194 +1,191 @@
 <template>
-  <div class="terminal-page">
-    <div class="terminal-header">
-      <div class="terminal-title">
-        <el-icon><Connection /></el-icon>
-        <span>{{ title }}</span>
-      </div>
-      <div class="terminal-actions">
-        <el-button type="primary" link @click="handleReconnect">
-          <el-icon><Refresh /></el-icon>
-          重新连接
-        </el-button>
-        <el-button type="danger" link @click="handleClose">
-          <el-icon><Close /></el-icon>
-          关闭
-        </el-button>
-      </div>
+  <div class="terminal-container">
+    <div class="header">
+      <el-button v-if="isConnected" type="danger" @click="handleClose">关闭连接</el-button>
     </div>
-    <div class="terminal-container">
-      <div id="terminal" class="terminal"></div>
+    <div v-if="isConnected" ref="terminalRef" class="terminal"></div>
+    <div v-else class="reconnect-message">
+      <el-result
+        icon="warning"
+        title="连接已断开"
+        sub-title="终端连接已关闭,请重新连接"
+      >
+        <template #extra>
+          <el-button type="primary" @click="handleReconnect">重新连接</el-button>
+        </template>
+      </el-result>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
-import { Connection, Refresh, Close } from '@element-plus/icons-vue'
-import { getTerminalWebSocket } from '@/api/cmdb/host'
 import { ElMessage } from 'element-plus'
 import 'xterm/css/xterm.css'
+
+// 常量定义
+const INACTIVITY_TIMEOUT = 60000 // 不活动超时时间(毫秒)
+const TERMINAL_CONFIG = {
+  cols: 120,
+  rows: 30,
+  convertEol: true,
+  scrollback: 1000,
+  disableStdin: false,
+  cursorStyle: 'block' as const,
+  cursorBlink: true,
+  fontFamily: 'Menlo, Monaco, Consolas, monospace',
+  fontSize: 14,
+  theme: {
+    foreground: '#ffffff',
+    background: '#000000',
+    cursor: '#ffffff',
+    black: '#000000',
+    red: '#cd3131',
+    green: '#0dbc79',
+    yellow: '#e5e510',
+    blue: '#2472c8',
+    magenta: '#bc3fbc',
+    cyan: '#11a8cd',
+    white: '#e5e5e5',
+    brightBlack: '#666666',
+    brightRed: '#f14c4c',
+    brightGreen: '#23d18b',
+    brightYellow: '#f5f543',
+    brightBlue: '#3b8eea',
+    brightMagenta: '#d670d6',
+    brightCyan: '#29b8db',
+    brightWhite: '#e5e5e5'
+  }
+}
 
 defineOptions({
   name: 'TerminalView'
 })
 
 const route = useRoute()
-const title = ref('终端')
-
-// 终端相关
 let terminal: Terminal | null = null
 let fitAddon: FitAddon | null = null
-let socket: WebSocket | null = null
-let commandBuffer = '' // 用于存储当前输入的命令
+let ws: WebSocket | null = null
+const isConnected = ref(true)
+let inactivityTimer: ReturnType<typeof setTimeout> | null = null
+const terminalRef = ref<HTMLElement | null>(null)
 
-// 初始化终端
-const initTerminal = () => {
-  const height = window.innerHeight - 140
-  const width = window.innerWidth - 230
-
-  terminal = new Terminal({
-    rows: parseInt(String(height/17), 10), // 根据高度计算行数
-    cols: parseInt(String(width/8), 10), // 根据宽度计算列数
-    cursorStyle: 'block', // 设置光标样式为块状
-    cursorBlink: true, // 光标闪烁
-    scrollback: 1000, // 回滚的行数
-    theme: {
-      background: '#000000', // 背景色
-      foreground: '#ffffff'  // 字体颜色
-    }
-  })
-
-  fitAddon = new FitAddon()
-  terminal.loadAddon(fitAddon)
-  
-  const terminalElement = document.getElementById('terminal')
-  if (terminalElement) {
-    terminal.open(terminalElement)
-    fitAddon.fit()
+// 重置不活动计时器
+const resetInactivityTimer = () => {
+  if (inactivityTimer) {
+    clearTimeout(inactivityTimer)
   }
-
-  // 监听用户输入
-  terminal.onData((data) => {
-    if (data === '\r') {
-      // 当按下回车键时，显示完整命令并发送到服务器
-      terminal?.write('\r\n')  // 显示回车后的空行
-      if (socket?.readyState === WebSocket.OPEN) {
-        socket.send(commandBuffer + '\n')
-      }
-      commandBuffer = '' // 清空缓冲区
-    } else if (data === '\u007f') {
-      // 处理退格键
-      if (commandBuffer.length > 0) {
-        commandBuffer = commandBuffer.slice(0, -1)
-        terminal?.write('\b \b')  // 在终端上模拟删除字符
-      }
-    } else {
-      // 将输入的命令显示到终端上，并存入缓冲区
-      commandBuffer += data
-      terminal?.write(data)  // 显示用户输入
+  inactivityTimer = setTimeout(() => {
+    if (ws) {
+      ElMessage.warning('由于长时间未操作,连接已自动关闭')
+      ws.close(1000, '用户不活动超时')
     }
-  })
+  }, INACTIVITY_TIMEOUT)
 }
 
-// 连接 WebSocket
-const connectWebSocket = () => {
-  const wsUrl = route.query.wsUrl as string
-
-  if (!wsUrl) {
-    ElMessage.error('缺少WebSocket连接地址')
-    return
-  }
-
-  try {
-    // 建立 WebSocket 连接
-    socket = getTerminalWebSocket(wsUrl)
-
-    // 连接建立时的处理
-    socket.onopen = () => {
-      ElMessage({
-        type: 'success',
-        message: 'SSH会话已建立'
-      })
-      // 连接成功后，可以开始接收数据
-      terminal?.focus()
-    }
-
-    // 接收服务器消息
-    socket.onmessage = (event) => {
-      // 处理换行符，确保每个输出行正确显示
-      const processedMessage = event.data.replace(/\r?\n/g, '\r\n')
-      terminal?.write(processedMessage)
-    }
-
-    // 处理错误
-    socket.onerror = (error) => {
-      console.error('WebSocket 错误:', error)
-      ElMessage({
-        type: 'error',
-        message: 'SSH会话连接错误'
-      })
-    }
-
-    // 连接关闭时的处理
-    socket.onclose = (event) => {
-      console.log('WebSocket 连接关闭:', event)
-      ElMessage({
-        type: 'warning',
-        message: 'SSH会话已关闭'
-      })
-    }
-
-    // 处理终端大小变化
-    terminal?.onResize(({ cols, rows }) => {
-      if (socket?.readyState === WebSocket.OPEN) {
-        // 发送终端大小变化到服务器
-        socket.send(JSON.stringify({ type: 'resize', cols, rows }))
-      }
-    })
-  } catch (error) {
-    console.error('建立SSH会话失败:', error)
-    ElMessage.error('建立SSH会话失败')
+// 手动关闭连接
+const handleClose = () => {
+  if (ws) {
+    ws.close(1000, '用户手动关闭连接')
+    ElMessage.success('已关闭终端连接')
   }
 }
 
 // 重新连接
 const handleReconnect = () => {
-  if (socket) {
-    socket.close()
+  const hostId = route.query.id
+  if (hostId) {
+    isConnected.value = true
+    window.location.reload()
   }
-  if (terminal) {
-    terminal.clear()
-    commandBuffer = ''
-  }
-  connectWebSocket()
 }
 
-// 关闭终端
-const handleClose = () => {
-  if (socket) {
-    socket.close()
-  }
-  window.close()
+// 处理终端输入
+const handleTerminalInput = (data: string) => {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  resetInactivityTimer();
+  ws.send(data); // 只发送，不写入终端，由后端回显
 }
 
 onMounted(() => {
-  // 设置标题
-  const host = route.query.host as string
-  const name = route.query.name as string
-  if (host && name) {
-    title.value = `终端 - ${name} (${host})`
+  const hostId = route.query.id
+  if (!hostId) {
+    ElMessage.error('缺少主机ID')
+    return
   }
-  
+
+  // 获取 token
+  const token = localStorage.getItem('token')
+  if (!token) {
+    ElMessage.error('未登录或token失效')
+    return
+  }
+
   // 初始化终端
-  initTerminal()
+  terminal = new Terminal(TERMINAL_CONFIG)
+  fitAddon = new FitAddon()
+  terminal.loadAddon(fitAddon)
   
-  // 建立 WebSocket 连接
-  connectWebSocket()
-  
+  if (terminalRef.value) {
+    terminal.open(terminalRef.value)
+    fitAddon.fit()
+  }
+
+  // 拼接 WebSocket 地址
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+  const wsUrl = `${wsProtocol}//127.0.0.1:8080/cmdb/hosts/terminal?id=${hostId}`
+  ws = new WebSocket(wsUrl)
+
+  ws.onopen = () => {
+    terminal?.write('\r\n\x1B[1;32m正在连接...\x1B[0m\r\n')
+    // 发送认证信息
+    ws?.send(JSON.stringify({
+      type: 'auth',
+      token: token
+    }))
+    resetInactivityTimer()
+  }
+
+  ws.onmessage = (event) => {
+    try {
+      // 尝试解析消息是否为JSON
+      const data = JSON.parse(event.data)
+      if (data.type === 'auth_result') {
+        if (data.success) {
+          terminal?.write('\r\n\x1B[1;32m认证成功\x1B[0m\r\n')
+        } else {
+          terminal?.write('\r\n\x1B[1;31m认证失败: ' + data.message + '\x1B[0m\r\n')
+          ws?.close()
+        }
+      } else {
+        // 如果不是认证结果，则直接显示消息
+        terminal?.write(event.data)
+      }
+    } catch {
+      // 如果不是JSON，则直接显示消息
+      terminal?.write(event.data)
+    }
+  }
+
+  ws.onerror = (error) => {
+    console.error('WebSocket错误:', error)
+    ElMessage.error('终端连接错误')
+    isConnected.value = false
+  }
+
+  ws.onclose = () => {
+    isConnected.value = false
+    if (inactivityTimer) {
+      clearTimeout(inactivityTimer)
+    }
+  }
+
+  // 处理终端输入
+  terminal.onData(handleTerminalInput)
+
   // 监听窗口大小变化
   window.addEventListener('resize', () => {
     fitAddon?.fit()
@@ -196,11 +193,14 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (socket) {
-    socket.close()
+  if (ws) {
+    ws.close()
   }
   if (terminal) {
     terminal.dispose()
+  }
+  if (inactivityTimer) {
+    clearTimeout(inactivityTimer)
   }
   window.removeEventListener('resize', () => {
     fitAddon?.fit()
@@ -209,63 +209,41 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.terminal-page {
+.terminal-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #1e1e1e;
-  z-index: 9999;
+  padding: 0;
+  margin: 0;
+  background: #000;
+  border-radius: 0;
+  box-shadow: none;
+  z-index: 10;
 }
 
-.terminal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px;
-  background-color: #2d2d2d;
-  color: #fff;
-  border-bottom: 1px solid #3d3d3d;
-}
-
-.terminal-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 16px;
-}
-
-.terminal-actions {
-  display: flex;
-  gap: 16px;
-}
-
-.terminal-container {
-  flex: 1;
-  padding: 10px;
-  overflow: hidden;
+.header {
+  position: absolute;
+  top: 24px;
+  right: 40px;
+  margin: 0;
+  z-index: 20;
 }
 
 .terminal {
-  width: 100%;
-  height: 100%;
-  background-color: black;
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  overflow: hidden;
 }
 
-:deep(.el-button) {
-  color: #fff;
-}
-
-:deep(.el-button:hover) {
-  color: var(--el-color-primary);
-}
-
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+.reconnect-message {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0;
 }
 </style> 
