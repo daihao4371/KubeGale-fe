@@ -152,11 +152,18 @@ export default function useHost() {
       const res = await getHostList(params)
       if (res.code === 0) {
         // 将项目ID映射为项目名称
-        tableData.value = res.data.list.map(host => ({
+        let filteredData = res.data.list
+        
+        // 如果选择了特定项目，确保只显示该项目的主机
+        if (searchForm.projectId) {
+          filteredData = filteredData.filter(host => Number(host.project) === Number(searchForm.projectId))
+        }
+        
+        tableData.value = filteredData.map(host => ({
           ...host,
           projectName: projectOptions.value.find(p => p.id === Number(host.project))?.name || '-'
         }))
-        total.value = res.data.total
+        total.value = filteredData.length // 更新总数为过滤后的数量
       }
       // 同步刷新全量主机
       fetchAllHosts()
