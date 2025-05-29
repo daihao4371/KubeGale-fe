@@ -14,6 +14,21 @@ import {
 } from '@/api/cmdb/host'
 import { getProjectList } from '@/api/cmdb/project'
 
+// 定义接口
+interface HostListParams {
+  page: number
+  pageSize: number
+  name?: string
+  ip?: string
+  project_id?: number
+}
+
+interface ProjectTreeNode {
+  id: number
+  name: string
+  children?: ProjectTreeNode[]
+}
+
 export default function useHost() {
   // 状态管理
   const loading = ref(false)
@@ -29,7 +44,8 @@ export default function useHost() {
   // 搜索表单
   const searchForm = reactive({
     name: '',
-    ip: ''
+    ip: '',
+    projectId: undefined as number | undefined
   })
 
   // 表单数据
@@ -58,6 +74,9 @@ export default function useHost() {
   // 项目选项
   const projectOptions = ref<{ id: number; name: string }[]>([])
 
+  // 项目树形数据
+  const projectTreeData = ref<ProjectTreeNode[]>([])
+
   // 详情对话框
   const detailVisible = ref(false)
   const hostDetail = ref<Host | null>(null)
@@ -75,7 +94,22 @@ export default function useHost() {
     project: [{ required: true, message: '请选择所属项目', trigger: 'change' }]
   }
 
-  // 获取项目列表
+  // 新增：全量主机列表用于项目树计数
+  const allHosts = ref<Host[]>([])
+
+  // 拉取所有主机（不分页、不过滤）
+  const fetchAllHosts = async () => {
+    try {
+      const res = await getHostList({ page: 1, pageSize: 99999 }) // 拉全量
+      if (res.code === 0) {
+        allHosts.value = res.data.list
+      }
+    } catch (error) {
+      allHosts.value = []
+    }
+  }
+
+  // 获取项目列表并转换为树形结构
   const fetchProjectList = async () => {
     try {
       const res = await getProjectList({
@@ -83,6 +117,12 @@ export default function useHost() {
         pageSize: 1000
       })
       if (res.code === 0) {
+        // 转换为树形结构
+        projectTreeData.value = res.data.list.map(item => ({
+          id: item.ID,
+          name: item.name
+        }))
+        // 同时更新项目选项
         projectOptions.value = res.data.list.map(item => ({
           id: item.ID,
           name: item.name
@@ -102,11 +142,14 @@ export default function useHost() {
       if (projectOptions.value.length === 0) {
         await fetchProjectList()
       }
-      const res = await getHostList({
+      const params: HostListParams = {
         page: currentPage.value,
         pageSize: pageSize.value,
-        ...searchForm
-      })
+        name: searchForm.name || undefined,
+        ip: searchForm.ip || undefined,
+        project_id: searchForm.projectId ? Number(searchForm.projectId) : undefined
+      }
+      const res = await getHostList(params)
       if (res.code === 0) {
         // 将项目ID映射为项目名称
         tableData.value = res.data.list.map(host => ({
@@ -115,6 +158,8 @@ export default function useHost() {
         }))
         total.value = res.data.total
       }
+      // 同步刷新全量主机
+      fetchAllHosts()
     } catch (error) {
       console.error('获取主机列表失败:', error)
       ElMessage.error('获取主机列表失败')
@@ -129,11 +174,14 @@ export default function useHost() {
     fetchList()
   }
 
-  // 重置
+  // 重置搜索
   const handleReset = () => {
-    Object.keys(searchForm).forEach(key => {
-      searchForm[key as keyof typeof searchForm] = ''
+    Object.assign(searchForm, {
+      name: '',
+      ip: '',
+      projectId: undefined
     })
+    currentPage.value = 1
     handleSearch()
   }
 
@@ -310,6 +358,15 @@ export default function useHost() {
     })
   }
 
+  // 处理项目选择
+  const handleProjectSelect = (data: ProjectTreeNode) => {
+    if (data && data.id) {
+      searchForm.projectId = data.id
+      currentPage.value = 1 // 切换项目时回到第一页
+      handleSearch()
+    }
+  }
+
   // 初始化
   onMounted(() => {
     fetchList()
@@ -330,6 +387,7 @@ export default function useHost() {
     formData,
     formRules,
     projectOptions,
+    projectTreeData,
     detailVisible,
     hostDetail,
     detailLoading,
@@ -350,6 +408,8 @@ export default function useHost() {
     importRules,
     handleFileChange,
     downloadTemplate,
-    handleImport
+    handleImport,
+    handleProjectSelect,
+    allHosts
   }
 }

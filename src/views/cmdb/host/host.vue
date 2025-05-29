@@ -9,6 +9,21 @@
         <el-form-item label="IP地址">
           <el-input v-model="searchForm.ip" placeholder="请输入IP地址" clearable />
         </el-form-item>
+        <el-form-item label="所属项目">
+          <el-tree-select
+            v-model="searchForm.projectId"
+            :data="projectTreeData"
+            :props="{
+              label: 'name',
+              children: 'children',
+              value: 'id'
+            }"
+            placeholder="请选择项目"
+            clearable
+            check-strictly
+            :render-after-expand="false"
+          />
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
             <el-icon><Search /></el-icon>
@@ -40,82 +55,123 @@
       </div>
     </div>
 
-    <!-- 主机列表 -->
-    <el-table
-      v-loading="loading"
-      :data="tableData"
-      @selection-change="handleSelectionChange"
-      border
-    >
-      <el-table-column type="selection" width="55" />
-      <el-table-column prop="name" label="主机名称" min-width="120" />
-      <el-table-column prop="os" label="操作系统" min-width="120" />
-      <el-table-column prop="status" label="状态" width="100">
-        <template #default="{ row }">
-          <el-tag :type="row.status === '已验证' ? 'primary' : 'warning'">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="配置" min-width="120">
-        <template #default="{ row }">
-          <div>CPU: {{ row.cpuCount }}核</div>
-          <div>内存: {{ row.memory }}</div>
-          <div>磁盘: {{ row.diskTotal }}</div>
-        </template>
-      </el-table-column>
-      <el-table-column label="IP地址" min-width="160">
-        <template #default="{ row }">
-          <div>公网：{{ row.publicIP }}</div>
-          <div>私网：{{ row.privateIP }}</div>
-        </template>
-      </el-table-column>
-      <el-table-column prop="projectName" label="所属项目" min-width="120" />
-      <el-table-column prop="CreatedAt" label="创建时间" min-width="160">
-        <template #default="{ row }">
-          {{ new Date(row.CreatedAt).toLocaleString() }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="UpdatedAt" label="修改时间" min-width="160">
-        <template #default="{ row }">
-          {{ new Date(row.UpdatedAt).toLocaleString() }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="280" fixed="right">
-        <template #default="{ row }">
-          <el-button-group>
-            <el-button type="primary" link @click="handleEdit(row)">
-              <el-icon><Edit /></el-icon>
-              编辑
-            </el-button>
-            <el-button type="primary" link @click="handleDetail(row)">
-              <el-icon><View /></el-icon>
-              详情
-            </el-button>
-            <el-button type="primary" link @click="handleTerminal(row)">
-              <el-icon><Connection /></el-icon>
-              终端
-            </el-button>
-            <el-button type="danger" link @click="handleDelete(row)">
-              <el-icon><Delete /></el-icon>
-              删除
-            </el-button>
-          </el-button-group>
-        </template>
-      </el-table-column>
-    </el-table>
+    <!-- 主机列表区域 -->
+    <div class="host-content">
+      <!-- 左侧项目树 -->
+      <div class="project-tree">
+        <el-card class="tree-card">
+          <template #header>
+            <div class="tree-header">
+              <span>项目列表</span>
+              <el-button type="primary" link @click="handleReset">
+                <el-icon><Refresh /></el-icon>
+                重置筛选
+              </el-button>
+            </div>
+          </template>
+          <el-tree
+            :data="projectTreeData"
+            :props="{
+              label: 'name',
+              children: 'children'
+            }"
+            node-key="id"
+            :default-expand-all="true"
+            highlight-current
+            @node-click="handleProjectSelect"
+            :current-node-key="searchForm.projectId"
+          >
+            <template #default="{ node, data }">
+              <span class="custom-tree-node">
+                <span>{{ node.label }}</span>
+                <span class="node-count" v-if="data.id">
+                  ({{ allHosts.filter(item => item.project === data.id).length }})
+                </span>
+              </span>
+            </template>
+          </el-tree>
+        </el-card>
+      </div>
 
-    <!-- 分页 -->
-    <div class="pagination">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        :total="total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <!-- 右侧表格 -->
+      <div class="table-content">
+        <el-table
+          v-loading="loading"
+          :data="tableData"
+          @selection-change="handleSelectionChange"
+          border
+        >
+          <el-table-column type="selection" width="55" />
+          <el-table-column prop="name" label="主机名称" min-width="120" />
+          <el-table-column prop="os" label="操作系统" min-width="120" />
+          <el-table-column prop="status" label="状态" width="100">
+            <template #default="{ row }">
+              <el-tag :type="row.status === '已验证' ? 'primary' : 'warning'">
+                {{ row.status }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="配置" min-width="120">
+            <template #default="{ row }">
+              <div>CPU: {{ row.cpuCount }}核</div>
+              <div>内存: {{ row.memory }}</div>
+              <div>磁盘: {{ row.diskTotal }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column label="IP地址" min-width="160">
+            <template #default="{ row }">
+              <div>公网：{{ row.publicIP }}</div>
+              <div>私网：{{ row.privateIP }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="projectName" label="所属项目" min-width="120" />
+          <el-table-column prop="CreatedAt" label="创建时间" min-width="160">
+            <template #default="{ row }">
+              {{ new Date(row.CreatedAt).toLocaleString() }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="UpdatedAt" label="修改时间" min-width="160">
+            <template #default="{ row }">
+              {{ new Date(row.UpdatedAt).toLocaleString() }}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="280" fixed="right">
+            <template #default="{ row }">
+              <el-button-group>
+                <el-button type="primary" link @click="handleEdit(row)">
+                  <el-icon><Edit /></el-icon>
+                  编辑
+                </el-button>
+                <el-button type="primary" link @click="handleDetail(row)">
+                  <el-icon><View /></el-icon>
+                  详情
+                </el-button>
+                <el-button type="primary" link @click="handleTerminal(row)">
+                  <el-icon><Connection /></el-icon>
+                  终端
+                </el-button>
+                <el-button type="danger" link @click="handleDelete(row)">
+                  <el-icon><Delete /></el-icon>
+                  删除
+                </el-button>
+              </el-button-group>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <!-- 分页 -->
+        <div class="pagination">
+          <el-pagination
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
+      </div>
     </div>
 
     <!-- 主机表单对话框 -->
@@ -302,6 +358,7 @@ const {
   formData,
   formRules,
   projectOptions,
+  projectTreeData,
   detailVisible,
   hostDetail,
   detailLoading,
@@ -322,7 +379,9 @@ const {
   importRules,
   handleFileChange,
   downloadTemplate,
-  handleImport
+  handleImport,
+  handleProjectSelect,
+  allHosts
 } = useHost()
 
 // 打开终端
