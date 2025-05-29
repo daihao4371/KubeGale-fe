@@ -3,6 +3,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   /* Assuming parent .content provides necessary page padding */
 }
 
@@ -32,7 +33,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-width: 0; /* Prevent overflow */
+  min-width: 0;
+  min-height: 0;
 }
 
 /* el-card within content-area */
@@ -40,6 +42,7 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   /* Global el-card styles from main.css apply for background, radius, shadow */
 }
 /* :deep(.content-area .box-card > .el-card__header) can be used for specific adjustments if needed */
@@ -50,6 +53,7 @@
   flex-direction: column;
   overflow: hidden; /* Let children manage their scroll, e.g. table wrapper */
   width: 100%; /* Ensure full width */
+  min-height: 0;
 }
 
 
@@ -88,13 +92,14 @@
 /* el-input, el-select will inherit global styles from main.css */
 
 
-/* Table Wrapper - to manage table growth and scrolling within card body */
-.table-wrapper {
+/* Table Container - 修改这里，添加正确的类名 */
+.table-container {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   overflow: auto; /* Scroll for table content */
   min-height: 0; /* For nested flex */
+  margin-bottom: var(--spacing-md); /* 确保表格和分页器之间有间距 */
 }
 
 .el-table { /* el-table styling is global from main.css */

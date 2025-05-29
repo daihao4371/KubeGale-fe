@@ -1,27 +1,28 @@
 <template>
-  <div class="rds-manager-container">
-    <div class="rds-layout">
-      <!-- 左侧云平台树 -->
-      <div class="platform-tree">
-        <CloudPlatformTree @select="handlePlatformSelect" />
-      </div>
-      
-      <!-- 右侧内容区 -->
-      <div class="content-area">
-        <el-card class="box-card">
-          <template #header>
-            <div class="card-header">
-              <span>云数据库管理</span>
-              <div class="header-buttons">
-                <el-button type="success" @click="handleSync">
-                  <el-icon><Refresh /></el-icon>同步数据
-                </el-button>
-              </div>
+  <div class="cloud-rds-container">
+    <div class="platform-tree">
+      <CloudPlatformTree @select="handlePlatformSelect" />
+    </div>
+    <div class="cloud-rds-list">
+      <el-card class="box-card">
+        <template #header>
+          <div class="card-header">
+            <span>云数据库管理</span>
+            <div class="header-buttons">
+              <el-button 
+                type="primary" 
+                :loading="loading" 
+                :disabled="!selectedPlatformId"
+                @click="handleSync"
+              >
+                <el-icon><Refresh /></el-icon>同步数据
+              </el-button>
             </div>
-          </template>
-          
-          <!-- 搜索栏 -->
-          <el-form :inline="true" :model="searchForm" class="search-form">
+          </div>
+        </template>
+
+        <!-- 搜索栏 -->
+        <el-form :inline="true" :model="searchForm" class="search-form">
             <el-form-item label="实例名称">
               <el-input v-model="searchForm.name" placeholder="请输入实例名称" clearable />
             </el-form-item>
@@ -62,11 +63,6 @@
               <el-table-column prop="creation_time" label="创建时间" width="180">
                 <template #default="{ row }">
                   {{ formatDateTime(row.creation_time) }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="expired_time" label="过期时间" width="180">
-                <template #default="{ row }">
-                  {{ row.expired_time || '-' }}
                 </template>
               </el-table-column>
               <el-table-column label="操作" width="120" fixed="right">
@@ -129,15 +125,11 @@
         <el-descriptions-item label="创建时间" :span="2">
           {{ formatDateTime(currentInstance.creation_time) }}
         </el-descriptions-item>
-        <el-descriptions-item label="过期时间" :span="2">
-          {{ currentInstance.expired_time || '-' }}
-        </el-descriptions-item>
         <el-descriptions-item label="云平台" :span="2">
           {{ currentInstance.cloud_platform?.name || '-' }}
         </el-descriptions-item>
       </el-descriptions>
     </el-dialog>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -168,7 +160,8 @@ import {
   handlePlatformSelect,
   handleView,
   handleSizeChange,
-  handleCurrentChange
+  handleCurrentChange,
+  selectedPlatformId
 } from './CloudRds'
 
 defineOptions({
