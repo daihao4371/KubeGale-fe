@@ -12,6 +12,6 @@ defineOptions({
 
 <style scoped>
 .project-container {
-  padding: 20px;
+  padding: var(--spacing-lg); /* Use theme variable */
 }
-</style> 
+</style>

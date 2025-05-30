@@ -118,8 +118,71 @@ const handleNodeClick = (data: PlatformRegionTreeItem | (RegionNode & { parentPl
   height: 100%;
   display: flex;
   flex-direction: column;
+  /* background-color: var(--bg-color-card); /* Or transparent if part of a larger card */
+  /* padding: var(--spacing-md); */ /* Add padding if it's a standalone card-like element */
+  /* border-radius: var(--border-radius-md); */ /* Add radius if standalone */
 }
+
 .search-input {
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-md); /* Use theme variable */
 }
-</style> 
+
+/* Styling for el-tree items. Element Plus uses CSS variables for this too.
+   Refer to Element Plus documentation for their specific CSS variables for el-tree
+   if deeper customization than hover/active is needed.
+   Example: --el-tree-node-hover-bg-color
+*/
+:deep(.el-tree-node__content) {
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+}
+
+:deep(.el-tree-node__content:hover) {
+  background-color: var(--color-primary-light-hover); /* Use a light hover from theme */
+}
+
+:deep(.el-tree-node.is-current > .el-tree-node__content) {
+  background-color: var(--color-primary-light) !important; /* Use primary for selection */
+  color: var(--text-color-on-primary); /* Text color on primary background */
+  font-weight: var(--font-weight-bold);
+}
+
+:deep(.el-tree-node.is-current > .el-tree-node__content .el-tag),
+:deep(.el-tree-node.is-current > .el-tree-node__content span) { /* Ensure text and tag color on selection */
+  color: var(--text-color-on-primary);
+}
+:deep(.el-tree-node.is-current > .el-tree-node__content .el-tag .el-tag__close){
+  color: var(--text-color-on-primary);
+}
+
+
+/* Default state text color for tree items if needed, usually inherited */
+:deep(.el-tree-node__label) {
+  color: var(--text-color-primary);
+  font-size: var(--font-size-base);
+}
+:deep(.el-tag){
+  background-color: var(--bg-color-page) !important;
+  color: var(--text-color-secondary) !important;
+  border-color: var(--border-color-light) !important;
+}
+:deep(.el-tree-node.is-current > .el-tree-node__content .el-tag){
+  background-color: var(--color-primary) !important;
+  color: var(--text-color-on-primary) !important;
+  border-color: var(--color-primary-dark) !important;
+}
+
+/* Search input styling - should mostly inherit from global el-input styles in main.css */
+/* .search-input :deep(.el-input__wrapper) {
+  background-color: var(--bg-color-input);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 0 0 1px var(--border-color-light) inset;
+}
+.search-input :deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 1px var(--color-primary) inset;
+}
+.search-input :deep(.el-input__inner) {
+  color: var(--text-color-primary);
+} */
+</style>

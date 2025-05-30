@@ -1,164 +1,122 @@
+/* Main Layout */
 .loadbalancer-layout {
-    display: flex;
-    height: 100vh;
-    gap: 20px;
-    padding: 20px;
-    min-width: 0;
-  }
-  
-  .sidebar {
-    width: 280px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-  
-  .sidebar-title {
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 8px;
-    margin-bottom: 16px;
-    font-weight: bold;
-    font-size: 16px;
-    color: var(--el-text-color-primary);
-  }
-  
-  .el-card {
-    border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.04);
-    background: #fff;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 0;
-    min-width: 0;
-  }
-  
-  .el-tree {
-    flex: 1;
-    overflow: auto;
-    padding: 8px;
-    min-width: 0;
-  }
-  
-  :deep(.el-tree-node__content) {
-    height: 40px;
-    border-radius: 6px;
-    font-size: 15px;
-    transition: background 0.2s;
-  }
-  
-  :deep(.el-tree-node__content:hover) {
-    background: #f5f7fa;
-  }
-  
-  :deep(.el-tree-node.is-current > .el-tree-node__content) {
-    background: var(--el-color-primary-light-8);
-    color: var(--el-color-primary);
-  }
-  
-  .main-content {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  
-  .main-card {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    min-width: 0;
-    height: 100%;
-  }
-  
-  .search-form {
-    background: #f7f8fa;
-    border-radius: 6px;
-    padding: 12px 16px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
+  display: flex;
+  height: 100%; /* Fit within parent content area */
+  gap: var(--spacing-lg);
+  min-width: 0; /* Prevent flexbox overflow issues */
+}
 
-  .search-form .el-input {
-    width: 220px;
-  }
+/* Sidebar (contains CloudPlatformTree) */
+.sidebar {
+  width: 280px;
+  flex: 0 0 280px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
 
-  .search-form .el-button {
-    min-width: 80px;
-  }
+.sidebar .el-card { /* Targeting the el-card within the sidebar */
+  flex: 1; /* Allow card to fill sidebar height */
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+:deep(.sidebar .el-card__body) { /* Ensure card body can contain tree properly */
+  padding: var(--spacing-md);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Tree itself should scroll */
+}
+:deep(.sidebar .el-card__header) { /* Standardized padding for consistency */
+  padding: var(--spacing-md) var(--spacing-lg);
+}
 
-  /* 表格相关样式 */
-  .table-wrapper {
-    flex: 1;
-    overflow: auto;
-    padding: 0;
-    margin: 0;
-    min-width: 0;
-    height: 100%;
-  }
+.sidebar-title {
+  border-bottom: 1px solid var(--border-color-light);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  color: var(--color-heading);
+}
 
-  .table-container {
-    background: #fff;
-    border-radius: 6px;
-    overflow: hidden;
-    height: 100%;
-    min-width: 0;
-  }
+/* Main Content Area */
+.main-content {
+  flex: 1; /* Takes remaining space */
+  min-width: 0; /* Prevent flexbox overflow issues */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
-  /* 表格内容区域样式 */
-  :deep(.el-table__body-wrapper) {
-    overflow-y: auto;
-    height: 100% !important;
-  }
+.main-card.el-card { /* Targeting the el-card in main-content */
+  flex: 1; /* Allow card to fill main-content height */
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+/* :deep(.main-card.el-card > .el-card__header) can be used for specific adjustments if needed */
+:deep(.main-card.el-card > .el-card__body) {
+  padding: var(--spacing-lg);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Let child elements like table-wrapper handle their own scroll */
+}
 
-  :deep(.el-table__header-wrapper) {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
 
-  :deep(.el-table th) {
-    background: #f5f7fa;
-    color: #333;
-    font-weight: 600;
-  }
+/* Search Form */
+.search-form {
+  background: var(--bg-color-page); /* Consistent with other search forms */
+  border-radius: var(--border-radius-md); /* Consistent radius */
+  padding: var(--spacing-lg); /* Consistent padding */
+  margin-bottom: var(--spacing-lg); /* Space below form */
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; /* Allow wrapping */
+  gap: var(--spacing-md); /* Consistent gap */
+}
+.search-form .el-form-item {
+  margin-bottom: 0 !important; /* Remove default el-form-item margin for inline forms */
+}
 
-  :deep(.el-table__row:hover) {
-    background: #f0f7ff;
-  }
+/* Table Wrapper */
+.table-wrapper {
+  flex: 1; /* Allow table wrapper to take available space */
+  overflow: auto; /* Primary scroll for table content if table itself doesn't handle it well */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
 
-  :deep(.el-table .el-tag) {
-    border-radius: 4px;
-    font-size: 13px;
-    padding: 0 8px;
-  }
+.table-container.el-table { /* Targeting el-table instance */
+  width: 100% !important; /* Override inline style from template if necessary */
+  flex-grow: 1; /* Allow table to grow in .table-wrapper */
+  min-width: 0;
+  /* Global styles from main.css for el-table will apply for background, radius, borders, etc. */
+}
 
-  /* 分页条美化 */
-  .pagination-container {
-    margin-top: 12px;
-    display: flex;
-    justify-content: flex-end;
-    background: #fff;
-    padding: 12px 0 0 0;
-    border-radius: 0 0 6px 6px;
-  }
+/* Pagination Container */
+.pagination-container {
+  margin-top: var(--spacing-lg); /* Space above pagination */
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--spacing-md) 0; /* Padding top/bottom */
+  /* Global el-pagination styles from main.css will apply */
+}
 
-  /* 详情弹窗美化 */
-  :deep(.el-dialog__body) {
-    background: #f7f8fa;
-  }
-
-  :deep(.el-descriptions__label) {
-    color: #888;
-    font-weight: 500;
-  }
-
-  :deep(.el-descriptions__content) {
-    color: #222;
-  }
+/* Icon Spacing in Buttons (specific to this view if needed, or can be global) */
+.el-button .el-icon + span,
+.el-button span + .el-icon {
+  margin-left: var(--spacing-xs);
+}
+/* Styles for icon-only buttons or buttons with icon at start/end */
+.el-button > .el-icon:first-child:not(:last-child) { /* Icon at start followed by text */
+  margin-right: var(--spacing-xs);
+}
+.el-button > .el-icon:last-child:not(:first-child) { /* Icon at end preceded by text */
+  margin-left: var(--spacing-xs);
+}
+/* .el-button > .el-icon:first-child:last-child ensures no margin for icon-only buttons, handled by Element Plus */

@@ -14,6 +14,15 @@ const router = createRouter({
       component: () => import('../views/login/Login.vue')
     },
     {
+      path: '/terminal',
+      name: 'Terminal',
+      component: () => import('@/views/terminal/index.vue'),
+      meta: {
+        title: '终端',
+        requiresAuth: true
+      }
+    },
+    {
       path: '/homepage',
       name: 'homepage',
       component: () => import('../views/homepage/Homepage.vue'),
@@ -95,6 +104,7 @@ const router = createRouter({
           children: [
             {
               path: '',
+              name: 'cloud-assets-default',
               redirect: '/homepage/cloud-assets/provider'
             },
             {
@@ -146,6 +156,7 @@ const router = createRouter({
           children: [
             {
               path: '',
+              name: 'cmdb-default',
               redirect: '/homepage/cmdb/project'
             },
             {
@@ -155,6 +166,24 @@ const router = createRouter({
               meta: {
                 requiresAuth: true,
                 title: '项目管理'
+              }
+            },
+            {
+              path: 'host',
+              name: 'cmdb-host',
+              component: () => import('../views/cmdb/host/index.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '主机管理'
+              }
+            },
+            {
+              path: 'batchtask',
+              name: 'cmdb-batchtask',
+              component: () => import('../views/cmdb/batchtask/index.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '批量任务'
               }
             }
           ]

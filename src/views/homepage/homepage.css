@@ -1,3 +1,4 @@
+/* General Container */
 .homepage-container {
   display: flex;
   height: 100vh;
@@ -8,217 +9,264 @@
   position: absolute;
   top: 0;
   left: 0;
-  background: #f5f7fa;
+  background: var(--bg-color-page); /* Use new page background */
   animation: fadeIn 0.5s ease-out;
 }
 
+/* Sidebar Styling */
 .sidebar {
-  width: 240px;
-  background: linear-gradient(180deg, #001529 0%, #002140 100%);
-  color: #fff;
+  width: 250px; /* Slightly wider for better spacing */
+  background: var(--bg-color-nav); /* Sidebar background */
+  color: var(--text-color-primary); /* Text color for light sidebar */
   height: 100%;
   overflow-y: auto;
-  transition: width 0.3s;
+  transition: width 0.3s ease-in-out;
   flex-shrink: 0;
-  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--box-shadow-md); /* Consistent shadow */
   position: relative;
-  z-index: 10;
+  z-index: 100; /* Ensure sidebar is above content */
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-header {
-  height: 64px;
+  height: 64px; /* Keep height consistent with header */
   display: flex;
   align-items: center;
-  padding-left: 24px;
-  font-size: 20px;
-  font-weight: 600;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.2);
-  letter-spacing: 1px;
+  padding: 0 var(--spacing-lg); /* Use spacing variables */
+  font-size: 1.1rem; /* Slightly larger */
+  font-weight: var(--font-weight-bold);
+  border-bottom: 1px solid var(--border-color-light);
+  background: var(--bg-color-header); /* Can be same as nav or slightly different */
+  color: var(--color-heading); /* Heading color for header text */
+  letter-spacing: 0.5px; /* Subtle letter spacing */
+  flex-shrink: 0;
 }
 
 .sidebar-menu {
-  padding: 16px 0;
+  padding: var(--spacing-md) 0;
   display: flex;
   flex-direction: column;
-  height: calc(100% - 64px);
+  flex-grow: 1; /* Allow menu to take available space */
+  overflow-y: auto; /* Scroll only menu if needed */
+}
+
+.menu-item-container { /* Wrapper for menu item and its potential submenu */
+  width: 100%;
 }
 
 .menu-item {
-  padding: 12px 24px;
+  padding: var(--spacing-md) var(--spacing-lg);
   display: flex;
   align-items: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-left-color 0.2s ease;
   position: relative;
-  overflow: hidden;
+  overflow: hidden; /* For pseudo-elements if used for hover effects */
+  color: var(--text-color-secondary); /* Default menu item color */
+  font-size: var(--font-size-base);
+  border-left: 4px solid transparent; /* For active state indicator */
 }
 
 .menu-item:hover {
-  background: rgba(24, 144, 255, 0.2);
+  background-color: var(--bg-color-page); /* Subtle hover */
+  color: var(--color-primary);
+  border-left-color: var(--color-primary-light); /* Accent on hover */
 }
 
 .menu-item.active {
-  background: rgba(24, 144, 255, 0.3);
-  border-left: 3px solid #1890ff;
+  background-color: var(--color-primary-light); /* Use a light primary shade */
+  color: var(--text-color-on-primary); /* Ensure contrast */
+  font-weight: var(--font-weight-bold);
+  border-left-color: var(--color-primary); /* Strong primary border for active */
+}
+.menu-item.active .menu-item-icon,
+.menu-item.active .menu-title,
+.menu-item.active .menu-arrow {
+  color: var(--text-color-on-primary); /* Ensure all parts of active item are colored */
 }
 
+
 .menu-item-icon {
-  margin-right: 12px;
-  font-size: 18px;
-  width: 24px;
+  margin-right: var(--spacing-md);
+  font-size: 1.25rem; /* Consistent icon size */
+  width: 24px; /* Fixed width for alignment */
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
+  color: inherit; /* Inherit color from .menu-item */
 }
 
 .menu-item:hover .menu-item-icon {
-  transform: scale(1.1);
-}
-
-.logout-item {
-  margin-top: auto;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 40, 77, 0.5);
-}
-
-.logout-item:hover {
-  background: rgba(245, 108, 108, 0.2);
-}
-
-.main-content {
-  flex: 1;
-  background: #f5f7fa;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  width: calc(100vw - 240px);
-  padding: 0;
-}
-
-.header {
-  height: 64px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  justify-content: space-between;
-  width: 100%;
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 9;
-}
-
-.content {
-  margin: 24px;
-  padding: 24px;
-  background: #fff;
-  min-height: calc(100vh - 184px);
-  border-radius: 8px;
-  flex: 1;
-  overflow-y: auto;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
+  transform: scale(1.05); /* Subtle scale on hover */
 }
 
 .menu-title {
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal); /* Normal weight for titles, bold on active */
+  transition: opacity 0.3s ease, transform 0.2s ease;
+  flex-grow: 1; /* Allow title to take space */
+  color: inherit; /* Inherit color from .menu-item */
+}
+.menu-item.active .menu-title {
+  font-weight: var(--font-weight-bold);
 }
 
-.menu-item:hover .menu-title {
-  transform: translateX(4px);
-}
 
 .menu-arrow {
   margin-left: auto;
+  font-size: 0.9rem;
   transition: transform 0.3s ease;
+  color: inherit; /* Inherit color from .menu-item */
 }
 
+.parent-active { /* When a child submenu item is active */
+  background-color: var(--bg-color-page); /* Slightly different from direct active */
+  color: var(--color-primary);
+  border-left-color: var(--color-primary-light);
+}
+.parent-active .menu-title {
+  font-weight: var(--font-weight-bold); /* Make parent title bold */
+}
+
+
+/* Submenu Styling */
 .submenu {
-  padding-left: 24px;
-  width: calc(100% - 24px);
-  background: rgba(0, 40, 77, 0.3);
-  border-radius: 0 0 4px 4px;
+  padding-left: calc(var(--spacing-lg) + var(--spacing-md)); /* Indent submenu */
+  background: var(--bg-color-page); /* Slightly different background for submenu section */
   overflow: hidden;
-  transition: all 0.3s;
-  border-left: 2px solid #1890ff;
-  margin-top: 2px;
-  margin-bottom: 2px;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out; /* Smooth expand/collapse */
+  max-height: 500px; /* Adjust as needed, for transition */
+  border-left: 4px solid transparent; /* Match parent for alignment */
+  margin-left: var(--spacing-sm); /* Align with parent's content area slightly */
+  margin-right: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
 }
 
 .submenu-item {
   display: flex;
   align-items: center;
-  padding: 10px 16px;
+  padding: var(--spacing-sm) var(--spacing-md); /* Slightly less padding for submenu items */
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin: 2px 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  color: var(--text-color-secondary);
+  font-size: calc(var(--font-size-base) - 1px); /* Slightly smaller font */
   position: relative;
 }
-
-.submenu-item:before {
-  content: "";
-  position: absolute;
-  left: -10px;
-  top: 50%;
-  width: 6px;
-  height: 1px;
-  background: #1890ff;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.submenu-item:hover:before {
-  opacity: 1;
+.submenu-item .menu-item-icon {
+  font-size: 1.1rem; /* Slightly smaller icons for submenu */
+  margin-right: var(--spacing-sm);
 }
 
 .submenu-item:hover {
-  background: rgba(24, 144, 255, 0.2);
+  background-color: var(--bg-color-card); /* Hover for submenu items */
+  color: var(--color-primary);
 }
 
 .submenu-item.active {
-  background: rgba(24, 144, 255, 0.3);
-  color: #fff;
+  background-color: transparent; /* Active submenu item, rely on text color */
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+.submenu-item.active .menu-item-icon,
+.submenu-item.active .menu-title {
+  color: var(--color-primary);
 }
 
-.submenu-item.active:before {
-  opacity: 1;
+
+/* Logout Item */
+.logout-item {
+  margin-top: auto; /* Pushes to the bottom */
+  border-top: 1px solid var(--border-color-light);
+  background: transparent; /* No special background by default */
+}
+.logout-item .menu-item-icon {
+  color: var(--error-color); /* Use error color for logout icon */
+}
+.logout-item:hover {
+  background-color: var(--error-color) !important; /* Use error color for hover */
+  color: var(--text-color-on-primary) !important; /* Text on error color */
+  border-left-color: var(--error-color) !important;
+}
+.logout-item:hover .menu-item-icon,
+.logout-item:hover .menu-title {
+  color: var(--text-color-on-primary) !important;
 }
 
-.parent-active {
-  background: rgba(0, 33, 64, 0.5);
-  border-left: 3px solid #1890ff;
+
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  background: var(--bg-color-page); /* Page background */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  width: calc(100vw - 250px); /* Adjusted for new sidebar width */
+  padding: 0; /* Remove padding if header/content have their own */
+  transition: width 0.3s ease-in-out; /* For sidebar collapse */
 }
 
-/* 添加悬停效果增强交互感 */
-.menu-item:after, .submenu-item:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
+/* Header Styling */
+.header {
+  height: 64px;
+  background: var(--bg-color-header); /* Consistent header background */
+  box-shadow: var(--box-shadow-sm); /* Subtle shadow from global vars */
+  display: flex;
+  align-items: center;
+  padding: 0 var(--spacing-lg); /* Use spacing variables */
+  justify-content: space-between;
   width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  position: sticky; /* Keep header sticky */
+  top: 0;
+  z-index: 90; /* Below sidebar but above content */
+}
+.header-left {
+  display: flex;
+  align-items: center;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  color: var(--text-color-secondary);
+  font-size: var(--font-size-sm);
+}
+.header-right span {
+  margin-left: var(--spacing-sm);
+}
+.header-right span:first-child {
+  font-weight: var(--font-weight-bold);
+  color: var(--text-color-primary);
 }
 
-.menu-item:hover:after, .submenu-item:hover:after,
-.menu-item.active:after, .submenu-item.active:after {
-  transform: translateX(0);
+
+/* Content within Main Area */
+.content {
+  margin: var(--spacing-lg); /* Consistent margin */
+  padding: var(--spacing-lg); /* Consistent padding */
+  background: var(--bg-color-card); /* Card background for content area */
+  min-height: calc(100vh - 64px - (2 * var(--spacing-lg))); /* Adjusted for header and margins */
+  border-radius: var(--border-radius-lg); /* Larger radius for content cards */
+  flex: 1;
+  overflow-y: auto;
+  box-shadow: var(--box-shadow-md); /* Consistent shadow */
+  transition: all 0.3s ease;
 }
 
-/* 添加页面加载动画 */
+
+/* Remove old hover/active effects with :after pseudo-elements if they conflict */
+.menu-item:after, .submenu-item:after {
+  display: none; /* Disable if not part of the new design */
+}
+
+
+/* Animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(var(--spacing-sm)); /* Use variable */
   }
   to {
     opacity: 1;
@@ -226,31 +274,70 @@
   }
 }
 
-/* 响应式调整 */
+/* Responsive Design - Adjust for new sidebar width and variables */
 @media screen and (max-width: 768px) {
   .sidebar {
-    width: 64px;
+    width: 64px; /* Collapsed width */
   }
-  
-  .sidebar-header {
-    padding-left: 0;
+
+  .sidebar.collapsed .menu-title, /* These classes might be dynamically added by JS */
+  .sidebar.collapsed .menu-arrow,
+  .sidebar:not(.expanded-for-mobile) .menu-title, /* New class for explicit control if needed */
+  .sidebar:not(.expanded-for-mobile) .menu-arrow {
+    opacity: 0;
+    pointer-events: none; /* Hide and make non-interactive */
+    display: none; /* Ensure it doesn't take space */
+  }
+
+  .sidebar.collapsed .menu-item,
+  .sidebar:not(.expanded-for-mobile) .menu-item {
     justify-content: center;
+    padding-left: var(--spacing-md); /* Adjust padding for centered icon */
+    padding-right: var(--spacing-md);
   }
-  
-  .menu-title {
-    display: none;
-  }
-  
-  .menu-item {
-    padding: 12px;
-    justify-content: center;
-  }
-  
-  .menu-item-icon {
+  .sidebar.collapsed .menu-item-icon,
+  .sidebar:not(.expanded-for-mobile) .menu-item-icon {
     margin-right: 0;
   }
-  
-  .main-content {
-    width: calc(100vw - 64px);
+
+  .sidebar-header {
+    padding-left: 0; /* Remove padding for collapsed header */
+    justify-content: center; /* Center title/logo if visible */
   }
+  .sidebar-header .logo-text { /* Assuming a class for logo text if it needs to hide */
+    display: none;
+  }
+
+  .sidebar:not(.collapsed) .menu-title,
+  .sidebar.expanded-for-mobile .menu-title { /* Ensure title is visible when expanded */
+    display: inline-block;
+    opacity: 1;
+  }
+  .sidebar:not(.collapsed) .menu-arrow,
+  .sidebar.expanded-for-mobile .menu-arrow {
+    display: inline-block;
+    opacity: 1;
+  }
+
+  .main-content {
+    width: calc(100vw - 64px); /* Adjusted for collapsed sidebar */
+  }
+}
+
+/* Breadcrumb styles (moved from Homepage.vue) */
+.header .el-breadcrumb__inner a,
+.header .el-breadcrumb__inner.is-link {
+  color: var(--text-color-link) !important; /* Use link color variable */
+  font-weight: var(--font-weight-normal);
+  transition: color 0.2s ease;
+}
+
+.header .el-breadcrumb__inner a:hover,
+.header .el-breadcrumb__inner.is-link:hover {
+  color: var(--text-color-link-hover) !important; /* Use link hover color */
+}
+
+.header .el-breadcrumb__item:last-child .el-breadcrumb__inner {
+  color: var(--text-color-secondary) !important; /* Non-interactive item color */
+  font-weight: var(--font-weight-normal);
 }

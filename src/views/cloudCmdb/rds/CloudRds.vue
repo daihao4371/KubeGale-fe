@@ -1,27 +1,28 @@
 <template>
-  <div class="rds-manager-container">
-    <div class="rds-layout">
-      <!-- 左侧云平台树 -->
-      <div class="platform-tree">
-        <CloudPlatformTree @select="handlePlatformSelect" />
-      </div>
-      
-      <!-- 右侧内容区 -->
-      <div class="content-area">
-        <el-card class="box-card">
-          <template #header>
-            <div class="card-header">
-              <span>云数据库管理</span>
-              <div class="header-buttons">
-                <el-button type="success" @click="handleSync">
-                  <el-icon><Refresh /></el-icon>同步数据
-                </el-button>
-              </div>
+  <div class="cloud-rds-container">
+    <div class="platform-tree">
+      <CloudPlatformTree @select="handlePlatformSelect" />
+    </div>
+    <div class="cloud-rds-list">
+      <el-card class="box-card">
+        <template #header>
+          <div class="card-header">
+            <span>云数据库管理</span>
+            <div class="header-buttons">
+              <el-button 
+                type="primary" 
+                :loading="loading" 
+                :disabled="!selectedPlatformId"
+                @click="handleSync"
+              >
+                <el-icon><Refresh /></el-icon>同步数据
+              </el-button>
             </div>
-          </template>
-          
-          <!-- 搜索栏 -->
-          <el-form :inline="true" :model="searchForm" class="search-form">
+          </div>
+        </template>
+
+        <!-- 搜索栏 -->
+        <el-form :inline="true" :model="searchForm" class="search-form">
             <el-form-item label="实例名称">
               <el-input v-model="searchForm.name" placeholder="请输入实例名称" clearable />
             </el-form-item>
@@ -38,44 +39,41 @@
             </el-form-item>
           </el-form>
           
-          <el-table
-            :data="tableData"
-            style="width: 100%"
-            v-loading="loading"
-            border
-          >
-            <el-table-column prop="name" label="实例名称" min-width="150" />
-            <el-table-column prop="instance_id" label="实例ID" min-width="150" />
-            <el-table-column prop="private_addr" label="私有地址" min-width="200" />
-            <el-table-column prop="public_addr" label="公网地址" min-width="200">
-              <template #default="{ row }">
-                {{ row.public_addr || '-' }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="region_name" label="区域" width="120" />
-            <el-table-column prop="status" label="状态" width="100">
-              <template #default="{ row }">
-                <el-tag :type="getStatusType(row.status)">{{ row.status }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="creation_time" label="创建时间" width="180">
-              <template #default="{ row }">
-                {{ formatDateTime(row.creation_time) }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="expired_time" label="过期时间" width="180">
-              <template #default="{ row }">
-                {{ row.expired_time || '-' }}
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="120" fixed="right">
-              <template #default="{ row }">
-                <el-button type="primary" link @click="handleView(row)">
-                  <el-icon><View /></el-icon>详情
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <div class="table-container">
+            <el-table
+              :data="tableData"
+              style="width: 100%"
+              v-loading="loading"
+              border
+            >
+              <el-table-column prop="name" label="实例名称" min-width="150" />
+              <el-table-column prop="instance_id" label="实例ID" min-width="150" />
+              <el-table-column prop="private_addr" label="私有地址" min-width="200" />
+              <el-table-column prop="public_addr" label="公网地址" min-width="200">
+                <template #default="{ row }">
+                  {{ row.public_addr || '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column prop="region_name" label="区域" width="120" />
+              <el-table-column prop="status" label="状态" width="100">
+                <template #default="{ row }">
+                  <el-tag :type="getStatusType(row.status)">{{ row.status }}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column prop="creation_time" label="创建时间" width="180">
+                <template #default="{ row }">
+                  {{ formatDateTime(row.creation_time) }}
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="120" fixed="right">
+                <template #default="{ row }">
+                  <el-button type="primary" link @click="handleView(row)">
+                    <el-icon><View /></el-icon>详情
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
           
           <!-- 分页组件 -->
           <div class="pagination-container">
@@ -127,15 +125,11 @@
         <el-descriptions-item label="创建时间" :span="2">
           {{ formatDateTime(currentInstance.creation_time) }}
         </el-descriptions-item>
-        <el-descriptions-item label="过期时间" :span="2">
-          {{ currentInstance.expired_time || '-' }}
-        </el-descriptions-item>
         <el-descriptions-item label="云平台" :span="2">
           {{ currentInstance.cloud_platform?.name || '-' }}
         </el-descriptions-item>
       </el-descriptions>
     </el-dialog>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -166,7 +160,8 @@ import {
   handlePlatformSelect,
   handleView,
   handleSizeChange,
-  handleCurrentChange
+  handleCurrentChange,
+  selectedPlatformId
 } from './CloudRds'
 
 defineOptions({

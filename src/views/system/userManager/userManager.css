@@ -1,22 +1,28 @@
+/* Main Container */
 .user-manager-container {
-  padding: 0;
   height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  /* Assuming parent .content provides page padding */
 }
 
+/* Main Card - .box-card is an el-card instance */
 .box-card {
-  margin-bottom: 0;
-  border-radius: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
   width: 100%;
+  /* Global el-card styles from main.css apply for background, radius, shadow, border */
 }
 
+/* Card Header (content wrapper in el-card__header slot) */
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%; /* Ensure it takes full width of el-card__header */
+  /* el-card__header global styles provide padding and border */
 }
 
 .header-left {
@@ -25,179 +31,157 @@
 }
 
 .header-title {
-  font-size: 18px;
-  font-weight: 500;
-  color: #303133;
+  font-size: 1.25rem; /* 20px */
+  font-weight: var(--font-weight-bold);
+  color: var(--color-heading);
 }
 
 .header-subtitle {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 4px;
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+  margin-top: var(--spacing-xs);
 }
 
-/* 统计卡片样式 */
+.header-right {
+  display: flex;
+  gap: var(--spacing-md);
+  /* Buttons will inherit global styles from main.css */
+}
+
+/* Stats Cards */
 .stats-cards {
   display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-  padding: 0 20px;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
 }
 
-.stats-card {
+.stats-card { /* This is an el-card instance */
   flex: 1;
-  min-width: 200px;
+  min-width: 220px;
+  /* Global el-card styles from main.css apply for background, radius, shadow */
 }
 
-.stats-card-header {
+.stats-card :deep(.el-card__header) { /* Targeting header within stats-card */
+  padding: var(--spacing-sm) var(--spacing-md) !important; /* Smaller padding for stats card headers */
+  border-bottom: none !important; /* Optional: remove border for a cleaner look */
+}
+
+.stats-card-header { /* Content within el-card__header */
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #606266;
+  gap: var(--spacing-sm);
+  color: var(--text-color-secondary);
+  font-weight: var(--font-weight-normal);
 }
 
 .stats-card-header .el-icon {
-  font-size: 18px;
+  font-size: 1.1rem;
+}
+/* Specific icon colors for different stats */
+.stats-card.total-users .stats-card-header .el-icon { color: var(--color-primary); }
+.stats-card.enabled-users .stats-card-header .el-icon { color: var(--success-color); }
+.stats-card.disabled-users .stats-card-header .el-icon { color: var(--error-color); }
+
+
+.stats-card :deep(.el-card__body) { /* Targeting body within stats-card */
+  padding: var(--spacing-md) !important;
 }
 
 .stats-card-content {
   display: flex;
   align-items: baseline;
   justify-content: center;
-  padding: 10px 0;
+  padding: var(--spacing-sm) 0;
 }
 
 .stats-number {
-  font-size: 24px;
-  font-weight: 500;
-  color: #303133;
-  margin-right: 4px;
+  font-size: 1.75rem; /* 28px */
+  font-weight: var(--font-weight-bold);
+  color: var(--text-color-primary);
+  margin-right: var(--spacing-xs);
 }
 
 .stats-label {
-  font-size: 14px;
-  color: #909399;
+  font-size: var(--font-size-base); /* 16px */
+  color: var(--text-color-secondary);
 }
 
-/* 搜索表单样式 */
+/* Search Form */
 .search-form {
-  margin-bottom: 20px;
-  padding: 20px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background-color: var(--bg-color-page);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  align-items: center;
 }
 
 .search-form .el-form-item {
-  margin-bottom: 0;
-  margin-right: 20px;
+  margin-bottom: 0 !important;
+  margin-right: 0 !important; /* Ensure no extra right margin if not needed by ElForm layout */
 }
+/* el-input, el-select, el-button will inherit global styles from main.css */
 
-.search-form .el-input {
-  width: 200px;
-}
-
-.search-form .el-button {
-  margin-left: 10px;
-}
-
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.el-button {
-  margin-right: 8px;
-  display: inline-flex;
-  align-items: center;
-}
-
-.el-button:last-child {
-  margin-right: 0;
-}
-
+/* Table Container */
 .el-table {
-  border-radius: 0;
-  margin-top: 10px;
+  margin-top: var(--spacing-md);
   flex: 1;
   width: 100%;
+  /* Global el-table styles from main.css apply */
 }
 
-:deep(.el-card__body) {
-  height: 100%;
-  padding: 15px;
+/* Ensure el-card__body allows table to grow */
+:deep(.box-card > .el-card__body) {
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  flex-grow: 1;
+  overflow: hidden; /* Let children (e.g., table wrapper) manage their scroll */
   width: 100%;
 }
 
-:deep(.el-table__inner-wrapper) {
-  width: 100%;
+/* Table Wrapper - if needed for specific scroll/layout control */
+.table-wrapper { /* Add this class around el-table in template if needed */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto; /* Scroll for table content */
+  min-height: 0; /* For nested flex */
 }
 
-:deep(.el-table__header-wrapper) {
-  width: 100%;
-}
 
-:deep(.el-table__body-wrapper) {
-  width: 100%;
-}
-
-:deep(.el-table th) {
-  font-weight: 500;
-}
-
-:deep(.el-pagination) {
-  margin-top: 20px;
-  justify-content: flex-end;
-}
-
+/* Operation Buttons within Table */
 .operation-buttons {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
   flex-wrap: nowrap;
+  gap: var(--spacing-sm);
+  /* Rely on global el-button size="small" type="primary/danger/info" link styles from main.css */
 }
 
-.operation-buttons .el-button {
-  margin-right: 5px;
-  padding: 6px 10px;
-  font-size: 12px;
-}
-
-.operation-buttons .el-button:last-child {
-  margin-right: 0;
-}
-
-.header-right {
-  display: flex;
-  gap: 10px;
-}
-
-/* 对话框样式 */
-.dialog-footer {
+/* Pagination Container */
+.pagination-container {
+  margin-top: var(--spacing-lg);
   display: flex;
   justify-content: flex-end;
+  padding: var(--spacing-md) 0;
 }
+/* Global el-pagination styles from main.css apply */
 
-:deep(.el-dialog__body) {
-  padding: 20px;
+/* Dialog Styling */
+.dialog-footer { /* This class is used in the template for the footer slot */
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
 }
+/* Global el-dialog, el-form-item, el-select styles from main.css apply */
 
-:deep(.el-form-item__label) {
-  font-weight: 500;
-}
-
-:deep(.el-select) {
-  width: 100%;
-}
-
-/* 密码输入框样式 */
-:deep(.el-input__inner[type="password"]) {
-  letter-spacing: 1px;
-}
-
-:deep(.el-input__suffix) {
-  cursor: pointer;
+/* Specific Tag Styling (e.g., for roles in user details) */
+.auth-tag.el-tag {
+  margin-right: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs); /* For wrapping */
+  /* Colors and other styles should come from el-tag global types or specific type overrides in main.css */
 }

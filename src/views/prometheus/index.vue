@@ -11,6 +11,6 @@
 
 <style scoped>
 .prometheus-container {
-  padding: 20px;
+  padding: var(--spacing-lg); /* Use theme variable */
 }
 </style>
