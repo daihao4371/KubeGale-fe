@@ -1,4 +1,4 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { logout } from '@/api/login/login'
@@ -50,7 +50,10 @@ interface BreadcrumbItem {
 
 export default function useHomepage() {
   const router = useRouter()
-  const activeMenu = ref('dashboard')  // 修改默认激活菜单为仪表盘
+  const getInitialActiveMenu = () => {
+    return localStorage.getItem('activeMenu') || 'dashboard'
+  }
+  const activeMenu = ref(getInitialActiveMenu())
   const recentPages = ref<BreadcrumbItem[]>([])
   const maxRecentPages = 10
 
@@ -101,7 +104,66 @@ export default function useHomepage() {
     { id: 'cicd', title: 'CICD', icon: 'Timer', path: '/homepage/cicd' }
   ])
 
-  const expandedMenus = ref<string[]>(['system', 'cloud-assets']) // 默认展开系统管理和云资产管理菜单
+  // ----------- 菜单展开记忆 start -----------
+  const getAllParentMenuIds = (items: MenuItem[]): string[] => {
+    const ids: string[] = []
+    items.forEach(item => {
+      if (item.children && item.children.length) {
+        ids.push(item.id)
+      }
+    })
+    return ids
+  }
+
+  const getInitialExpandedMenus = () => {
+    const saved = localStorage.getItem('expandedMenus')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch {
+        return getAllParentMenuIds(menuItems)
+      }
+    }
+    return getAllParentMenuIds(menuItems)
+  }
+
+  const expandedMenus = ref<string[]>(getInitialExpandedMenus())
+
+  watch(expandedMenus, (val) => {
+    localStorage.setItem('expandedMenus', JSON.stringify(val))
+  }, { deep: true })
+  // ----------- 菜单展开记忆 end -----------
+  
+  // ----------- 菜单高亮和页面记忆 start -----------
+  watch(activeMenu, (val) => {
+    localStorage.setItem('activeMenu', val)
+  })
+
+  // 递归查找菜单项
+  const findMenuItem = (id: string, items: MenuItem[]): MenuItem | undefined => {
+    for (const item of items) {
+      if (item.id === id) {
+        return item
+      }
+      if (item.children && item.children.length > 0) {
+        const found = findMenuItem(id, item.children)
+        if (found) {
+          return found
+        }
+      }
+    }
+    return undefined
+  }
+
+  onMounted(() => {
+    if (activeMenu.value) {
+      const menu = findMenuItem(activeMenu.value, menuItems)
+      if (menu && menu.path) {
+        router.replace(menu.path)
+      }
+    }
+  })
+  // ----------- 菜单高亮和页面记忆 end -----------
   
   // 初始化时导航到仪表盘
   router.push('/dashboard')
@@ -189,22 +251,6 @@ export default function useHomepage() {
            (expandedMenus.value.includes(item.id) && item.id === activeMenu.value)
   }
   
-  // 递归查找菜单项
-  const findMenuItem = (id: string, items: MenuItem[]): MenuItem | undefined => {
-    for (const item of items) {
-      if (item.id === id) {
-        return item
-      }
-      if (item.children && item.children.length > 0) {
-        const found = findMenuItem(id, item.children)
-        if (found) {
-          return found
-        }
-      }
-    }
-    return undefined
-  }
-
   const username = ref('Admin')
   const currentTime = ref(new Date().toLocaleString())
 
