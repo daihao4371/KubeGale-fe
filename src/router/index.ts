@@ -176,6 +176,15 @@ const router = createRouter({
                 requiresAuth: true,
                 title: '主机管理'
               }
+            },
+            {
+              path: 'batchtask',
+              name: 'cmdb-batchtask',
+              component: () => import('../views/cmdb/batchtask/index.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '批量任务'
+              }
             }
           ]
         },

@@ -1,4 +1,5 @@
 import request from '@/api/request'
+import type { AddUserReq, UpdateUserReq, ChangePasswordReq } from '@/types/cmdb'
 
 // 用户角色设置接口
 export interface SetUserAuthoritiesReq {
@@ -16,7 +17,7 @@ export const getUserList = (data: { page: number; pageSize: number }) => {
 }
 
 // 添加用户
-export const addUser = (data: any) => {
+export const addUser = (data: AddUserReq) => {
   return request({
     url: '/user/admin_register',
     method: 'post',
@@ -25,7 +26,7 @@ export const addUser = (data: any) => {
 }
 
 // 编辑用户
-export const updateUser = (data: any) => {
+export const updateUser = (data: UpdateUserReq) => {
   return request({
     url: '/user/setUserInfo',
     method: 'put',
@@ -69,7 +70,7 @@ export const getUserInfo = () => {
 }
 
 // 修改密码
-export const changePassword = (data: any) => {
+export const changePassword = (data: ChangePasswordReq) => {
   return request({
     url: '/user/changePassword',
     method: 'post',

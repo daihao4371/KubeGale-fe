@@ -25,4 +25,32 @@ export interface Host {
   CreatedBy: number
   UpdatedBy: number
   DeletedBy: number
+}
+
+export interface ApiResponse<T = Record<string, unknown>> {
+  code: number
+  data: T
+  msg: string
+}
+
+export interface AddUserReq {
+  username: string
+  password: string
+  nickname?: string
+  email?: string
+  phone?: string
+  authorityId?: number
+}
+
+export interface UpdateUserReq {
+  ID: number
+  nickname?: string
+  email?: string
+  phone?: string
+  authorityId?: number
+}
+
+export interface ChangePasswordReq {
+  oldPassword: string
+  newPassword: string
 } 

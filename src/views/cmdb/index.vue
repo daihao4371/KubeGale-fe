@@ -1,7 +1,5 @@
 <template>
-  <div class="cmdb-container">
-    <router-view></router-view>
-  </div>
+  <router-view />
 </template>
 
 <script setup lang="ts">
