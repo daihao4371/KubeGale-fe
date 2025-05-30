@@ -135,8 +135,9 @@ KubeGale-fe/
 - ![img.png](image/云服务器.png)
 - CMDB资产管理
 - ![img.png](image/项目管理.png)
-- CMDB主机管理
 - ![img.png](image/主机管理.png)
+- ![img.png](image/批量任务管理.png)
+- ![img.png](image/批量任务管理-执行日志.png)
 
 ## 后端地址
 [kubegale](https://github.com/daihao4371/KubeGale )
