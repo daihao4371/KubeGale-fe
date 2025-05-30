@@ -45,13 +45,22 @@
             {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" min-width="380">
+        <el-table-column label="操作" width="180" fixed="right">
           <template #default="{ row }">
-            <el-button :icon="View" size="small" link type="primary" @click="handleView(row)">详情</el-button>
-            <el-button :icon="Edit" size="small" link type="primary" @click="handleEdit(row)">编辑</el-button>
-            <el-button :icon="Delete" size="small" link type="danger" @click="handleDelete(row)">删除</el-button>
-            <el-button :icon="Search" size="small" link type="success" @click="handleTest(row)">测试</el-button>
-            <el-button :icon="Document" size="small" link type="info" @click="handleGetCardContent(row)">卡片内容</el-button>
+            <el-button
+              type="primary"
+              link
+              @click="handleEdit(row)"
+            >
+              编辑
+            </el-button>
+            <el-button
+              type="danger"
+              link
+              @click="handleDelete(row.id)"
+            >
+              删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -72,7 +81,7 @@
     <!-- 飞书机器人对话框 -->
     <el-dialog
       v-model="feishuDialogVisible"
-      title="添加飞书机器人"
+      :title="isEdit ? '编辑飞书机器人' : '添加飞书机器人'"
       width="600px"
       :close-on-click-modal="false"
     >
@@ -105,8 +114,8 @@
             default-first-option
             placeholder="请选择或输入标签"
           >
-            <el-option label="测试" value="测试" />
-            <el-option label="飞书" value="飞书" />
+            <el-option label="告警" value="告警" />
+            <el-option label="监控" value="监控" />
             <el-option label="通知" value="通知" />
           </el-select>
         </el-form-item>
@@ -116,8 +125,7 @@
             multiple
             placeholder="请选择通知事件"
           >
-            <el-option label="部署" value="deployment" />
-            <el-option label="错误" value="error" />
+            <el-option label="告警" value="alert" />
             <el-option label="警告" value="warning" />
           </el-select>
         </el-form-item>
@@ -125,9 +133,15 @@
           <el-select
             v-model="feishuForm.receivers"
             multiple
+            filterable
             placeholder="请选择接收者"
           >
-            <el-option label="所有人" value="all" />
+            <el-option
+              v-for="user in userOptions"
+              :key="user.value"
+              :label="user.label"
+              :value="user.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="每日统计" prop="send_daily_stats">
@@ -139,125 +153,9 @@
           <el-button @click="feishuDialogVisible = false">
             <el-icon><Close /></el-icon>取消
           </el-button>
-          <el-button type="primary" @click="submitFeishuForm(feishuFormRef)">
+          <el-button type="primary" :loading="formLoading" @click="submitFeishuForm(feishuFormRef)">
             <el-icon><Check /></el-icon>确定
           </el-button>
-        </span>
-      </template>
-    </el-dialog>
-
-    <!-- 测试通知对话框 -->
-    <el-dialog
-      v-model="testDialogVisible"
-      title="测试通知"
-      width="500px"
-      :close-on-click-modal="false"
-    >
-      <el-form label-width="100px">
-        <el-form-item label="测试消息">
-          <el-input
-            v-model="testMessage"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入测试消息内容（可选）"
-          />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="testDialogVisible = false">
-            <el-icon><Close /></el-icon>取消
-          </el-button>
-          <el-button type="primary" :loading="testLoading" @click="sendTestMessage">
-            <el-icon><Check /></el-icon>发送测试
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
-
-    <!-- 详情对话框 -->
-    <el-dialog
-      v-model="detailDialogVisible"
-      title="通知详情"
-      width="600px"
-      :close-on-click-modal="false"
-    >
-      <template v-if="detailData.config && detailData.cardContent">
-        <el-descriptions :column="1" border>
-          <el-descriptions-item label="名称">{{ detailData.config.name }}</el-descriptions-item>
-          <el-descriptions-item label="类型">
-            <el-tag type="warning">{{ detailData.config.type === 'feishu' ? '飞书' : detailData.config.type }}</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="通知策略">{{ detailData.config.notification_policy }}</el-descriptions-item>
-          <el-descriptions-item label="Webhook地址">{{ detailData.config.robot_url }}</el-descriptions-item>
-          <el-descriptions-item label="每日统计">
-            <el-tag :type="detailData.config.send_daily_stats ? 'success' : 'info'">
-              {{ detailData.config.send_daily_stats ? '是' : '否' }}
-            </el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="创建时间">{{ formatDate(detailData.config.created_at) }}</el-descriptions-item>
-          <el-descriptions-item label="更新时间">{{ formatDate(detailData.config.updated_at) }}</el-descriptions-item>
-        </el-descriptions>
-
-        <el-divider>卡片内容</el-divider>
-
-        <el-descriptions :column="1" border>
-          <el-descriptions-item label="告警级别">
-            <el-tag :type="detailData.cardContent.alert_level === 'Critical' ? 'danger' : 'warning'">
-              {{ detailData.cardContent.alert_level }}
-            </el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="告警名称">{{ detailData.cardContent.alert_name }}</el-descriptions-item>
-          <el-descriptions-item label="通知策略">{{ detailData.cardContent.notification_policy }}</el-descriptions-item>
-          <el-descriptions-item label="告警内容">{{ detailData.cardContent.alert_content }}</el-descriptions-item>
-          <el-descriptions-item label="通知用户">{{ detailData.cardContent.notified_users }}</el-descriptions-item>
-          <el-descriptions-item label="处理人">{{ detailData.cardContent.alert_handler }}</el-descriptions-item>
-          <el-descriptions-item label="告警时间">{{ formatDate(detailData.cardContent.alert_time) }}</el-descriptions-item>
-          <el-descriptions-item label="状态">
-            <el-tag :type="detailData.cardContent.unresolved_alert ? 'danger' : 'success'">
-              {{ detailData.cardContent.unresolved_alert ? '未解决' : '已解决' }}
-            </el-tag>
-          </el-descriptions-item>
-        </el-descriptions>
-      </template>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="detailDialogVisible = false">关闭</el-button>
-        </span>
-      </template>
-    </el-dialog>
-
-    <!-- 卡片内容对话框 -->
-    <el-dialog
-      v-model="cardContentDialogVisible"
-      title="卡片内容"
-      width="600px"
-      :close-on-click-modal="false"
-    >
-      <template v-if="cardContentData">
-        <el-descriptions :column="1" border>
-          <el-descriptions-item label="告警级别">
-            <el-tag :type="cardContentData.alert_level === 'Critical' ? 'danger' : 'warning'">
-              {{ cardContentData.alert_level }}
-            </el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="告警名称">{{ cardContentData.alert_name }}</el-descriptions-item>
-          <el-descriptions-item label="通知策略">{{ cardContentData.notification_policy }}</el-descriptions-item>
-          <el-descriptions-item label="告警内容">{{ cardContentData.alert_content }}</el-descriptions-item>
-          <el-descriptions-item label="通知用户">{{ cardContentData.notified_users }}</el-descriptions-item>
-          <el-descriptions-item label="处理人">{{ cardContentData.alert_handler }}</el-descriptions-item>
-          <el-descriptions-item label="告警时间">{{ formatDate(cardContentData.alert_time) }}</el-descriptions-item>
-          <el-descriptions-item label="上次相似告警">{{ cardContentData.last_similar_alert }}</el-descriptions-item>
-          <el-descriptions-item label="状态">
-            <el-tag :type="cardContentData.unresolved_alert ? 'danger' : 'success'">
-              {{ cardContentData.unresolved_alert ? '未解决' : '已解决' }}
-            </el-tag>
-          </el-descriptions-item>
-        </el-descriptions>
-      </template>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="cardContentDialogVisible = false">关闭</el-button>
         </span>
       </template>
     </el-dialog>
@@ -266,7 +164,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Plus, Search, RefreshRight, Edit, Delete, Close, Check, View, Document } from '@element-plus/icons-vue'
+import { Plus, Search, RefreshRight, Close, Check } from '@element-plus/icons-vue'
 import type { FormInstance } from 'element-plus'
 import dayjs from 'dayjs'
 import {
@@ -274,30 +172,22 @@ import {
   handleSearch,
   handleReset,
   tableData,
-  handleEdit,
-  handleDelete,
   handleAddFeishu,
   feishuDialogVisible,
   feishuForm,
   feishuFormRules,
   submitFeishuForm,
   loading,
+  formLoading,
   currentPage,
   pageSize,
   total,
   handleSizeChange,
   handleCurrentChange,
-  testDialogVisible,
-  testLoading,
-  testMessage,
-  handleTest,
-  sendTestMessage,
-  detailDialogVisible,
-  detailData,
-  handleView,
-  handleGetCardContent,
-  cardContentDialogVisible,
-  cardContentData
+  userOptions,
+  handleDelete,
+  handleEdit,
+  isEdit
 } from './notificationManage'
 
 const feishuFormRef = ref<FormInstance>()
@@ -311,4 +201,3 @@ const formatDate = (date: string) => {
 <style scoped>
 @import './notificationManage.css';
 </style>
-[end of src/views/im/notificationManage.vue]

@@ -12,8 +12,31 @@ import type {
   CreateUpdateResponse,
   NotificationItem,
   DingTalkCardContent,
-  NotificationCardContent
+  NotificationCardContent,
+  FeiShuNotificationListResponse
 } from '@/types/im'
+
+interface UpdateFeiShuParams {
+  id: number
+  name: string
+  notification_policy: string
+  robot_url: string
+  send_daily_stats: boolean
+  card_content: {
+    alert_level: string
+    alert_name: string
+    notification_policy: string
+    alert_content: string
+    alert_time: string
+    notified_users: string[]
+    last_similar_alert: string
+    alert_handler: string
+    claim_alert: boolean
+    resolve_alert: boolean
+    mute_alert: boolean
+    unresolved_alert: boolean
+  }
+}
 
 // 创建飞书通知
 export const createFeiShu = (data: CreateFeiShuParams) => {
@@ -25,8 +48,8 @@ export const createFeiShu = (data: CreateFeiShuParams) => {
 }
 
 // 更新飞书通知
-export const updateFeiShu = (data: UpdateNotificationParams) => {
-  return request<ApiResponse<CreateUpdateResponse>>({
+export const updateFeiShu = (data: UpdateFeiShuParams) => {
+  return request<ApiResponse>({
     url: '/notification/updateFeiShu',
     method: 'put',
     data
@@ -34,7 +57,7 @@ export const updateFeiShu = (data: UpdateNotificationParams) => {
 }
 
 // 删除通知配置
-export const deleteNotification = (params: DeleteNotificationParams) => {
+export const deleteNotification = (params: { id: number; type: string }) => {
   return request<ApiResponse>({
     url: '/notification/deleteNotification',
     method: 'delete',
@@ -69,12 +92,15 @@ export const updateCardContent = (data: CardContentParams) => {
   })
 }
 
-// 获取通知配置列表
-export const getNotificationList = (data: GetNotificationListParams) => {
+// 获取通知列表
+export const getNotificationList = (params: {
+  page: number
+  page_size: number
+}) => {
   return request<ApiResponse<NotificationListResponse>>({
     url: '/notification/getNotificationList',
     method: 'post',
-    data
+    data: params
   })
 }
 

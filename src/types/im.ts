@@ -34,28 +34,15 @@ export interface CreateDingTalkParams {
 
 // 创建飞书通知请求参数
 export interface CreateFeiShuParams {
-  id?: number
   name: string
   type: 'feishu'
   enabled: boolean
   webhook_url: string
-  description?: string
-  tags?: string[]
-  notify_events?: string[]
-  receivers?: string[]
-  send_daily_stats?: boolean
-  card_content?: {
-    alert_level: string
-    alert_name: string
-    notification_policy: string
-    alert_content: string
-    notified_users: string
-    alert_handler: string
-    claim_alert: boolean
-    resolve_alert: boolean
-    mute_alert: boolean
-    unresolved_alert: boolean
-  }
+  description: string
+  tags: string[]
+  notify_events: string[]
+  receivers: string[]
+  send_daily_stats: boolean
 }
 
 // 更新通知请求参数
@@ -171,9 +158,24 @@ export interface NotificationListResponse {
   pageSize: number
 }
 
-// 创建/更新响应
-export interface CreateUpdateResponse {
-  id?: number
+// 飞书通知列表项
+export interface FeiShuNotificationItem {
+  id: number
+  name: string
+  type: string
+  notification_policy: string
+  robot_url: string
+  created_at: string
+  updated_at: string
+  send_daily_stats: boolean
+}
+
+// 飞书通知列表响应
+export interface FeiShuNotificationListResponse {
+  total: number
+  list: FeiShuNotificationItem[]
+  page: number
+  pageSize: number
 }
 
 // 通用响应格式
@@ -181,6 +183,11 @@ export interface ApiResponse<T = Record<string, never>> {
   code: number
   data: T
   msg: string
+}
+
+// 创建/更新响应
+export interface CreateUpdateResponse {
+  error?: string
 }
 
 // 更新钉钉通知请求参数

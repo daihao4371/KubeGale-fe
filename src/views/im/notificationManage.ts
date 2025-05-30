@@ -1,9 +1,38 @@
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
-import { getNotificationList, deleteNotification, createFeiShu, getNotificationById, getCardContent, testNotification, updateFeiShu } from '@/api/im/notification'
-import type { NotificationItem, CreateFeiShuParams, FeiShuCardContent, UpdateNotificationParams, NotificationConfig, NotificationCardContent } from '@/types/im'
+import { createFeiShu, getNotificationList, deleteNotification, updateFeiShu } from '@/api/im/notification'
+import { getUserList } from '@/api/system/user'
+import type { CreateFeiShuParams } from '@/types/im'
+import type { ApiResponse } from '@/types/cmdb'
 
+interface UserListResponse {
+  list: Array<{
+    userName: string
+    nickName: string
+  }>
+  total: number
+  page: number
+  pageSize: number
+}
+
+interface NotificationItem {
+  id: number
+  name: string
+  type: string
+  notification_policy: string
+  robot_url: string
+  created_at: string
+}
+
+interface NotificationListResponse {
+  list: NotificationItem[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+// 状态定义
 const searchName = ref('')
 const tableData = ref<NotificationItem[]>([])
 const loading = ref(false)
@@ -12,7 +41,9 @@ const pageSize = ref(10)
 const total = ref(0)
 const feishuDialogVisible = ref(false)
 const formLoading = ref(false)
+const userOptions = ref<{ label: string; value: string }[]>([])
 
+// 表单数据
 const feishuForm = ref<CreateFeiShuParams>({
   name: '',
   type: 'feishu',
@@ -20,150 +51,17 @@ const feishuForm = ref<CreateFeiShuParams>({
   webhook_url: '',
   description: '',
   tags: [],
-  notify_events: ['deployment', 'error', 'warning'],
-  receivers: ['all'],
+  notify_events: ['alert', 'warning'],
+  receivers: [],
   send_daily_stats: true
 })
 
-const handleSearch = async () => {
-  loading.value = true
-  try {
-    const response = await getNotificationList({
-      page: currentPage.value,
-      pageSize: pageSize.value,
-      orderKey: 'created_at',
-      desc: true
-    })
-    if (response.data?.code === 0 && response.data.data) {
-      tableData.value = response.data.data.list
-      total.value = response.data.data.total
-      currentPage.value = response.data.data.page
-      pageSize.value = response.data.data.pageSize
-    }
-  } catch (error) {
-    console.error('获取通知列表失败:', error)
-    ElMessage.error('获取通知列表失败')
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleSizeChange = (val: number) => {
-  pageSize.value = val
-  handleSearch()
-}
-
-const handleCurrentChange = (val: number) => {
-  currentPage.value = val
-  handleSearch()
-}
-
-const handleReset = () => {
-  searchName.value = ''
-  currentPage.value = 1
-  handleSearch()
-}
-
-const handleEdit = async (row: NotificationItem) => {
-  try {
-    const res = await getNotificationById({ id: row.id, type: 'feishu' });
-    if (res.data?.code === 0 && res.data.data) {
-      const config = res.data.data.config;
-      const cardContent = res.data.data.card_content;
-      if (config && cardContent) {
-        feishuForm.value = {
-          id: config.id,
-          name: config.name,
-          type: 'feishu',
-          enabled: true,
-          webhook_url: config.robot_url,
-          description: '',
-          tags: [],
-          notify_events: config.notification_policy.split(','),
-          receivers: ['all'],
-          send_daily_stats: config.send_daily_stats,
-          card_content: {
-            alert_level: cardContent.alert_level,
-            alert_name: cardContent.alert_name,
-            notification_policy: cardContent.notification_policy,
-            alert_content: cardContent.alert_content,
-            notified_users: cardContent.notified_users,
-            alert_handler: cardContent.alert_handler,
-            claim_alert: cardContent.claim_alert,
-            resolve_alert: cardContent.resolve_alert,
-            mute_alert: cardContent.mute_alert,
-            unresolved_alert: cardContent.unresolved_alert
-          }
-        }
-      } else {
-        fallbackToFeishuRowData(row);
-      }
-    } else {
-      fallbackToFeishuRowData(row);
-    }
-    feishuDialogVisible.value = true;
-  } catch (error) {
-    console.error('获取通知详情失败:', error)
-    ElMessage.error('获取通知详情失败')
-  }
-}
-
-const fallbackToFeishuRowData = (row: NotificationItem) => {
-  feishuForm.value = {
-    id: row.id,
-    name: row.name,
-    type: 'feishu',
-    enabled: true,
-    webhook_url: row.robot_url,
-    description: '',
-    tags: [],
-    notify_events: row.notification_policy.split(','),
-    receivers: ['all'],
-    send_daily_stats: row.send_daily_stats || false,
-    card_content: {
-      alert_level: 'Critical',
-      alert_name: '',
-      notification_policy: 'critical,warning',
-      alert_content: '',
-      notified_users: '@all',
-      alert_handler: '',
-      claim_alert: false,
-      resolve_alert: false,
-      mute_alert: false,
-      unresolved_alert: true
-    }
-  }
-}
-
-const handleDelete = async (row: NotificationItem) => {
-  try {
-    await ElMessageBox.confirm('确认删除该通知吗？', '警告', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    })
-    const response = await deleteNotification({ 
-      id: row.id,
-      type: 'feishu'
-    })
-    if (response.data?.code === 0) {
-      ElMessage.success('删除成功')
-      handleSearch()
-    } else {
-      ElMessage.error(response.data?.msg || '删除失败')
-    }
-  } catch (error) {
-    if (error !== 'cancel') {
-      console.error('删除失败:', error)
-      ElMessage.error('删除失败')
-    }
-  }
-}
-
+// 表单验证规则
 const feishuFormRules: FormRules = {
   name: [
     { required: true, message: '请输入名称', trigger: 'blur' },
-    { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
+    { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' },
+    { pattern: /^[a-zA-Z0-9\u4e00-\u9fa5_-]+$/, message: '名称只能包含中文、英文、数字、下划线和横线', trigger: 'blur' }
   ],
   webhook_url: [
     { required: true, message: '请输入机器人 Webhook 地址', trigger: 'blur' },
@@ -177,21 +75,86 @@ const feishuFormRules: FormRules = {
   ]
 }
 
-const handleAddFeishu = () => {
+// 编辑状态
+const isEdit = ref(false)
+const currentEditId = ref<number>()
+
+// 获取通知列表
+const handleSearch = async () => {
+  loading.value = true
+  try {
+    const response = await getNotificationList({
+      page: currentPage.value,
+      page_size: pageSize.value
+    })
+    if (response.code === 0 && response.data) {
+      tableData.value = response.data.list
+      total.value = response.data.total
+      currentPage.value = response.data.page
+      pageSize.value = response.data.pageSize
+    }
+  } catch (error) {
+    console.error('获取通知列表失败:', error)
+    ElMessage.error('获取通知列表失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 分页处理
+const handleSizeChange = (val: number) => {
+  pageSize.value = val
+  handleSearch()
+}
+
+const handleCurrentChange = (val: number) => {
+  currentPage.value = val
+  handleSearch()
+}
+
+// 重置搜索
+const handleReset = () => {
+  searchName.value = ''
+  currentPage.value = 1
+  handleSearch()
+}
+
+// 获取用户列表
+const fetchUserList = async () => {
+  try {
+    const response = await getUserList({ page: 1, pageSize: 1000 })
+    if (response.data?.code === 0 && response.data.data) {
+      userOptions.value = response.data.data.list.map((user: { userName: string; nickName: string }) => ({
+        label: user.nickName,
+        value: user.userName
+      }))
+    }
+  } catch (error) {
+    console.error('获取用户列表失败:', error)
+    ElMessage.error('获取用户列表失败')
+  }
+}
+
+// 编辑通知
+const handleEdit = async (row: NotificationItem) => {
+  await fetchUserList()
+  isEdit.value = true
+  currentEditId.value = row.id
   feishuForm.value = {
-    name: '',
+    name: row.name,
     type: 'feishu',
     enabled: true,
-    webhook_url: '',
+    webhook_url: row.robot_url,
     description: '',
     tags: [],
-    notify_events: ['deployment', 'error', 'warning'],
-    receivers: ['all'],
+    notify_events: row.notification_policy.split(','),
+    receivers: [],
     send_daily_stats: true
   }
   feishuDialogVisible.value = true
 }
 
+// 提交表单
 const submitFeishuForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid) => {
@@ -199,44 +162,54 @@ const submitFeishuForm = async (formEl: FormInstance | undefined) => {
       formLoading.value = true
       try {
         let response
-        if (feishuForm.value.id) {
-          // 更新操作
-          const updateParams: UpdateNotificationParams = {
-            id: feishuForm.value.id,
+        if (isEdit.value && currentEditId.value) {
+          response = await updateFeiShu({
+            id: currentEditId.value,
             name: feishuForm.value.name,
-            notification_policy: feishuForm.value.notify_events?.join(',') || 'critical,warning',
+            notification_policy: feishuForm.value.notify_events.join(','),
             robot_url: feishuForm.value.webhook_url,
-            send_daily_stats: feishuForm.value.send_daily_stats || false,
+            send_daily_stats: feishuForm.value.send_daily_stats,
             card_content: {
-              alert_level: feishuForm.value.card_content?.alert_level || 'Critical',
-              alert_name: feishuForm.value.card_content?.alert_name || '',
-              notification_policy: feishuForm.value.card_content?.notification_policy || 'critical,warning',
-              alert_content: feishuForm.value.card_content?.alert_content || '',
-              notified_users: feishuForm.value.card_content?.notified_users || '@all',
-              alert_handler: feishuForm.value.card_content?.alert_handler || '',
-              claim_alert: feishuForm.value.card_content?.claim_alert || false,
-              resolve_alert: feishuForm.value.card_content?.resolve_alert || false,
-              mute_alert: feishuForm.value.card_content?.mute_alert || false,
-              unresolved_alert: feishuForm.value.card_content?.unresolved_alert || true,
-              alert_time: new Date().toISOString()
+              alert_level: 'warning',
+              alert_name: '测试告警',
+              notification_policy: 'immediate',
+              alert_content: '这是一个测试告警内容',
+              alert_time: new Date().toISOString(),
+              notified_users: feishuForm.value.receivers,
+              last_similar_alert: new Date().toISOString(),
+              alert_handler: '系统管理员',
+              claim_alert: false,
+              resolve_alert: false,
+              mute_alert: false,
+              unresolved_alert: true
             }
-          }
-          response = await updateFeiShu(updateParams)
+          })
         } else {
-          // 创建操作
           response = await createFeiShu(feishuForm.value)
         }
-        if (response.data?.code === 0) {
-          ElMessage.success(feishuForm.value.id ? '更新成功' : '添加成功')
+
+        if (response.code === 0) {
+          ElMessage.success(isEdit.value ? '更新成功' : '添加成功')
           feishuDialogVisible.value = false
           handleSearch()
           formEl.resetFields()
+          isEdit.value = false
+          currentEditId.value = undefined
         } else {
-          ElMessage.error(response.data?.msg || (feishuForm.value.id ? '更新失败' : '添加失败'))
+          const errorMsg = response.msg || ''
+          if (errorMsg.includes('Duplicate entry') && errorMsg.includes('idx_name_type_unique')) {
+            ElMessage.error('该名称的飞书通知已存在，请使用其他名称')
+          } else if (errorMsg.includes('飞书通知配置不存在')) {
+            ElMessage.error('该通知配置已被删除或不存在')
+            feishuDialogVisible.value = false
+            handleSearch()
+          } else {
+            ElMessage.error(errorMsg || (isEdit.value ? '更新失败' : '添加失败'))
+          }
         }
       } catch (error) {
-        console.error(feishuForm.value.id ? '更新失败:' : '添加失败:', error)
-        ElMessage.error(feishuForm.value.id ? '更新失败' : '添加失败')
+        console.error(isEdit.value ? '更新失败:' : '添加失败:', error)
+        ElMessage.error(isEdit.value ? '更新失败' : '添加失败')
       } finally {
         formLoading.value = false
       }
@@ -244,122 +217,71 @@ const submitFeishuForm = async (formEl: FormInstance | undefined) => {
   })
 }
 
+// 添加飞书通知
+const handleAddFeishu = async () => {
+  isEdit.value = false
+  currentEditId.value = undefined
+  await fetchUserList()
+  feishuForm.value = {
+    name: '',
+    type: 'feishu',
+    enabled: true,
+    webhook_url: '',
+    description: '',
+    tags: [],
+    notify_events: ['alert', 'warning'],
+    receivers: [],
+    send_daily_stats: true
+  }
+  feishuDialogVisible.value = true
+}
+
+// 删除通知
+const handleDelete = async (id: number) => {
+  try {
+    await ElMessageBox.confirm('确定要删除该通知配置吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    
+    const response = await deleteNotification({ id, type: 'feishu' })
+    if (response.code === 0) {
+      ElMessage.success('删除成功')
+      handleSearch()
+    } else {
+      ElMessage.error(response.msg || '删除失败')
+    }
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('删除失败:', error)
+      ElMessage.error('删除失败')
+    }
+  }
+}
+
 // 初始加载
 handleSearch()
-
-// 添加测试对话框相关变量
-const testDialogVisible = ref(false)
-const testLoading = ref(false)
-const currentTestItem = ref<NotificationItem | null>(null)
-const testMessage = ref('')
-
-// 处理测试按钮点击
-const handleTest = (row: NotificationItem) => {
-  currentTestItem.value = row
-  testMessage.value = ''
-  testDialogVisible.value = true
-}
-
-// 发送测试消息
-const sendTestMessage = async () => {
-  if (!currentTestItem.value) return
-  testLoading.value = true
-  try {
-    const response = await testNotification({
-      id: currentTestItem.value.id,
-      type: 'feishu',
-      message: testMessage.value || undefined
-    })
-    if (response.data?.code === 0) {
-      ElMessage.success(response.data.data?.message || '测试消息发送成功')
-      testDialogVisible.value = false
-    } else {
-      ElMessage.error(response.data?.msg || '测试消息发送失败')
-    }
-  } catch (error) {
-    console.error('测试消息发送失败:', error)
-    ElMessage.error('测试消息发送失败')
-  } finally {
-    testLoading.value = false
-  }
-}
-
-// 添加详情对话框相关变量
-const detailDialogVisible = ref(false)
-const detailData = ref<{
-  config: NotificationConfig | null
-  cardContent: NotificationCardContent | null
-}>({
-  config: null,
-  cardContent: null
-})
-
-// 处理详情按钮点击
-const handleView = async (row: NotificationItem) => {
-  try {
-    const res = await getNotificationById({ id: row.id, type: 'feishu' });
-    if (res.data?.code === 0 && res.data.data) {
-      detailData.value = {
-        config: res.data.data.config || null,
-        cardContent: res.data.data.card_content || null
-      }
-      detailDialogVisible.value = true
-    } else {
-      ElMessage.error('获取通知详情失败')
-    }
-  } catch (error) {
-    console.error('获取通知详情失败:', error)
-    ElMessage.error('获取通知详情失败')
-  }
-}
-
-// 卡片内容对话框相关变量
-const cardContentDialogVisible = ref(false)
-const cardContentData = ref<NotificationCardContent | null>(null)
-
-// 处理获取卡片内容
-const handleGetCardContent = async (row: NotificationItem) => {
-  try {
-    const res = await getCardContent({ notification_id: row.id });
-    if (res.data?.code === 0 && res.data.data) {
-      cardContentData.value = res.data.data
-      cardContentDialogVisible.value = true
-    } else {
-      ElMessage.error('获取卡片内容失败')
-    }
-  } catch (error) {
-    console.error('获取卡片内容失败:', error)
-    ElMessage.error('获取卡片内容失败')
-  }
-}
 
 export {
   searchName,
   handleSearch,
   handleReset,
   tableData,
-  handleEdit,
-  handleDelete,
   handleAddFeishu,
   feishuDialogVisible,
   feishuForm,
   feishuFormRules,
   submitFeishuForm,
   loading,
+  formLoading,
   currentPage,
   pageSize,
   total,
   handleSizeChange,
   handleCurrentChange,
-  testDialogVisible,
-  testLoading,
-  testMessage,
-  handleTest,
-  sendTestMessage,
-  detailDialogVisible,
-  detailData,
-  handleView,
-  handleGetCardContent,
-  cardContentDialogVisible,
-  cardContentData
+  userOptions,
+  handleDelete,
+  handleEdit,
+  isEdit
 }

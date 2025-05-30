@@ -1,140 +1,83 @@
 /* Main Container */
 .notification-manage {
   height: 100%;
-  min-height: 0; /* For flex children */
-  padding: var(--spacing-lg); /* Use theme variable */
+  min-height: 0;
+  padding: var(--spacing-lg);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
 }
 
 /* Main Card */
-.box-card { /* Assuming this is an el-card instance */
-  flex: 1 1 0%; /* Allow card to grow and shrink */
+.box-card {
+  flex: 1 1 0%;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* For flex children */
-  /* Global el-card styles from main.css apply */
+  min-height: 0;
 }
 
-/* Table should grow within the card's body */
+/* Table */
 .el-table {
   flex: 1 1 0%;
   min-height: 0;
-  /* Global el-table styles from main.css apply */
 }
 
-/* Card Header (content wrapper in el-card__header slot) */
+/* Card Header */
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%; /* Ensure it takes full width of el-card__header */
+  width: 100%;
 }
 
 .header-buttons {
   display: flex;
-  gap: var(--spacing-sm); /* Use theme variable */
+  gap: var(--spacing-sm);
 }
 
 /* Search Form */
 .search-form {
-  margin-bottom: var(--spacing-lg); /* Use theme variable */
-  padding: var(--spacing-lg); /* Use theme variable, consistent with other search forms */
-  background-color: var(--bg-color-page); /* Use theme variable */
-  border-radius: var(--border-radius-md); /* Use theme variable */
-  display: flex; /* For layout of internal form items */
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background-color: var(--bg-color-page);
+  border-radius: var(--border-radius-md);
+  display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-md);
   align-items: center;
 }
+
 .search-form .el-form-item {
-  margin-bottom: 0 !important; /* For inline forms */
+  margin-bottom: 0 !important;
 }
 
+.search-input {
+  width: 300px;
+}
 
-/* Search Bar (if different from search-form, e.g., simpler filter) */
-.search-bar {
+/* Pagination */
+.pagination-container {
+  margin-top: var(--spacing-lg);
   display: flex;
-  gap: var(--spacing-sm); /* Use theme variable */
-  margin-bottom: var(--spacing-lg); /* Use theme variable */
-  align-items: center;
+  justify-content: flex-end;
+  padding: var(--spacing-md) 0;
 }
 
-.search-input { /* Specific width for search input if needed */
-  width: 300px; /* Kept specific width as per original */
-}
-
-/* Operation Bar (for action buttons above table) */
-.operation-bar {
-  display: flex;
-  gap: var(--spacing-sm); /* Use theme variable */
-  margin-bottom: var(--spacing-lg); /* Use theme variable */
-}
-
-/* Dialog Footer (standardized class for dialog footers) */
+/* Dialog Footer */
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
-  gap: var(--spacing-sm); /* Use theme variable */
-}
-
-/* Pagination Container */
-.pagination-container {
-  margin-top: var(--spacing-lg); /* Use theme variable */
-  display: flex;
-  justify-content: flex-end;
-  padding: var(--spacing-md) 0; /* Consistent padding */
-}
-
-/* Empty Data Placeholder */
-.empty-data {
-  margin: var(--spacing-xl) 0; /* Use theme variable */
-  text-align: center;
-  color: var(--text-color-secondary); /* Use theme variable */
-}
-
-/* Icon spacing in buttons */
-.el-button .el-icon { /* General rule for icon in button */
-  /* Element Plus 2.3+ handles spacing better. This can be a fallback or adjustment. */
-  /* margin-right: var(--spacing-xs); */ /* Default for icon on left, if text follows */
-}
-/* More specific rules for icon spacing if needed (copied from other files for consistency) */
-.el-button .el-icon + span,
-.el-button span + .el-icon {
-  margin-left: var(--spacing-xs);
-}
-.el-button > .el-icon:first-child:not(:last-child) {
-  margin-right: var(--spacing-xs);
-}
-.el-button > .el-icon:last-child:not(:first-child) {
-  margin-left: var(--spacing-xs);
-}
-
-/* Table specific button margins */
-.el-table .el-button {
-  margin-right: var(--spacing-xs); /* Use theme variable, 6px -> 4px or 8px. xs=4px is closer */
-}
-.el-table .el-button:last-child {
-  margin-right: 0;
+  gap: var(--spacing-sm);
 }
 
 /* Responsive Layout */
 @media screen and (max-width: 768px) {
-  .search-bar { /* Assuming .search-bar is the primary filter area */
+  .search-form {
     flex-direction: column;
-    gap: var(--spacing-md); /* Keep consistent gap for column layout */
+    gap: var(--spacing-md);
   }
 
   .search-input {
     width: 100%;
-  }
-
-  .operation-bar {
-    flex-direction: column;
-    gap: var(--spacing-md); /* Keep consistent gap */
-  }
-  .operation-bar .el-button {
-    width: 100%; /* Make buttons full width in column layout */
   }
 }
