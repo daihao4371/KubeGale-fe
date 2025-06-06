@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import AIAssistantEntry from '@/components/ai/AIAssistantEntry.vue'
 </script>
 
 <template>
   <RouterView />
+  <AIAssistantEntry />
 </template>
 
 <style>
