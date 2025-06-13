@@ -116,6 +116,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 import type { FormRules } from 'element-plus'
 import type { ClusterData } from '@/api/kubernetes/cluster/k8sCluster'
+import type { ClusterFormData } from '@/types/kubernetes'
 
 interface SearchInfo {
   startCreatedAt?: Date;
@@ -131,9 +132,12 @@ defineOptions({
 const showAllQuery = ref(false)
 
 // 自动化生成的字典（可能为空）以及字段
-const formData = ref<ClusterData>({
-  id: '',
+const formData = ref<ClusterFormData>({
   name: '',
+  kube_type: 1,
+  kube_config: '',
+  api_address: '',
+  prometheus_auth_type: 1,
   createdAt: new Date().toISOString()
 })
 
@@ -163,7 +167,7 @@ const title = ref('')
 const page = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
-const tableData = ref([])
+const tableData = ref<ClusterData[]>([])
 const searchInfo = ref<SearchInfo>({})
 
 // 重置
@@ -252,7 +256,9 @@ const onDelete = async() => {
       return
     }
     multipleSelection.value.map(item => {
-      IDs.push(item.id)
+      if (item.id) {
+        IDs.push(item.id)
+      }
     })
     const res = await DeleteClusterByIds({ IDs })
     if (res.code === 0) {
@@ -273,6 +279,7 @@ const type = ref('')
 
 // 更新行
 const updateK8sClusterFunc = async(row: ClusterData) => {
+  if (!row.id) return
   const res = await getClustersById({ id: row.id })
   type.value = 'update'
   if (res.code === 0) {
@@ -284,6 +291,7 @@ const updateK8sClusterFunc = async(row: ClusterData) => {
 
 // 删除行
 const deleteK8sClusterFunc = async (row: ClusterData) => {
+  if (!row.id) return
   const res = await DeleteCluster({ id: row.id })
   if (res.code === 0) {
     ElMessage({
@@ -313,8 +321,11 @@ const openDialog = () => {
 const closeDialog = () => {
   dialogFormVisible.value = false
   formData.value = {
-    id: '',
     name: '',
+    kube_type: 1,
+    kube_config: '',
+    api_address: '',
+    prometheus_auth_type: 1,
     createdAt: new Date().toISOString()
   }
 }

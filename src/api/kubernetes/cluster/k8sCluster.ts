@@ -10,9 +10,16 @@ export interface ClusterParams {
 }
 
 export interface ClusterData {
-  id: string;
+  id?: string;
   name: string;
-  createdAt: string;
+  createdAt?: string;
+  kube_type: number;
+  kube_config: string;
+  api_address: string;
+  prometheus_url?: string;
+  prometheus_auth_type: number;
+  prometheus_user?: string;
+  prometheus_pwd?: string;
   [key: string]: unknown;
 }
 
@@ -24,7 +31,24 @@ export interface IdsParams {
   IDs: string[];
 }
 
-export const getClustersList = (params: ClusterParams) => {
+export interface ApiResponse<T> {
+  code: number;
+  data: T;
+  message?: string;
+}
+
+export interface ClusterListResponse {
+  list: ClusterData[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface ClusterResponse {
+  cluster: ClusterData;
+}
+
+export const getClustersList = (params: ClusterParams): Promise<ApiResponse<ClusterListResponse>> => {
   return service({
     url: '/kubernetes/clusterList',
     method: 'get',
@@ -32,7 +56,7 @@ export const getClustersList = (params: ClusterParams) => {
   })
 }
 
-export const getClustersById = (data: IdParams) => {
+export const getClustersById = (data: IdParams): Promise<ApiResponse<ClusterResponse>> => {
   return service({
     url: '/kubernetes/clusterById',
     method: 'post',
@@ -40,7 +64,7 @@ export const getClustersById = (data: IdParams) => {
   })
 }
 
-export const CreateCluster = (data: ClusterData) => {
+export const CreateCluster = (data: ClusterData): Promise<ApiResponse<null>> => {
   return service({
     url: '/kubernetes/cluster',
     method: 'post',
@@ -48,7 +72,7 @@ export const CreateCluster = (data: ClusterData) => {
   })
 }
 
-export const UpdateCluster = (data: ClusterData) => {
+export const UpdateCluster = (data: ClusterData): Promise<ApiResponse<null>> => {
   return service({
     url: '/kubernetes/cluster',
     method: 'put',
@@ -56,7 +80,7 @@ export const UpdateCluster = (data: ClusterData) => {
   })
 }
 
-export const DeleteCluster = (data: IdParams) => {
+export const DeleteCluster = (data: IdParams): Promise<ApiResponse<null>> => {
   return service({
     url: '/kubernetes/cluster',
     method: 'delete',
@@ -64,7 +88,7 @@ export const DeleteCluster = (data: IdParams) => {
   })
 }
 
-export const DeleteClusterByIds = (data: IdsParams) => {
+export const DeleteClusterByIds = (data: IdsParams): Promise<ApiResponse<null>> => {
   return service({
     url: '/kubernetes/clusterByIds',
     method: 'delete',

@@ -39,7 +39,7 @@ export interface ClusterRole {
 }
 
 export interface ClusterFormData {
-  id?: number;
+  id?: string;
   name: string;
   kube_type: number;
   kube_config: string;
@@ -48,4 +48,5 @@ export interface ClusterFormData {
   prometheus_auth_type: number;
   prometheus_user?: string;
   prometheus_pwd?: string;
+  createdAt?: string;
 } 
