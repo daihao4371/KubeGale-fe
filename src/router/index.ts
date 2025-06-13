@@ -194,7 +194,22 @@ const router = createRouter({
           component: () => import('../views/kubernetes/index.vue'),
           meta: {
             requiresAuth: true
-          }
+          },
+          children: [
+            {
+              path: '',
+              redirect: '/homepage/kubernetes/cluster'
+            },
+            {
+              path: 'cluster',
+              name: 'kubernetes-cluster',
+              component: () => import('../views/kubernetes/k8sCluster/k8sCluster.vue'),
+              meta: {
+                requiresAuth: true,
+                title: '集群管理'
+              }
+            }
+          ]
         },
         {
           path: 'prometheus',

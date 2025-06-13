@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import AIAssistantEntry from '@/components/ai/AIAssistantEntry.vue'
+import { StagewiseToolbar } from '@stagewise/toolbar-vue'
+import { VuePlugin } from '@stagewise-plugins/vue'
+
+const isDev = import.meta.env.DEV
 </script>
 
 <template>
   <RouterView />
   <AIAssistantEntry />
+  <StagewiseToolbar v-if="isDev" :config="{ plugins: [VuePlugin] }" />
 </template>
 
 <style>

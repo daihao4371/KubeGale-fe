@@ -97,7 +97,15 @@ export default function useHomepage() {
     },
     { id: 'im', title: 'IM通知管理', icon: 'Bell', path: '/homepage/im' },
 
-    { id: 'kubernetes', title: 'k8s管理', icon: 'Ship', path: '/homepage/kubernetes' },
+    { 
+      id: 'kubernetes', 
+      title: 'k8s管理', 
+      icon: 'Ship', 
+      path: '/homepage/kubernetes',
+      children: [
+        { id: 'kubernetes-cluster', title: '集群管理', icon: 'Box', path: '/homepage/kubernetes/cluster' }
+      ]
+    },
     { id: 'prometheus', title: 'Prometheus监控管理', icon: 'Histogram', path: '/homepage/prometheus' },
     { id: 'config', title: '配置中心', icon: 'SetUp', path: '/homepage/config' },
     { id: 'docker', title: 'docker管理', icon: 'Goods', path: '/homepage/docker' },
